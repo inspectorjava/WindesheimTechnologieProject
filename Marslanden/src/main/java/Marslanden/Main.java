@@ -1,4 +1,4 @@
-package src.main.java.Marslanden;
+package Marslanden;
 
 public class Main {
 

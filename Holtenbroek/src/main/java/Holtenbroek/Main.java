@@ -1,4 +1,4 @@
-package src.main.java.Holtenbroek;
+package Holtenbroek;
 
 public class Main {
 

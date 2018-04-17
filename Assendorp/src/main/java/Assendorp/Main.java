@@ -1,4 +1,4 @@
-package src.main.java.Assendorp;
+package Assendorp;
 
 public class Main {
 
