@@ -13,10 +13,10 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>${artifactId}}-Assendorp-${version}</finalName>
+                    <finalName>${artifactId}}-assendorp-${version}</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>src.main.java.Assendorp.Main</mainClass>
+                            <mainClass>src.main.java.assendorp.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

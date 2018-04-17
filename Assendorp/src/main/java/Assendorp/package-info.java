@@ -1,4 +1,0 @@
-/**
- * Assendorp project
- */
-package Assendorp;
