@@ -2,4 +2,4 @@ language: java
 
 script:
    - mvn install
-   - checkstyle:check
+   - mvn checkstyle:check
