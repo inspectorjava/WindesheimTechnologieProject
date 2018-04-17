@@ -1,4 +1,4 @@
-package Holtenbroek;
+package src.main.java.Holtenbroek;
 
 public class Main {
 
@@ -12,3 +12,4 @@ public class Main {
     }
 
 }
+
