@@ -3,4 +3,3 @@ language: java
 script:
    - mvn clean install
    - mvn checkstyle:check
-   
