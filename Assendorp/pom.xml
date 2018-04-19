@@ -8,15 +8,20 @@
     <artifactId>Assendorp</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>${artifactId}}-assendorp-${version}</finalName>
+                    <finalName>${project.artifactId}-assendorp-${project.version}</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>src.main.java.assendorp.Main</mainClass>
+                            <mainClass>assendorp.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
