@@ -1,0 +1,4 @@
+/**
+ * Console application.
+ */
+package console;
