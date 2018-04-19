@@ -1,8 +1,9 @@
+package console;
 
 /**
  * Main class for the Console project.
  */
-public class Console {
+public final class Console {
 
     /**
      * Private constructor.
@@ -17,10 +18,9 @@ public class Console {
     public static void main(final String[] args) {
         if (args.length == 0) {
             System.out.println("Files in argument given.");
-        }
-        else {
+        } else {
             for (String a : args) {
-                // @TODO: Pass this file to Marslanden.
+                /* TODO : pass this file to Marslanden */
                 System.out.println(a);
             }
         }
