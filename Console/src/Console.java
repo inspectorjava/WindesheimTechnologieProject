@@ -15,11 +15,14 @@ public class Console {
      * @param args default arguments
      */
     public static void main(final String[] args) {
-        System.out.println("[Console] Project loading.");
-
-        // Do whatever we need to do,
-        // its just a sample setup to make sure it works.
-
-        System.out.println("[Console] Project loaded.");
+        if (args.length == 0) {
+            System.out.println("Files in argument given.");
+        }
+        else {
+            for (String a : args) {
+                // @TODO: Pass this file to Marslanden.
+                System.out.println(a);
+            }
+        }
     }
 }
