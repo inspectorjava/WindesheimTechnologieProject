@@ -1,4 +1,4 @@
-package marslanden.analizers;
+package marslanden.analyzers;
 
 import marslanden.patterns.IDesignPattern;
 

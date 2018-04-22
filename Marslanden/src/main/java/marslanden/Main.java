@@ -1,5 +1,7 @@
 package marslanden;
 
+import parser.ParserWrapper;
+
 /**
  * Main class for the marslanden project.
  */
@@ -16,12 +18,12 @@ public final class Main {
      * @param args default arguments
      */
     public static void main(final String[] args) {
-        System.out.println("[marslanden] Project loading.");
+        System.out.println("[marslanden] running");
 
-        // Do whatever we need to do,
-        // its just a sample setup to make sure it works.
+        ParserWrapper pw = new ParserWrapper();
+        pw.test();
 
-        System.out.println("[marslanden] Project loaded.");
+        System.out.println("[marslanden] done");
     }
 
 }

@@ -1,6 +1,6 @@
 package marslanden;
 
-import marslanden.analizers.PatternAnalyzer;
+import marslanden.analyzers.PatternAnalyzer;
 import marslanden.patterns.IDesignPattern;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -11,19 +11,19 @@ import java.util.ArrayList;
 /**
  * Created by caveman on 4/19/18.
  */
-public class FileAnalisisProvider {
+public class FileAnalysisProvider {
     private ArrayList<PatternAnalyzer> analyzers = new ArrayList<>();
 
     public ArrayList<PatternAnalyzer> getAnalyzers() {
         return analyzers;
     }
 
-    public FileAnalisisProvider addAnalyzer(PatternAnalyzer analyzer) {
+    public FileAnalysisProvider addAnalyzer(PatternAnalyzer analyzer) {
         this.analyzers.add(analyzer);
         return this;
     }
 
-    public FileAnalisisProvider removeAnalyzer(PatternAnalyzer analyzer) {
+    public FileAnalysisProvider removeAnalyzer(PatternAnalyzer analyzer) {
         this.analyzers.remove(analyzer);
         return this;
     }
