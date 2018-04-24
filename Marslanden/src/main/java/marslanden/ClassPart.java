@@ -1,5 +1,7 @@
 package marslanden;
 
+import com.github.javaparser.Range;
+
 import javax.swing.text.Position;
 import java.io.File;
 
@@ -13,14 +15,9 @@ public class ClassPart {
     private File file;
 
     /**
-     * The position in the file where the ClassPart starts at.
-     */
-    private Position startPosition;
-
-    /**
      * The position in the file where the ClassPart ends at.
      */
-    private Position endPosition;
+    private Range range;
 
     /**
      * Returns the file of the ClassPart.
@@ -41,36 +38,18 @@ public class ClassPart {
     }
 
     /**
-     * @return Returns the start position of the class part.
+     * @return character range in file
      */
-    public Position getStartPosition() {
-        return startPosition;
+    public Range getRange() {
+        return range;
     }
 
     /**
-     * Sets the start position of the class part.
-     * @param startPosition the start position
-     * @return returns this object
+     * @param range character range in file
+     * @return instance of this
      */
-    public ClassPart setStartPosition(final Position startPosition) {
-        this.startPosition = startPosition;
-        return this;
-    }
-
-    /**
-     * @return Returns the end position of the class part
-     */
-    public Position getEndPosition() {
-        return endPosition;
-    }
-
-    /**
-     * Sets the end position of the class part.
-     * @param endPosition the end position
-     * @return returns this object
-     */
-    public ClassPart setEndPosition(final Position endPosition) {
-        this.endPosition = endPosition;
+    public ClassPart setRange(Range range) {
+        this.range = range;
         return this;
     }
 }
