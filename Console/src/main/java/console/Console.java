@@ -19,9 +19,9 @@ public final class Console {
         if (args.length == 0) {
             System.out.println("Files in argument given.");
         } else {
-            for (String a : args) {
+            for (String file : args) {
                 /* TODO : pass this file to Marslanden */
-                System.out.println(a);
+                System.out.println(file);
             }
         }
     }
