@@ -21,7 +21,7 @@ public final class Main {
         System.out.println("[marslanden] running");
 
         ParserWrapper pw = new ParserWrapper();
-        pw.test();
+        pw.inheritenceTest();
 
         System.out.println("[marslanden] done");
     }

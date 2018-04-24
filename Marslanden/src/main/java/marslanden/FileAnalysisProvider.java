@@ -12,20 +12,10 @@ import java.util.ArrayList;
  * Created by caveman on 4/19/18.
  */
 public class FileAnalysisProvider {
-    private ArrayList<PatternAnalyzer> analyzers = new ArrayList<>();
+    private PatternAnalyzer analyzer;
 
-    public ArrayList<PatternAnalyzer> getAnalyzers() {
-        return analyzers;
-    }
-
-    public FileAnalysisProvider addAnalyzer(PatternAnalyzer analyzer) {
-        this.analyzers.add(analyzer);
-        return this;
-    }
-
-    public FileAnalysisProvider removeAnalyzer(PatternAnalyzer analyzer) {
-        this.analyzers.remove(analyzer);
-        return this;
+    public FileAnalysisProvider(PatternAnalyzer analyzer) {
+        this.analyzer = analyzer;
     }
 
     public ArrayList<IDesignPattern> analyzeFile(File file){
@@ -37,5 +27,14 @@ public class FileAnalysisProvider {
     public ArrayList<IDesignPattern> analyzeDirectory(  Path directoryPath){
         throw new NotImplementedException();
        // return new ArrayList<>();
+    }
+
+    public PatternAnalyzer getAnalyzer() {
+        return analyzer;
+    }
+
+    public FileAnalysisProvider setAnalyzer(PatternAnalyzer analyzer) {
+        this.analyzer = analyzer;
+        return this;
     }
 }

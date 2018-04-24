@@ -2,4 +2,4 @@ language: java
 
 script:
    - mvn clean install
-   - mvn checkstyle:check
+   - mvn checkstyle:check -Dcheckstyle.config.location=$(pwd)/checkstyle.xml
