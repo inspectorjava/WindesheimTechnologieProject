@@ -7,13 +7,10 @@ import marslanden.analyzers.PatternAnalyzer;
 import marslanden.analyzers.PatternAnalyzerComposite;
 import marslanden.analyzers.singleton.SingletonAnalyzer;
 import marslanden.patterns.IDesignPattern;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;

@@ -12,10 +12,8 @@ import marslanden.ClassPart;
 import marslanden.analyzers.PatternAnalyzer;
 import marslanden.patterns.IDesignPattern;
 import marslanden.patterns.Singleton;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
