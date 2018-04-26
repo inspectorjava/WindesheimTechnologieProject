@@ -8,6 +8,9 @@ public final class App {
      * Private constructor.
      */
     private App() {
+        System.out.println("[marslanden] running");
+
+        System.out.println("[marslanden] done");
     }
 
     /**
@@ -16,6 +19,6 @@ public final class App {
      * @param args default arguments
      */
     public static void main(final String[] args) {
-        System.out.println("Hello World!");
+        new App();
     }
 }
