@@ -1,12 +1,5 @@
 package nl.windesheim.codeparser;
 
-import nl.windesheim.codeparser.patterns.IDesignPattern;
-
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.ArrayList;
-
 /**
  * App for console parser.
  */
