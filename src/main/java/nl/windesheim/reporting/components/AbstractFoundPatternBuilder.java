@@ -5,7 +5,7 @@ import nl.windesheim.reporting.DesignPatternType;
 /**
  * Extend this class to create a new found pattern build.
  */
-abstract class AbstractFoundPatternBuilder implements IFoundPatternBuilder {
+public abstract class AbstractFoundPatternBuilder implements IFoundPatternBuilder {
     /**
      * Design patterns.
      */
