@@ -30,7 +30,7 @@ public class SingletonAnalyzer extends PatternAnalyzer {
      * @inheritDoc
      */
     @Override
-    protected ArrayList<IDesignPattern> analyzePattern(final ArrayList<CompilationUnit> files) {
+    public ArrayList<IDesignPattern> analyze(final ArrayList<CompilationUnit> files) {
         ArrayList<IDesignPattern> singletons = new ArrayList<IDesignPattern>();
 
         //For each file
