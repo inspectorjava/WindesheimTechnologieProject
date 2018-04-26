@@ -1,4 +1,4 @@
-package parser;
+package nl.windesheim.codeparser.parser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;

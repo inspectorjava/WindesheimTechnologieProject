@@ -1,4 +1,4 @@
 /**
  * Singleton analyzer classes.
  */
-package marslanden.analyzers.singleton;
+package nl.windesheim.codeparser.marslanden.analyzers.singleton;

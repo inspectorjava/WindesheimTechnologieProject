@@ -1,10 +1,17 @@
-package marslanden.analyzers.singleton;
+package nl.windesheim.codeparser;
 
-import org.junit.Test;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class SingletonAnalyzerTest {
-    @Test
-    public void analyzePattern() throws Exception {
+public class SingletonAnalyzerTest extends TestCase {
+
+    /**
+     * Rigourous Test :-)
+     */
+    public void testApp()
+    {
+        assertTrue( true );
     }
 
 }

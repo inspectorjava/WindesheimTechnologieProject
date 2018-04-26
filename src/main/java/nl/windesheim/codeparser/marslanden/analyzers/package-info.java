@@ -1,4 +1,4 @@
 /**
  * Design pattern analyzer classes.
  */
-package marslanden.analyzers;
+package nl.windesheim.codeparser.marslanden.analyzers;

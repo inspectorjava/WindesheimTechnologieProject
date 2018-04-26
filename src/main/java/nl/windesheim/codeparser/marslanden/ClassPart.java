@@ -1,4 +1,4 @@
-package marslanden;
+package nl.windesheim.codeparser.marslanden;
 
 import com.github.javaparser.Range;
 

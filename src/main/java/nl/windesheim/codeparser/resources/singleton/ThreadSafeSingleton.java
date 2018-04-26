@@ -1,7 +1,7 @@
 /**
  * Source: https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples
  */
-package com.journaldev.singleton;
+package nl.windesheim.codeparser.resources.singleton;
 
 public class ThreadSafeSingleton {
 

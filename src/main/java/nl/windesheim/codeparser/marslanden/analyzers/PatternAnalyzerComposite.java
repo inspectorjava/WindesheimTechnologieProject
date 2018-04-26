@@ -1,7 +1,7 @@
-package marslanden.analyzers;
+package nl.windesheim.codeparser.marslanden.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
-import marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
      */
     @Override
     protected ArrayList<IDesignPattern> analyzePattern(final ArrayList<CompilationUnit> files) {
-        return new ArrayList<>();
+        return new ArrayList<IDesignPattern>();
     }
 
 

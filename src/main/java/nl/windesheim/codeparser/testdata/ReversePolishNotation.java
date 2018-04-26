@@ -20,35 +20,35 @@ public class ReversePolishNotation { // What does this do?
     public Double calc (String input) {
         String[] tokens = input.split(" ");
         Stack<Double> numbers = new Stack<Double>();
-        Stream.of(tokens).forEach(t -> {
-            double a;
-            double b;
-
-            switch (t) {
-                case "+":
-                    b = numbers.pop();
-                    a = numbers.pop();
-                    numbers.push(a + b);
-                    break;
-                case "/":
-                    b = numbers.pop();
-                    a = numbers.pop();
-                    numbers.push(a / b);
-                    break;
-                case "-":
-                    b = numbers.pop();
-                    a = numbers.pop();
-                    numbers.push(a - b);
-                    break;
-                case "*":
-                    b = numbers.pop();
-                    a = numbers.pop();
-                    numbers.push(a * b);
-                    break;
-                default:
-                    numbers.push(Double.valueOf(t));
-            }
-        });
+//        Stream.of(tokens).forEach(t -> {
+//            double a;
+//            double b;
+//
+//            switch (t) {
+//                case "+":
+//                    b = numbers.pop();
+//                    a = numbers.pop();
+//                    numbers.push(a + b);
+//                    break;
+//                case "/":
+//                    b = numbers.pop();
+//                    a = numbers.pop();
+//                    numbers.push(a / b);
+//                    break;
+//                case "-":
+//                    b = numbers.pop();
+//                    a = numbers.pop();
+//                    numbers.push(a - b);
+//                    break;
+//                case "*":
+//                    b = numbers.pop();
+//                    a = numbers.pop();
+//                    numbers.push(a * b);
+//                    break;
+//                default:
+//                    numbers.push(Double.valueOf(t));
+//            }
+//        });
 
         return numbers.pop();
     }

@@ -1,4 +1,4 @@
-package marslanden.analyzers.singleton;
+package nl.windesheim.codeparser.marslanden.analyzers.singleton;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -8,10 +8,10 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import marslanden.ClassPart;
-import marslanden.analyzers.PatternAnalyzer;
-import marslanden.patterns.IDesignPattern;
-import marslanden.patterns.Singleton;
+import nl.windesheim.codeparser.marslanden.ClassPart;
+import nl.windesheim.codeparser.marslanden.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.marslanden.patterns.Singleton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class SingletonAnalyzer extends PatternAnalyzer {
 
     @Override
     protected ArrayList<IDesignPattern> analyzePattern(final ArrayList<CompilationUnit> files) {
-        ArrayList<IDesignPattern> singletons = new ArrayList<>();
+        ArrayList<IDesignPattern> singletons = new ArrayList<IDesignPattern>();
 
         //For each file
         for (CompilationUnit cu : files){

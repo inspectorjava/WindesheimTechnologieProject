@@ -1,12 +1,12 @@
-package marslanden;
+package nl.windesheim.codeparser.marslanden;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.utils.SourceRoot;
-import marslanden.analyzers.PatternAnalyzer;
-import marslanden.analyzers.PatternAnalyzerComposite;
-import marslanden.analyzers.singleton.SingletonAnalyzer;
-import marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.marslanden.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.marslanden.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.marslanden.analyzers.singleton.SingletonAnalyzer;
+import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ public class FileAnalysisProvider {
         FileInputStream fileInputStream = new FileInputStream(file.getFile());
         CompilationUnit cu = JavaParser.parse(fileInputStream);
 
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<>();
+        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.add(cu);
 
         ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
@@ -44,7 +44,7 @@ public class FileAnalysisProvider {
 
         sourceRoot.tryToParse();
 
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<>();
+        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());
 
         ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);

@@ -1,4 +1,4 @@
-package testdata.inheritance_test;
+package nl.windesheim.codeparser.resources.inheritance_test;
 
 public class Bicycle {
 

@@ -1,12 +1,9 @@
-package marslanden.analyzers;
+package nl.windesheim.codeparser.marslanden.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
-import marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Defines a base for all design pattern analyzers.
@@ -15,7 +12,7 @@ public abstract class PatternAnalyzer {
     /**
      * The children for this composite
      */
-    private ArrayList<PatternAnalyzer> children = new ArrayList<>();
+    private ArrayList<PatternAnalyzer> children = new ArrayList<PatternAnalyzer>();
 
     /**
      * Adds a child to the list of PatternAnalyzers which makes this composite
