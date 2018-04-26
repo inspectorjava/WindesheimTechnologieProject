@@ -1,13 +1,21 @@
 package nl.windesheim.codeparser;
 
 /**
- * Hello world!
- *
+ * App for console parser.
  */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+public final class App {
+    /**
+     * Private constructor.
+     */
+    private App() {
+    }
+
+    /**
+     * main function for the parser.
+     *
+     * @param args default arguments
+     */
+    public static void main(final String[] args) {
+        System.out.println("Hello World!");
     }
 }
