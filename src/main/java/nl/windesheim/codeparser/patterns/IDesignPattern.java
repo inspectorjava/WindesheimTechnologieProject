@@ -1,4 +1,4 @@
-package nl.windesheim.codeparser.marslanden.patterns;
+package nl.windesheim.codeparser.patterns;
 
 /**
  * Created by caveman on 4/19/18.

@@ -1,12 +1,12 @@
-package nl.windesheim.codeparser.marslanden;
+package nl.windesheim.codeparser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.utils.SourceRoot;
-import nl.windesheim.codeparser.marslanden.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.marslanden.analyzers.PatternAnalyzerComposite;
-import nl.windesheim.codeparser.marslanden.analyzers.singleton.SingletonAnalyzer;
-import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
+import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,14 +20,23 @@ import java.util.ArrayList;
  */
 public class FileAnalysisProvider {
     /**
-     * The patter analyzer composite which will be called in the analyzeFile and analyzeDirectory functions
+     * The patter analyzer composite which will be called in the analyzeFile and analyzeDirectory functions.
      */
     private PatternAnalyzer analyzer;
 
-    public FileAnalysisProvider(PatternAnalyzer analyzer) {
+    /**
+     * @param analyzer the pattern analyzer which will be used to analyze files
+     */
+    public FileAnalysisProvider(final PatternAnalyzer analyzer) {
         this.analyzer = analyzer;
     }
 
+    /**
+     * Analyzes a single file for design patterns.
+     * @param file the file that should be analyzed
+     * @return a list of patterns which were found
+     * @throws FileNotFoundException if the file that was passed doesn't exist
+     */
     public ArrayList<IDesignPattern> analyzeFile(final URL file) throws FileNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(file.getFile());
         CompilationUnit cu = JavaParser.parse(fileInputStream);
@@ -39,7 +48,13 @@ public class FileAnalysisProvider {
         return patterns;
     }
 
-    public ArrayList<IDesignPattern> analyzeDirectory(  Path directoryPath) throws IOException {
+    /**
+     * Analyzes a directory for design patterns.
+     * @param directoryPath the path to analyze
+     * @return a list of found patterns
+     * @throws IOException if the directory doesn't exist
+     */
+    public ArrayList<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
 
         sourceRoot.tryToParse();
@@ -51,16 +66,26 @@ public class FileAnalysisProvider {
         return patterns;
     }
 
+    /**
+     * @return the current analyzer that is used
+     */
     public PatternAnalyzer getAnalyzer() {
         return analyzer;
     }
 
-    public FileAnalysisProvider setAnalyzer(PatternAnalyzer analyzer) {
+    /**
+     * @param analyzer the analyzer that will be used to analyze files
+     * @return this
+     */
+    public FileAnalysisProvider setAnalyzer(final PatternAnalyzer analyzer) {
         this.analyzer = analyzer;
         return this;
     }
 
-    public static FileAnalysisProvider getConfiguredFileAnalysisProvider(){
+    /**
+     * @return a default preconfigured FileAnalysisProvider
+     */
+    public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         PatternAnalyzer analyzer = new PatternAnalyzerComposite();
         analyzer.addChild(new SingletonAnalyzer());
 

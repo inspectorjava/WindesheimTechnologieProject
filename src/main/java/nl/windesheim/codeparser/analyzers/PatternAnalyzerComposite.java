@@ -1,7 +1,7 @@
-package nl.windesheim.codeparser.marslanden.analyzers;
+package nl.windesheim.codeparser.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
-import nl.windesheim.codeparser.marslanden.patterns.IDesignPattern;
+import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
 

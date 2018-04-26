@@ -1,8 +1,7 @@
-package nl.windesheim.codeparser.marslanden;
+package nl.windesheim.codeparser;
 
 import com.github.javaparser.Range;
 
-import javax.swing.text.Position;
 import java.io.File;
 
 /**
@@ -48,7 +47,7 @@ public class ClassPart {
      * @param range character range in file
      * @return instance of this
      */
-    public ClassPart setRange(Range range) {
+    public ClassPart setRange(final Range range) {
         this.range = range;
         return this;
     }
