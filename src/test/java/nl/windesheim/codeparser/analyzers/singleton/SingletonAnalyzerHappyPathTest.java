@@ -47,7 +47,7 @@ public class SingletonAnalyzerHappyPathTest {
         ArrayList<CompilationUnit> units = new ArrayList<>();
         units.add(JavaParser.parse(new File(filename.getFile())));
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyzePattern(units);
+        ArrayList<IDesignPattern> patterns = analyzer.analyze(units);
 
         assertEquals(1, patterns.size());
 
