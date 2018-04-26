@@ -1,4 +1,0 @@
-/**
- * marslanden project.
- */
-package marslanden;
