@@ -86,10 +86,10 @@ public class FileAnalysisProvider {
      * @return a default preconfigured FileAnalysisProvider
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
-        PatternAnalyzer analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new SingletonAnalyzer());
+        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
+        composite.addChild(new SingletonAnalyzer());
 
-        FileAnalysisProvider analysisProvider = new FileAnalysisProvider(analyzer);
+        FileAnalysisProvider analysisProvider = new FileAnalysisProvider(composite);
         return analysisProvider;
     }
 }
