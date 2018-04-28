@@ -8,7 +8,7 @@ import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -33,12 +33,13 @@ public class FileAnalysisProvider {
 
     /**
      * Analyzes a single file for design patterns.
-     * @param file the file that should be analyzed
+     * @param fileName the file that should be analyzed
      * @return a list of patterns which were found
      * @throws FileNotFoundException if the file that was passed doesn't exist
      */
-    public ArrayList<IDesignPattern> analyzeFile(final URL file) throws FileNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(file.getFile());
+    public ArrayList<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
+        File fileInputStream = new File(fileName.getFile());
+
         CompilationUnit cu = JavaParser.parse(fileInputStream);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
