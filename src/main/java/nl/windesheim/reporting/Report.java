@@ -20,8 +20,8 @@ public final class Report {
     }
 
     /**
-     * Get the CodeReportDesignPatternMapper
-     * @return
+     * Get the CodeReportDesignPatternMapper.
+     * @return CodeReportDesignPatternMapper
      */
     public static CodeReportDesignPatternMapper getMapper() {
         return new CodeReportDesignPatternMapper();
