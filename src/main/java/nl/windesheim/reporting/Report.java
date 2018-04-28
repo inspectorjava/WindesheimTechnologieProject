@@ -5,7 +5,7 @@ import nl.windesheim.reporting.builders.CodeReportBuilder;
 /**
  * Facade class.
  */
-final class Report {
+public final class Report {
 
     /**
      * Private report.
@@ -17,5 +17,13 @@ final class Report {
      */
     public static CodeReportBuilder create() {
         return new CodeReportBuilder();
+    }
+
+    /**
+     * Get the CodeReportDesignPatternMapper.
+     * @return CodeReportDesignPatternMapper
+     */
+    public static CodeReportDesignPatternMapper getMapper() {
+        return new CodeReportDesignPatternMapper();
     }
 }
