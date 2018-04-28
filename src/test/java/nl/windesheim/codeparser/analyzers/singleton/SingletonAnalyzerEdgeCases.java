@@ -3,10 +3,7 @@ package nl.windesheim.codeparser.analyzers.singleton;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.Singleton;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.net.URL;
@@ -18,15 +15,15 @@ import static org.junit.Assert.assertTrue;
 
 public class SingletonAnalyzerEdgeCases {
 
-    private ClassLoader cl;
+    private ClassLoader classLoader;
 
     public SingletonAnalyzerEdgeCases() {
-        cl = this.getClass().getClassLoader();
+        classLoader = this.getClass().getClassLoader();
     }
 
     @Test
     public void testFileForSingleton() throws Exception {
-        URL filename = cl.getResource("singleton/IncompleteSingletons.java");
+        URL filename = classLoader.getResource("singleton/IncompleteSingletons.java");
 
         SingletonAnalyzer analyzer = new SingletonAnalyzer();
 

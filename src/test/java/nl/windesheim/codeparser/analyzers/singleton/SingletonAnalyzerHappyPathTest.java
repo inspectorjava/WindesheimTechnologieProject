@@ -9,11 +9,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -32,12 +29,12 @@ public class SingletonAnalyzerHappyPathTest {
         };
     }
 
-    private ClassLoader cl;
+    private ClassLoader classLoader;
     private URL filename;
 
     public SingletonAnalyzerHappyPathTest(String filename) {
-        cl = this.getClass().getClassLoader();
-        this.filename = cl.getResource(filename);
+        classLoader = this.getClass().getClassLoader();
+        this.filename = classLoader.getResource(filename);
     }
 
     @Test
