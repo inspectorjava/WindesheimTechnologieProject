@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
@@ -9,6 +10,11 @@ import java.util.ArrayList;
  * The top level composite which doesn't analyze a pattern but only holds other PatternAnalyzers.
  */
 public class PatternAnalyzerComposite extends PatternAnalyzer {
+
+    /**
+     * A CombinedTypeSolver which can be used to find relations between classes when analyzing
+     */
+    private CombinedTypeSolver typeSolver;
 
     /**
      * The children for this composite.
@@ -21,6 +27,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
      * @return this object
      */
     public PatternAnalyzer addChild(final PatternAnalyzer analyzer) {
+        analyzer.setParent(this);
         children.add(analyzer);
         return this;
     }
@@ -31,6 +38,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
      * @return this object
      */
     public PatternAnalyzer removeChild(final PatternAnalyzer analyzer) {
+        analyzer.setParent(null);
         children.remove(analyzer);
         return this;
     }
@@ -40,6 +48,22 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
      */
     public ArrayList<PatternAnalyzer> getChildren() {
         return children;
+    }
+
+    /**
+     * @return a typeSolver which can be used by the children of this class
+     */
+    public CombinedTypeSolver getTypeSolver() {
+        return typeSolver;
+    }
+
+    /**
+     * @param typeSolver a typeSolver which can be used by the children of this class
+     * @return this
+     */
+    public PatternAnalyzerComposite setTypeSolver(final CombinedTypeSolver typeSolver) {
+        this.typeSolver = typeSolver;
+        return this;
     }
 
     /**

@@ -2,8 +2,10 @@ package nl.windesheim.codeparser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -22,12 +24,12 @@ public class FileAnalysisProvider {
     /**
      * The patter analyzer composite which will be called in the analyzeFile and analyzeDirectory functions.
      */
-    private PatternAnalyzer analyzer;
+    private PatternAnalyzerComposite analyzer;
 
     /**
      * @param analyzer the pattern analyzer which will be used to analyze files
      */
-    public FileAnalysisProvider(final PatternAnalyzer analyzer) {
+    public FileAnalysisProvider(final PatternAnalyzerComposite analyzer) {
         this.analyzer = analyzer;
     }
 
@@ -39,6 +41,13 @@ public class FileAnalysisProvider {
      */
     public ArrayList<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
         File fileInputStream = new File(fileName.getFile());
+
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+        combinedTypeSolver.add(new ReflectionTypeSolver());
+        combinedTypeSolver.add(new JavaParserTypeSolver(fileInputStream));
+
+        analyzer.setTypeSolver(combinedTypeSolver);
 
         CompilationUnit cu = JavaParser.parse(fileInputStream);
 
@@ -60,6 +69,13 @@ public class FileAnalysisProvider {
 
         sourceRoot.tryToParse();
 
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
+        combinedTypeSolver.add(new ReflectionTypeSolver());
+        combinedTypeSolver.add(new JavaParserTypeSolver(directoryPath));
+
+        analyzer.setTypeSolver(combinedTypeSolver);
+
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());
 
@@ -70,7 +86,7 @@ public class FileAnalysisProvider {
     /**
      * @return the current analyzer that is used
      */
-    public PatternAnalyzer getAnalyzer() {
+    public PatternAnalyzerComposite getAnalyzer() {
         return analyzer;
     }
 
@@ -78,7 +94,7 @@ public class FileAnalysisProvider {
      * @param analyzer the analyzer that will be used to analyze files
      * @return this
      */
-    public FileAnalysisProvider setAnalyzer(final PatternAnalyzer analyzer) {
+    public FileAnalysisProvider setAnalyzer(final PatternAnalyzerComposite analyzer) {
         this.analyzer = analyzer;
         return this;
     }

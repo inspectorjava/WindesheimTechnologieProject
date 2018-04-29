@@ -8,7 +8,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import nl.windesheim.codeparser.ClassPart;
+import nl.windesheim.codeparser.FilePart;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
@@ -109,10 +109,10 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                             String fileName = cu.getStorage().get().getFileName();
                             File file = new File(fileName);
 
-                            ClassPart classPart = new ClassPart().setFile(file);
-                            classPart.setRange(classDeclaration.getRange().get());
+                            FilePart filePart = new FilePart().setFile(file);
+                            filePart.setRange(classDeclaration.getRange().get());
 
-                            singleton.setClassPart(classPart);
+                            singleton.setFilePart(filePart);
                         }
 
                         singletons.add(singleton);
