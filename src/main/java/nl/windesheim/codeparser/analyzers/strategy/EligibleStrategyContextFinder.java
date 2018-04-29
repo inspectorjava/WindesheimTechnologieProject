@@ -24,19 +24,19 @@ public class EligibleStrategyContextFinder
         extends VoidVisitorAdapter<CombinedTypeSolver> {
 
     /**
-     * The context, interface pairs found in the last visit
+     * The context, interface pairs found in the last visit.
      */
     private ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes;
 
     /**
-     * A visitor which is used to tell if there exists a setter for a field
+     * A visitor which is used to tell if there exists a setter for a field.
      */
     private SetterFinder setterFinder;
 
     /**
-     * Make a new EligibleStrategyContextFinder
+     * Make a new EligibleStrategyContextFinder.
      */
-    EligibleStrategyContextFinder(){
+    EligibleStrategyContextFinder() {
         classes = new ArrayList<>();
         setterFinder = new SetterFinder();
     }
@@ -44,26 +44,26 @@ public class EligibleStrategyContextFinder
     /**
      * @return A list of context, interface pairs which were found in the last visit
      */
-    public ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> getClasses(){
+    public ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> getClasses() {
         return classes;
     }
 
     /**
-     * Reset the list of classes
+     * Reset the list of classes.
      */
-    public void reset(){
+    public void reset() {
         classes = new ArrayList<>();
     }
 
     @Override
     public void visit(final ClassOrInterfaceDeclaration declaration, final CombinedTypeSolver typeSolver) {
         //If this is a interface don't process further
-        if (declaration.isInterface()){
+        if (declaration.isInterface()) {
             return;
         }
 
         //Get all fields in the class
-        for (FieldDeclaration field : declaration.getFields()){
+        for (FieldDeclaration field : declaration.getFields()) {
 
             //For every variable in a field deceleration
             for (VariableDeclarator variable : field.getVariables()) {
@@ -75,8 +75,9 @@ public class EligibleStrategyContextFinder
                 try {
                     resolvedType = JavaParserFacade.get(typeSolver).convertToUsage(variableType);
                 } catch (UnsolvedSymbolException e) {
-                    System.err.println("Can't resolve symbol: " + variableType.asString() + ", can be caused by missing" +
-                            " dependencies, invalid java code or selection of invalid source root");
+                    System.err.println("Can't resolve symbol: " + variableType.asString()
+                            + ", can be caused by missing dependencies, "
+                            + "invalid java code or selection of invalid source root");
                     continue;
                 }
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class PatternAnalyzerComposite extends PatternAnalyzer {
 
     /**
-     * A CombinedTypeSolver which can be used to find relations between classes when analyzing
+     * A CombinedTypeSolver which can be used to find relations between classes when analyzing.
      */
     private CombinedTypeSolver typeSolver;
 

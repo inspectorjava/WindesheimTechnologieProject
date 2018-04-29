@@ -8,7 +8,7 @@ import java.util.List;
 class Customer {
 
     private List<Double> drinks;
-    private BillingStrategy strategy, strategy2;
+    private BillingStrategy strategy;
 
     public Customer(final BillingStrategy strategy) {
         this.drinks = new ArrayList<Double>();
@@ -33,10 +33,4 @@ class Customer {
     public void setStrategy(final BillingStrategy strategy) {
         this.strategy = strategy;
     }
-
-    // Set Strategy
-    public void setStrategy2(final BillingStrategy newStrategy) {
-        strategy2 = newStrategy;
-    }
-
 }

@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.analyzers.strategy;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -31,7 +32,7 @@ import java.util.List;
  * - There is a interface which is implemented by all strategies with at least one function (strategy interface)
  * - There is at least one class which implements the strategy interface (strategy)
  */
-public class StrategyAnalyzer extends PatternAnalyzer{
+public class StrategyAnalyzer extends PatternAnalyzer {
 
     @Override
     public ArrayList<IDesignPattern> analyze(final ArrayList<CompilationUnit> files) {
@@ -40,6 +41,7 @@ public class StrategyAnalyzer extends PatternAnalyzer{
 
         JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
+        //Create visitors which will find classes with special properties
         EligibleStrategyContextFinder strategyContextFinder = new EligibleStrategyContextFinder();
         ImplementationFinder implementationFinder = new ImplementationFinder();
 
@@ -51,32 +53,63 @@ public class StrategyAnalyzer extends PatternAnalyzer{
         ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = new ArrayList<>();
 
         //For each file
-        for (CompilationUnit compilationUnit : files){
+        for (CompilationUnit compilationUnit : files) {
+            //Reset the state of the visitor
             strategyContextFinder.reset();
+
+            //visit all nodes and save eligible contexts in buffer
             strategyContextFinder.visit(compilationUnit, typeSolver);
+
+            //Read buffer into collection
             eligibleContexts.addAll(strategyContextFinder.getClasses());
         }
 
-        for (Pair<VariableDeclarator, ClassOrInterfaceDeclaration> eligibleContext : eligibleContexts){
+        //foreach eligible context class
+        for (Pair<VariableDeclarator, ClassOrInterfaceDeclaration> eligibleContext : eligibleContexts) {
+            //Get the strategy interface of which the context type has a variable
             ClassOrInterfaceDeclaration strategyInterface = eligibleContext.getValue();
 
+            //Get the variable deceleration
             VariableDeclarator strategyVariable = eligibleContext.getKey();
             ClassOrInterfaceType strategyInterfaceType = (ClassOrInterfaceType) strategyVariable.getType();
 
-            ClassOrInterfaceDeclaration context = (ClassOrInterfaceDeclaration) strategyVariable.getParentNode().get().getParentNode().get();
+            //Walk up the tree until we have the class containing the variable deceleration, this is the context class
+            Node currentNode = strategyVariable;
+            while (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
+                if (!currentNode.getParentNode().isPresent()) {
+                    break;
+                }
+                currentNode = currentNode.getParentNode().get();
+            }
 
+            //If we stopped but the current node is not a class we have a issue, so continue loop
+            if (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
+                continue;
+            }
+
+            ClassOrInterfaceDeclaration context = (ClassOrInterfaceDeclaration) currentNode;
+
+            //Find all method calls in the context class
             List<MethodCallExpr> methodCalls = context.findAll(MethodCallExpr.class);
 
             boolean classCallsStrategy = false;
 
-            for (MethodCallExpr methodCallExpr : methodCalls){
-                if (methodCallExpr.getScope().isPresent()){
-                    ResolvedType methodType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
-                    if (methodType instanceof ReferenceTypeImpl) {
+            //Loop over the method calls
+            for (MethodCallExpr methodCallExpr : methodCalls) {
+
+                //We are looking for a call in the scope of the variable deceleration
+                if (methodCallExpr.getScope().isPresent()) {
+
+                    //Resolve the type of the scope
+                    ResolvedType scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+                    if (scopeType instanceof ReferenceTypeImpl) {
                         ResolvedReferenceTypeDeclaration scopeResolvedReferenceType
-                                = ((ReferenceTypeImpl) methodType).getTypeDeclaration();
+                                = ((ReferenceTypeImpl) scopeType).getTypeDeclaration();
                         if (scopeResolvedReferenceType instanceof JavaParserInterfaceDeclaration) {
-                            if (((JavaParserInterfaceDeclaration) scopeResolvedReferenceType).getWrappedNode().equals(strategyInterface)) {
+
+                            //If the scope is the same type as the strategy interface
+                            if (((JavaParserInterfaceDeclaration) scopeResolvedReferenceType)
+                                    .getWrappedNode().equals(strategyInterface)) {
                                 classCallsStrategy = true;
                             }
                         }
@@ -92,24 +125,36 @@ public class StrategyAnalyzer extends PatternAnalyzer{
             ArrayList<ClassOrInterfaceDeclaration> strategies = new ArrayList<>();
 
             //For each file
-            for (CompilationUnit compilationUnit : files){
+            for (CompilationUnit compilationUnit : files) {
+                //Reset the visitor
                 implementationFinder.reset();
+
+                //Visit all nodes
                 implementationFinder.visit(compilationUnit, strategyInterfaceType);
+
+                //Add the buffer to the collection
                 strategies.addAll(implementationFinder.getClasses());
             }
 
-            if (strategies.size() == 0){
+            //We should at least have one implementation of the strategy interface, else the pattern won't work
+            if (strategies.size() == 0) {
                 continue;
             }
 
+            //At this point every requirement has been met so we make the Strategy class
+
             Strategy strategyPattern = new Strategy();
 
+            //Resolve the file and part of the file where the context class is defined
             strategyPattern.setContext(FilePartResolver.getFilePartOfNode(context));
 
+            //Resolve the file and part of the file where the strategy interface is defined
             strategyPattern.setStrategyInterface(FilePartResolver.getFilePartOfNode(strategyInterface));
 
             ArrayList<FilePart> strategiesFileParts = new ArrayList<>();
-            for (ClassOrInterfaceDeclaration strategy : strategies){
+            for (ClassOrInterfaceDeclaration strategy : strategies) {
+
+                //Resolve the file and part of the file where the strategy is defined
                 strategiesFileParts.add(FilePartResolver.getFilePartOfNode(strategy));
             }
 

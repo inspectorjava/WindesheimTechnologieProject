@@ -3,51 +3,47 @@ package nl.windesheim.codeparser.analyzers.util.visitor;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 /**
  * Searches for classes which implement the given interface.
  */
-public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceType>{
+public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceType> {
 
     /**
-     * The classes which implement the given interface
+     * The classes which implement the given interface.
      */
     private ArrayList<ClassOrInterfaceDeclaration> classes;
 
     /**
-     * Make a new EligibleStrategyContextFinder
+     * Make a new EligibleStrategyContextFinder.
      */
-    public ImplementationFinder(){
+    public ImplementationFinder() {
         classes = new ArrayList<>();
     }
 
     /**
-     * @return A of classes which implement the given interface
+     * @return A of classes which implement the given interface.
      */
-    public ArrayList<ClassOrInterfaceDeclaration> getClasses(){
+    public ArrayList<ClassOrInterfaceDeclaration> getClasses() {
         return classes;
     }
 
     /**
-     * Resets the list of classes
+     * Resets the list of classes.
      */
-    public void reset(){
+    public void reset() {
         classes = new ArrayList<>();
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration classToCheck, ClassOrInterfaceType interfaceType) {
+    public void visit(final ClassOrInterfaceDeclaration classToCheck, final ClassOrInterfaceType interfaceType) {
         super.visit(classToCheck, interfaceType);
 
-        for (ClassOrInterfaceType implementedInterface : classToCheck.getImplementedTypes()){
-            if (implementedInterface.equals(interfaceType)){
-               classes.add(classToCheck);
+        for (ClassOrInterfaceType implementedInterface : classToCheck.getImplementedTypes()) {
+            if (implementedInterface.equals(interfaceType)) {
+                classes.add(classToCheck);
             }
         }
     }
