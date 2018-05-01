@@ -20,6 +20,7 @@ import java.util.EnumSet;
  * A class is seen as a singleton if the following conditions are true:
  * - The class only has private constructors
  * - The class has a static instance of itself
+ * -- or contains a static inner class with an instance of itself
  * - The class has a static method which returns the static instance of itself
  */
 public class SingletonAnalyzer extends PatternAnalyzer {
@@ -42,8 +43,6 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                         continue;
                     }
 
-//                    System.out.println("Checking class: " + classDeclaration.getName().asString());
-
                     boolean onlyHasPrivateConstructors = true;
 
                     //There are no constructors defined, so there is a default non private constructor
@@ -61,52 +60,12 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     boolean hasStaticInstance = false;
                     boolean hasGetInstanceFunction = false;
 
+                    StaticInstancePropertyFinder instanceFinder = new StaticInstancePropertyFinder(classDeclaration.getNameAsString());
+                    instanceFinder.visit(classDeclaration, null);
+                    hasStaticInstance = instanceFinder.getHasStaticInstanceProperty();
+
                     //Foreach AST nodes in children
                     for (Node childNode : classDeclaration.getChildNodes()) {
-                        //If node is a field
-                        if (childNode instanceof FieldDeclaration) {
-
-                            FieldDeclaration field = (FieldDeclaration) childNode;
-                            EnumSet<Modifier> modifiers = field.getModifiers();
-
-                            //If field is static private
-                            if (modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
-
-                                //If the variable type is equal to the name of the class it is a instance
-                                // of this class type
-                                String fieldType = field.getVariable(0).getType().asString();
-                                if (fieldType.equals(classDeclaration.getName().asString())) {
-                                    hasStaticInstance = true;
-                                }
-                            }
-                        }
-
-                        // If node is a member class
-                        // FIXME It's getting too complex, should refactor (use parser Visitor methods?)
-                        if (childNode instanceof ClassOrInterfaceDeclaration) {
-                            ClassOrInterfaceDeclaration memberClass = (ClassOrInterfaceDeclaration) childNode;
-
-                            if (!memberClass.isInterface()) {
-                                // If member class is private and static
-                                EnumSet<Modifier> classMods = memberClass.getModifiers();
-
-                                if (classMods.contains(Modifier.PRIVATE) && classMods.contains(Modifier.STATIC)) {
-                                    for (Node memberChild : memberClass.getChildNodes()) {
-                                        if (memberChild instanceof FieldDeclaration) {
-                                            FieldDeclaration memberClassField = (FieldDeclaration) memberChild;
-
-                                            EnumSet<Modifier> fieldMods = memberClassField.getModifiers();
-                                            if (fieldMods.contains(Modifier.PRIVATE) && fieldMods.contains(Modifier.STATIC)) {
-                                                String fieldType = memberClassField.getVariable(0).getType().asString();
-                                                if (fieldType.equals(classDeclaration.getName().asString())) {
-                                                    hasStaticInstance = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
 
                         //If node is a method
                         if (childNode instanceof MethodDeclaration) {
@@ -144,6 +103,8 @@ public class SingletonAnalyzer extends PatternAnalyzer {
 
                         singletons.add(singleton);
                     }
+
+                    System.out.println();
                 }
             }
         }
