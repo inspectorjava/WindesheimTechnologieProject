@@ -3,15 +3,13 @@ package nl.windesheim.codeparser.analyzers.singleton;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.*;
 import nl.windesheim.codeparser.ClassPart;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
+import sun.tools.util.ModifierFilter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +41,8 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     if (classDeclaration.isInterface()) {
                         continue;
                     }
+
+//                    System.out.println("Checking class: " + classDeclaration.getName().asString());
 
                     boolean onlyHasPrivateConstructors = true;
 
@@ -77,6 +77,33 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                                 String fieldType = field.getVariable(0).getType().asString();
                                 if (fieldType.equals(classDeclaration.getName().asString())) {
                                     hasStaticInstance = true;
+                                }
+                            }
+                        }
+
+                        // If node is a member class
+                        // FIXME It's getting too complex, should refactor (use parser Visitor methods?)
+                        if (childNode instanceof ClassOrInterfaceDeclaration) {
+                            ClassOrInterfaceDeclaration memberClass = (ClassOrInterfaceDeclaration) childNode;
+
+                            if (!memberClass.isInterface()) {
+                                // If member class is private and static
+                                EnumSet<Modifier> classMods = memberClass.getModifiers();
+
+                                if (classMods.contains(Modifier.PRIVATE) && classMods.contains(Modifier.STATIC)) {
+                                    for (Node memberChild : memberClass.getChildNodes()) {
+                                        if (memberChild instanceof FieldDeclaration) {
+                                            FieldDeclaration memberClassField = (FieldDeclaration) memberChild;
+
+                                            EnumSet<Modifier> fieldMods = memberClassField.getModifiers();
+                                            if (fieldMods.contains(Modifier.PRIVATE) && fieldMods.contains(Modifier.STATIC)) {
+                                                String fieldType = memberClassField.getVariable(0).getType().asString();
+                                                if (fieldType.equals(classDeclaration.getName().asString())) {
+                                                    hasStaticInstance = true;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

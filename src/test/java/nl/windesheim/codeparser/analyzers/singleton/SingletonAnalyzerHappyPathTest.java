@@ -20,10 +20,10 @@ public class SingletonAnalyzerHappyPathTest {
     @Parameterized.Parameters(name = "{0}")
     public static String[] data(){
         return new String[]{
-        //        "singleton/BillPughSingleton.java",
+                "singleton/BillPughSingleton.java",
                 "singleton/EagerInitializedSingleton.java",
                 "singleton/LazyInitializedSingleton.java",
-        //        "singleton/SerializedSingleton.java",
+                "singleton/SerializedSingleton.java",
                 "singleton/StaticBlockSingleton.java",
                 "singleton/ThreadSafeSingleton.java"
         };
