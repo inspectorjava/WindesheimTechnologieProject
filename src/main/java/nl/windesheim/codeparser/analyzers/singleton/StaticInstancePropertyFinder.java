@@ -40,7 +40,6 @@ public class StaticInstancePropertyFinder extends VoidVisitorAdapter<Void> {
 
     @Override
     public void visit(final FieldDeclaration fd, final Void arg) {
-        // FIXME Only check fields that belong directly to the investigated class
         super.visit(fd, arg);
 
         // The field should be private and static
