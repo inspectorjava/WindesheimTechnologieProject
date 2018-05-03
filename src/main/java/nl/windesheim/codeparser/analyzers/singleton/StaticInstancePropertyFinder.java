@@ -7,22 +7,26 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.EnumSet;
 
+/**
+ * Finds static instances of itself.
+ */
 public class StaticInstancePropertyFinder extends VoidVisitorAdapter<Void> {
     /**
-     * True if the compilation unit has a private static instance property
+     * True if the compilation unit has a private static instance property.
      */
     private boolean hasStaticInstanceProperty;
 
     /**
-     * The name of the type the instance property should have
+     * The name of the type the instance property should have.
      */
     private String targetType;
 
     /**
      * StaticInstancePropertyFinder constructor.
+     *
      * @param targetType The name of the type that the instance field should have
      */
-    public StaticInstancePropertyFinder (String targetType){
+    public StaticInstancePropertyFinder(final String targetType) {
         this.hasStaticInstanceProperty = false;
         this.targetType = targetType;
     }
@@ -30,12 +34,12 @@ public class StaticInstancePropertyFinder extends VoidVisitorAdapter<Void> {
     /**
      * @return Whether the compilation unit has a private static instance property
      */
-    public boolean getHasStaticInstanceProperty (){
+    public boolean getHasStaticInstanceProperty() {
         return hasStaticInstanceProperty;
     }
 
     @Override
-    public void visit (FieldDeclaration fd, Void arg){
+    public void visit(final FieldDeclaration fd, final Void arg) {
         // FIXME Only check fields that belong directly to the investigated class
         super.visit(fd, arg);
 
