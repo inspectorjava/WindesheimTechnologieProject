@@ -2,16 +2,17 @@ package nl.windesheim.codeparser.analyzers.singleton;
 
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.EnumSet;
 
 /**
- * Finds static instances of itself.
+ * Finds getters of static instances of itself.
  */
 public class StaticInstanceGetterFinder extends DeclarationFinder {
     /**
-     * @inheritDoc
+     * StaticInstanceGetterFinder constructor.
+     *
+     * @param targetType The name of the type that the declaration should have
      */
     public StaticInstanceGetterFinder(final String targetType) {
         super(targetType);

@@ -12,7 +12,9 @@ import java.util.EnumSet;
 public class StaticInstancePropertyFinder extends DeclarationFinder {
 
     /**
-     * @inheritDoc
+     * StaticInstancePropertyFinder constructor.
+     *
+     * @param targetType The name of the type that the declaration should have
      */
     public StaticInstancePropertyFinder(final String targetType) {
         super(targetType);
@@ -29,8 +31,8 @@ public class StaticInstancePropertyFinder extends DeclarationFinder {
             // The field should be of the expected type
             VariableDeclarator variable = fd.getVariable(0);
 
-            if (variable != null && variable.getType().asString().equals(targetType)) {
-                this.hasDeclaration = true;
+            if (variable != null && variable.getType().asString().equals(this.getTargetType())) {
+                this.setHasDeclaration(true);
             }
         }
     }
