@@ -3,39 +3,19 @@ package nl.windesheim.codeparser.analyzers.singleton;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.EnumSet;
 
 /**
  * Finds static instances of itself.
  */
-public class StaticInstancePropertyFinder extends VoidVisitorAdapter<Void> {
-    /**
-     * True if the compilation unit has a private static instance property.
-     */
-    private boolean hasStaticInstanceProperty;
+public class StaticInstancePropertyFinder extends DeclarationFinder {
 
     /**
-     * The name of the type the instance property should have.
-     */
-    private String targetType;
-
-    /**
-     * StaticInstancePropertyFinder constructor.
-     *
-     * @param targetType The name of the type that the instance field should have
+     * @inheritDoc
      */
     public StaticInstancePropertyFinder(final String targetType) {
-        this.hasStaticInstanceProperty = false;
-        this.targetType = targetType;
-    }
-
-    /**
-     * @return Whether the compilation unit has a private static instance property
-     */
-    public boolean getHasStaticInstanceProperty() {
-        return hasStaticInstanceProperty;
+        super(targetType);
     }
 
     @Override
@@ -50,7 +30,7 @@ public class StaticInstancePropertyFinder extends VoidVisitorAdapter<Void> {
             VariableDeclarator variable = fd.getVariable(0);
 
             if (variable != null && variable.getType().asString().equals(targetType)) {
-                hasStaticInstanceProperty = true;
+                this.hasDeclaration = true;
             }
         }
     }

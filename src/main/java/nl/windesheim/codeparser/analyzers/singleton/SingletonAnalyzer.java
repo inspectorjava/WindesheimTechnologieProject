@@ -63,12 +63,12 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     StaticInstancePropertyFinder instanceFinder
                             = new StaticInstancePropertyFinder(classDeclaration.getNameAsString());
                     instanceFinder.visit(classDeclaration, null);
-                    hasStaticInstance = instanceFinder.getHasStaticInstanceProperty();
+                    hasStaticInstance = instanceFinder.isHasDeclaration();
 
                     StaticInstanceGetterFinder getterFinder =
                             new StaticInstanceGetterFinder(classDeclaration.getNameAsString());
                     getterFinder.visit(classDeclaration, null);
-                    hasGetInstanceFunction = getterFinder.getHasStaticInstanceGetter();
+                    hasGetInstanceFunction = getterFinder.isHasDeclaration();
 
                     if (onlyHasPrivateConstructors
                             && hasStaticInstance

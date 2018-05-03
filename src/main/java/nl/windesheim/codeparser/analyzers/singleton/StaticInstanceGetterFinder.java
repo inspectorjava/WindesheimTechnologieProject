@@ -9,32 +9,12 @@ import java.util.EnumSet;
 /**
  * Finds static instances of itself.
  */
-public class StaticInstanceGetterFinder extends VoidVisitorAdapter<Void> {
+public class StaticInstanceGetterFinder extends DeclarationFinder {
     /**
-     * True if the compilation unit has a non-private static instance getter.
-     */
-    private boolean hasStaticInstanceGetter;
-
-    /**
-     * The name of the type the desired method should return.
-     */
-    private String targetType;
-
-    /**
-     * StaticInstancePropertyFinder constructor.
-     *
-     * @param targetType The name of the type that the desired method should return
+     * @inheritDoc
      */
     public StaticInstanceGetterFinder(final String targetType) {
-        this.hasStaticInstanceGetter = false;
-        this.targetType = targetType;
-    }
-
-    /**
-     * @return Whether the compilation unit has a non-private static instance method
-     */
-    public boolean getHasStaticInstanceGetter() {
-        return hasStaticInstanceGetter;
+        super(targetType);
     }
 
     @Override
@@ -46,8 +26,8 @@ public class StaticInstanceGetterFinder extends VoidVisitorAdapter<Void> {
 
         if (!modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
             // The method should return the expected type
-            if (md.getType().asString().equals(targetType)) {
-                hasStaticInstanceGetter = true;
+            if (md.getType().asString().equals(this.targetType)) {
+                this.hasDeclaration = true;
             }
         }
     }
