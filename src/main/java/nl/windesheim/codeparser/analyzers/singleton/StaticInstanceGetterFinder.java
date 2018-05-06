@@ -27,8 +27,8 @@ public class StaticInstanceGetterFinder extends DeclarationFinder {
 
         if (!modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
             // The method should return the expected type
-            if (md.getType().asString().equals(this.targetType)) {
-                this.hasDeclaration = true;
+            if (md.getType().asString().equals(this.getTargetType())) {
+                this.setHasDeclaration(true);
             }
         }
     }
