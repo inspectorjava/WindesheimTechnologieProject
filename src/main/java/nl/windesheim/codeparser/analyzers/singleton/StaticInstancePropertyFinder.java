@@ -21,15 +21,15 @@ public class StaticInstancePropertyFinder extends DeclarationFinder {
     }
 
     @Override
-    public void visit(final FieldDeclaration fd, final Void arg) {
-        super.visit(fd, arg);
+    public void visit(final FieldDeclaration fieldDeclaration, final Void argument) {
+        super.visit(fieldDeclaration, argument);
 
         // The field should be private and static
-        EnumSet<Modifier> modifiers = fd.getModifiers();
+        EnumSet<Modifier> modifiers = fieldDeclaration.getModifiers();
 
         if (modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
             // The field should be of the expected type
-            VariableDeclarator variable = fd.getVariable(0);
+            VariableDeclarator variable = fieldDeclaration.getVariable(0);
 
             if (variable != null && variable.getType().asString().equals(this.getTargetType())) {
                 this.setHasDeclaration(true);

@@ -19,15 +19,15 @@ public class StaticInstanceGetterFinder extends DeclarationFinder {
     }
 
     @Override
-    public void visit(final MethodDeclaration md, final Void arg) {
-        super.visit(md, arg);
+    public void visit(final MethodDeclaration methodDeclaration, final Void arg) {
+        super.visit(methodDeclaration, arg);
 
         // The method should be static and not private
-        EnumSet<Modifier> modifiers = md.getModifiers();
+        EnumSet<Modifier> modifiers = methodDeclaration.getModifiers();
 
         if (!modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
             // The method should return the expected type
-            if (md.getType().asString().equals(this.getTargetType())) {
+            if (methodDeclaration.getType().asString().equals(this.getTargetType())) {
                 this.setHasDeclaration(true);
             }
         }
