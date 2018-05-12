@@ -47,47 +47,51 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     //So this is not a singleton class
                     if (classDeclaration.getConstructors().size() == 0) {
                         onlyHasPrivateConstructors = false;
-                    }
-
-                    for (ConstructorDeclaration constructor : classDeclaration.getConstructors()) {
-                        if (!constructor.getModifiers().contains(Modifier.PRIVATE)) {
-                            onlyHasPrivateConstructors = false;
+                    } else {
+                        for (ConstructorDeclaration constructor : classDeclaration.getConstructors()) {
+                            if (!constructor.getModifiers().contains(Modifier.PRIVATE)) {
+                                onlyHasPrivateConstructors = false;
+                            }
                         }
                     }
 
-                    boolean hasStaticInstance = false;
-                    boolean hasGetInstanceFunction = false;
+                    if (!onlyHasPrivateConstructors) {
+                        continue;
+                    }
 
                     // Determine if the class contains a private static property, with it's own
                     // classname as type. This property could be located in a member class
                     StaticInstancePropertyFinder instanceFinder
                             = new StaticInstancePropertyFinder(classDeclaration.getNameAsString());
                     instanceFinder.visit(classDeclaration, null);
-                    hasStaticInstance = instanceFinder.isHasDeclaration();
+
+                    if (!instanceFinder.isHasDeclaration()) {
+                        continue;
+                    }
 
                     StaticInstanceGetterFinder getterFinder =
                             new StaticInstanceGetterFinder(classDeclaration.getNameAsString());
                     getterFinder.visit(classDeclaration, null);
-                    hasGetInstanceFunction = getterFinder.isHasDeclaration();
 
-                    if (onlyHasPrivateConstructors
-                            && hasStaticInstance
-                            && hasGetInstanceFunction) {
-
-                        Singleton singleton = new Singleton();
-
-                        if (cu.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
-                            String fileName = cu.getStorage().get().getFileName();
-                            File file = new File(fileName);
-
-                            FilePart filePart = new FilePart().setFile(file);
-                            filePart.setRange(classDeclaration.getRange().get());
-
-                            singleton.setFilePart(filePart);
-                        }
-
-                        singletons.add(singleton);
+                    if (!getterFinder.isHasDeclaration()) {
+                        continue;
                     }
+
+                    Singleton singleton = new Singleton();
+
+
+                    if (cu.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
+                        String fileName = cu.getStorage().get().getFileName();
+                        File file = new File(fileName);
+                        
+                        FilePart filePart = new FilePart().setFile(file);
+                        filePart.setRange(classDeclaration.getRange().get());
+
+                        singleton.setFilePart(filePart);
+                    }
+                    
+
+                    singletons.add(singleton);
                 }
             }
         }
