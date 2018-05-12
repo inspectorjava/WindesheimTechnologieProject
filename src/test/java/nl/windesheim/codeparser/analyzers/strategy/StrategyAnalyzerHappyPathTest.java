@@ -1,52 +1,64 @@
 package nl.windesheim.codeparser.analyzers.strategy;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import com.github.javaparser.utils.SourceRoot;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
-import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
-import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+public class StrategyAnalyzerHappyPathTest {
 
-public class StrategyAnalyzerTest {
     private ClassLoader classLoader;
+    private StrategyAnalyzerTestHelper helper;
 
-    public StrategyAnalyzerTest(){
+    public StrategyAnalyzerHappyPathTest(){
         classLoader = this.getClass().getClassLoader();
+        helper = new StrategyAnalyzerTestHelper();
     }
 
     @Test
     public void testWikiStrategy() throws IOException {
-        Path directoryPath = new File(classLoader.getResource("strategy/wiki").getPath()).toPath();
+        TestSettings settings = new TestSettings();
+        settings.codeDir = new File(classLoader.getResource("strategy/wiki").getPath());
 
-        SourceRoot sourceRoot = new SourceRoot(directoryPath);
-        sourceRoot.tryToParse();
+        settings.contextClassName = "Customer";
+        settings.contextfile = new File(classLoader.getResource("strategy/wiki/Customer.java").getPath());
 
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new StrategyAnalyzer());
+        settings.interfaceName = "BillingStrategy";
+        settings.interfaceFile = new File(classLoader.getResource("strategy/wiki/BillingStrategy.java").getPath());
 
-        //The type solver can now solve types from the standard library and the code we are analyzing
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(new JavaParserTypeSolver(directoryPath));
+        settings.strategies.put(
+                "NormalStrategy",
+                new File(classLoader.getResource("strategy/wiki/NormalStrategy.java").getPath())
+        );
+        settings.strategies.put(
+                "HappyHourStrategy",
+                new File(classLoader.getResource("strategy/wiki/HappyHourStrategy.java").getPath())
+        );
 
-        analyzer.setTypeSolver(combinedTypeSolver);
+        helper.testStrategyPattern(settings);
+    }
 
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.addAll(sourceRoot.getCompilationUnits());
+    @Test
+    public void testCompressionStrategy() throws IOException {
+        TestSettings settings = new TestSettings();
+        settings.codeDir = new File(classLoader.getResource("strategy/compression").getPath());
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
+        settings.contextClassName = "CompressionContext";
+        settings.contextfile = new File(classLoader.getResource("strategy/compression/CompressionContext.java").getPath());
 
-        System.out.println(patterns);
+        settings.interfaceName = "CompressionStrategy";
+        settings.interfaceFile = new File(classLoader.getResource("strategy/compression/CompressionStrategy.java").getPath());
+
+        settings.strategies.put(
+                "RarCompressionStrategy",
+                new File(classLoader.getResource("strategy/compression/RarCompressionStrategy.java").getPath())
+        );
+        settings.strategies.put(
+                "ZipCompressionStrategy",
+                new File(classLoader.getResource("strategy/compression/ZipCompressionStrategy.java").getPath())
+        );
+
+        helper.testStrategyPattern(settings);
     }
 
 }

@@ -1,3 +1,6 @@
+/**
+ * Source: https://en.wikipedia.org/wiki/Strategy_pattern
+ */
 public class StrategyPatternWiki {
 
     public static void main(final String[] arguments) {

@@ -2,6 +2,7 @@
  * Source: https://dzone.com/articles/design-patterns-strategy
  */
 public class CompressionContext {
+    private int useless;
     private CompressionStrategy strategy;
     //this can be set at runtime by the application preferences
     public void setCompressionStrategy(CompressionStrategy strategy) {

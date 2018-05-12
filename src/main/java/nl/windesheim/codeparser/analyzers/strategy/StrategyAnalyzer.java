@@ -13,7 +13,7 @@ import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParse
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import javafx.util.Pair;
-import nl.windesheim.codeparser.FilePart;
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationFinder;
@@ -146,16 +146,33 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             Strategy strategyPattern = new Strategy();
 
             //Resolve the file and part of the file where the context class is defined
-            strategyPattern.setContext(FilePartResolver.getFilePartOfNode(context));
+            strategyPattern.setContext(
+                    new ClassOrInterface()
+                            .setFilePart(FilePartResolver.getFilePartOfNode(context))
+                            .setName(context.getNameAsString())
+                            .setDeceleration(context)
+            );
 
-            //Resolve the file and part of the file where the strategy interface is defined
-            strategyPattern.setStrategyInterface(FilePartResolver.getFilePartOfNode(strategyInterface));
+            //Because of the way the strategy interface is found it doesn't have a file linked to it
+            // So we need to find a instance which has one
+            CompilationUnit newStrategyInterface = FilePartResolver.findCompilationUnitOfNode(files, strategyInterface);
 
-            ArrayList<FilePart> strategiesFileParts = new ArrayList<>();
+            if (newStrategyInterface != null) {
+                //Resolve the file and part of the file where the strategy interface is defined
+                strategyPattern.setStrategyInterface(new ClassOrInterface()
+                            .setFilePart(FilePartResolver.getFilePartOfNode(newStrategyInterface))
+                            .setName(strategyInterface.getNameAsString())
+                            .setDeceleration(strategyInterface));
+            }
+
+            ArrayList<ClassOrInterface> strategiesFileParts = new ArrayList<>();
             for (ClassOrInterfaceDeclaration strategy : strategies) {
 
                 //Resolve the file and part of the file where the strategy is defined
-                strategiesFileParts.add(FilePartResolver.getFilePartOfNode(strategy));
+                strategiesFileParts.add(new ClassOrInterface()
+                        .setFilePart(FilePartResolver.getFilePartOfNode(strategy))
+                        .setName(strategy.getNameAsString())
+                        .setDeceleration(strategy));
             }
 
             strategyPattern.setStrategies(strategiesFileParts);

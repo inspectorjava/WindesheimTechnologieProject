@@ -1,6 +1,6 @@
 package nl.windesheim.codeparser.patterns;
 
-import nl.windesheim.codeparser.FilePart;
+import nl.windesheim.codeparser.ClassOrInterface;
 
 import java.util.ArrayList;
 
@@ -11,22 +11,23 @@ public class Strategy implements IDesignPattern {
     /**
      * The file part which contains the context class of the strategy pattern.
      */
-    private FilePart context;
+    private ClassOrInterface context;
 
     /**
      * The file part which contains the strategy interface of the strategy pattern.
      */
-    private FilePart strategyInterface;
+    private ClassOrInterface strategyInterface;
+
 
     /**
      * A list of file parts of strategies which can be used in this strategy patterns.
      */
-    private ArrayList<FilePart> strategies;
+    private ArrayList<ClassOrInterface> strategies;
 
     /**
      * @return the context of the strategy pattern
      */
-    public FilePart getContext() {
+    public ClassOrInterface getContext() {
         return context;
     }
 
@@ -34,7 +35,7 @@ public class Strategy implements IDesignPattern {
      * @param context the context of the strategy pattern
      * @return this
      */
-    public Strategy setContext(final FilePart context) {
+    public Strategy setContext(final ClassOrInterface context) {
         this.context = context;
         return this;
     }
@@ -42,7 +43,7 @@ public class Strategy implements IDesignPattern {
     /**
      * @return the strategy interface of the strategy pattern
      */
-    public FilePart getStrategyInterface() {
+    public ClassOrInterface getStrategyInterface() {
         return strategyInterface;
     }
 
@@ -50,7 +51,7 @@ public class Strategy implements IDesignPattern {
      * @param strategyInterface the strategy interface of the strategy pattern
      * @return this
      */
-    public Strategy setStrategyInterface(final FilePart strategyInterface) {
+    public Strategy setStrategyInterface(final ClassOrInterface strategyInterface) {
         this.strategyInterface = strategyInterface;
         return this;
     }
@@ -58,7 +59,7 @@ public class Strategy implements IDesignPattern {
     /**
      * @return a list of strategies which can be used in this strategy pattern
      */
-    public ArrayList<FilePart> getStrategies() {
+    public ArrayList<ClassOrInterface> getStrategies() {
         return strategies;
     }
 
@@ -66,8 +67,32 @@ public class Strategy implements IDesignPattern {
      * @param strategies a list of strategies which can be used in this strategy pattern
      * @return this
      */
-    public Strategy setStrategies(final ArrayList<FilePart> strategies) {
+    public Strategy setStrategies(final ArrayList<ClassOrInterface> strategies) {
         this.strategies = strategies;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Strategy pattern\n");
+
+        stringBuilder.append("\tContext: \n\t\t");
+            stringBuilder.append(this.context);
+        stringBuilder.append("\n");
+
+        stringBuilder.append("\tStrategy interface: \n\t\t");
+            stringBuilder.append(this.strategyInterface);
+        stringBuilder.append("\n");
+
+        stringBuilder.append("\tStrategies: \n");
+            for (ClassOrInterface strategy : this.strategies) {
+                stringBuilder.append("\t\t- ");
+                stringBuilder.append(strategy);
+                stringBuilder.append("\n");
+            }
+        stringBuilder.append("\n");
+
+        return stringBuilder.toString();
     }
 }

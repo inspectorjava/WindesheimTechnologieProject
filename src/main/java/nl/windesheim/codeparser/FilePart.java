@@ -20,6 +20,7 @@ public class FilePart {
 
     /**
      * Returns the file of the FilePart.
+     *
      * @return File
      */
     public File getFile() {
@@ -28,6 +29,7 @@ public class FilePart {
 
     /**
      * Sets the file of the FilePart.
+     *
      * @param file File
      * @return File
      */
@@ -50,5 +52,13 @@ public class FilePart {
     public FilePart setRange(final Range range) {
         this.range = range;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "FilePart{"
+                + "file=" + file
+                + ", range=" + range
+                + '}';
     }
 }

@@ -10,6 +10,6 @@ public class CompressionContext {
 
     //use the strategy
     public void createArchive(ArrayList<File> files) {
-        strategy.compressFiles(files);
+        //strategy.compressFiles(files);
     }
 }

@@ -5,21 +5,21 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 /**
  * A object which describes a class.
  */
-public class Class {
+public class ClassOrInterface {
     /**
      * The name of the class.
      */
-    private String className;
+    private String name;
 
     /**
-     * The filePart in which this class is found
+     * The filePart in which this class is found.
      */
     private FilePart filePart;
 
     /**
-     * The AST node which was found
+     * The AST node which was found.
      */
-    private ClassOrInterfaceDeclaration classDeceleration;
+    private ClassOrInterfaceDeclaration deceleration;
 
     /**
      * @return the filepart
@@ -32,40 +32,48 @@ public class Class {
      * @param filePart the file part to be set
      * @return this
      */
-    public Class setFilePart(final FilePart filePart) {
+    public ClassOrInterface setFilePart(final FilePart filePart) {
         this.filePart = filePart;
         return this;
     }
 
     /**
-     * @return the class name
+     * @return the name
      */
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param className the class name to be set
+     * @param name the name to be set
      * @return this
      */
-    public Class setClassName(final String className) {
-        this.className = className;
+    public ClassOrInterface setName(final String name) {
+        this.name = name;
         return this;
     }
 
     /**
-     * @return the class deceleration
+     * @return the deceleration
      */
-    public ClassOrInterfaceDeclaration getClassDeceleration() {
-        return classDeceleration;
+    public ClassOrInterfaceDeclaration getDeceleration() {
+        return deceleration;
     }
 
     /**
-     * @param classDeceleration the class deceleration to be set
+     * @param deceleration the deceleration to be set
      * @return this
      */
-    public Class setClassDeceleration(final ClassOrInterfaceDeclaration classDeceleration) {
-        this.classDeceleration = classDeceleration;
+    public ClassOrInterface setDeceleration(final ClassOrInterfaceDeclaration deceleration) {
+        this.deceleration = deceleration;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassOrInterface{"
+                + "name='" + name + '\''
+                + ", filePart=" + filePart
+                + '}';
     }
 }
