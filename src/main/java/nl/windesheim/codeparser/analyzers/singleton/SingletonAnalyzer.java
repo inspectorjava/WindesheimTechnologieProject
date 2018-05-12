@@ -83,13 +83,13 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     if (cu.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
                         String fileName = cu.getStorage().get().getFileName();
                         File file = new File(fileName);
-                        
+
                         FilePart filePart = new FilePart().setFile(file);
                         filePart.setRange(classDeclaration.getRange().get());
 
                         singleton.setFilePart(filePart);
                     }
-                    
+
 
                     singletons.add(singleton);
                 }
