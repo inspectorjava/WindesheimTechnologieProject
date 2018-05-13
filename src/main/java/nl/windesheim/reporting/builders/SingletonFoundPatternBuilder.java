@@ -13,13 +13,14 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
     /**
      * Filename of file where pattern is found.
      */
-    private String fileName;
+    private final String fileName;
 
     /**
      * Create the builder.
      * @param fileName filename of the file where singleton is found
      */
     public SingletonFoundPatternBuilder(final String fileName) {
+        super();
         this.fileName = fileName;
     }
 

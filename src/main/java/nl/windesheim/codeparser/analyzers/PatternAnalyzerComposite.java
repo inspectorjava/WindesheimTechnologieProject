@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The top level composite which doesn't analyze a pattern but only holds other PatternAnalyzers.
@@ -13,7 +14,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
     /**
      * The children for this composite.
      */
-    private ArrayList<PatternAnalyzer> children = new ArrayList<PatternAnalyzer>();
+    private final List<PatternAnalyzer> children = new ArrayList<>();
 
     /**
      * Adds a child to the list of PatternAnalyzers which makes this composite.
@@ -38,7 +39,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
     /**
      * @return the children of this analyzer
      */
-    public ArrayList<PatternAnalyzer> getChildren() {
+    public List<PatternAnalyzer> getChildren() {
         return children;
     }
 
@@ -47,7 +48,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
      * @param files the file that will be analyzed
      * @return a list of DesignPatterns that were found in this file
      */
-    public ArrayList<IDesignPattern> analyze(final ArrayList<CompilationUnit> files) {
+    public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
 
         for (PatternAnalyzer patternAnalyzer : this.children) {

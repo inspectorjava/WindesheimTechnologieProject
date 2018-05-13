@@ -10,29 +10,29 @@ public class CodeReport {
     /**
      * Found Pattern Reports.
      */
-    private List<FoundPatternReport> foundPatternReports;
+    private final List<FoundPatternReport> foundReports;
 
     /**
-     * Instantiate the foundPatternReports ArrayList.
+     * Instantiate the foundReports ArrayList.
      */
     public CodeReport() {
-        this.foundPatternReports = new ArrayList<FoundPatternReport>();
+        this.foundReports = new ArrayList<FoundPatternReport>();
     }
 
     /**
      * Add a FoundPatternReport to the CodeReport.
-     * @param foundPatternReport the report
+     * @param foundReport the report
      */
-    public void addFoundPatternReport(final FoundPatternReport foundPatternReport) {
-        this.foundPatternReports.add(foundPatternReport);
+    public void addFoundPatternReport(final FoundPatternReport foundReport) {
+        this.foundReports.add(foundReport);
     }
 
     /**
      * Get all FoundPatternReports.
-     * @return ArrayList foundPatternReports
+     * @return ArrayList foundReports
      */
-    public List<FoundPatternReport> getFoundPatternReports() {
-        return foundPatternReports;
+    public List<FoundPatternReport> getFoundReports() {
+        return foundReports;
     }
 
     /**
@@ -40,13 +40,14 @@ public class CodeReport {
      * @return String report
      */
     public String getReport() {
-        String returnString = "";
+        StringBuffer returnString = new StringBuffer();
 
-        for (FoundPatternReport foundPatternReport : this.foundPatternReports) {
-            returnString += "\n\r" + foundPatternReport.getReport();
+        for (FoundPatternReport foundReport : this.foundReports) {
+            returnString.append("\n\r");
+            returnString.append(foundReport.getReport());
         }
 
-        return returnString;
+        return returnString.toString();
     }
 
     /**
@@ -54,6 +55,6 @@ public class CodeReport {
      * @return boolean for found or not
      */
     public boolean anyPatterns() {
-        return this.foundPatternReports.size() > 0;
+        return this.foundReports.size() > 0;
     }
 }
