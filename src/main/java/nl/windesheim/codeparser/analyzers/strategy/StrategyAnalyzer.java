@@ -34,35 +34,51 @@ import java.util.List;
  */
 public class StrategyAnalyzer extends PatternAnalyzer {
 
-    @Override
-    public ArrayList<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        CombinedTypeSolver typeSolver = getParent().getTypeSolver();
-        ArrayList<IDesignPattern> patterns = new ArrayList<>();
+    /**
+     * Finds relations between symbols.
+     */
+    private JavaSymbolSolver javaSymbolSolver;
 
-        JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(typeSolver);
+    /**
+     * A solver for data types.
+     */
+    private CombinedTypeSolver typeSolver;
+
+    /**
+     *
+     */
+    private final EligibleStrategyContextFinder contextFinder;
+
+    /**
+     *
+     */
+    private final ImplementationFinder implFinder;
+
+    /**
+     * Init the strategy analyzer.
+     */
+    public StrategyAnalyzer() {
+        super();
 
         //Create visitors which will find classes with special properties
-        EligibleStrategyContextFinder strategyContextFinder = new EligibleStrategyContextFinder();
-        ImplementationFinder implementationFinder = new ImplementationFinder();
+        contextFinder = new EligibleStrategyContextFinder();
+        implFinder = new ImplementationFinder();
+    }
+
+    @Override
+    public ArrayList<IDesignPattern> analyze(final List<CompilationUnit> files) {
+        typeSolver = getParent().getTypeSolver();
+
+        javaSymbolSolver = new JavaSymbolSolver(typeSolver);
+
+        ArrayList<IDesignPattern> patterns = new ArrayList<>();
 
         //Without a type solver the strategy analyzer can't function
         if (typeSolver == null) {
             return patterns;
         }
 
-        ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = new ArrayList<>();
-
-        //For each file
-        for (CompilationUnit compilationUnit : files) {
-            //Reset the state of the visitor
-            strategyContextFinder.reset();
-
-            //visit all nodes and save eligible contexts in buffer
-            strategyContextFinder.visit(compilationUnit, typeSolver);
-
-            //Read buffer into collection
-            eligibleContexts.addAll(strategyContextFinder.getClasses());
-        }
+        List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = findEligibleContexts(files);
 
         //foreach eligible context class
         for (Pair<VariableDeclarator, ClassOrInterfaceDeclaration> eligibleContext : eligibleContexts) {
@@ -71,7 +87,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             //Get the variable deceleration
             VariableDeclarator strategyVariable = eligibleContext.getKey();
-            ClassOrInterfaceType strategyInterfaceType = (ClassOrInterfaceType) strategyVariable.getType();
+            ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) strategyVariable.getType();
 
             //Walk up the tree until we have the class containing the variable deceleration, this is the context class
             Node currentNode = strategyVariable;
@@ -82,7 +98,8 @@ public class StrategyAnalyzer extends PatternAnalyzer {
                 currentNode = currentNode.getParentNode().get();
             }
 
-            //If we stopped but the current node is not a class we have a issue, so continue loop
+            //If we broke out of the loop above but the current node is not a classOrInterfaceDeceleration
+            // we have a issue, so continue to check other eligible contexts
             if (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
                 continue;
             }
@@ -92,95 +109,174 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             //Find all method calls in the context class
             List<MethodCallExpr> methodCalls = context.findAll(MethodCallExpr.class);
 
-            boolean classCallsStrategy = false;
-
-            //Loop over the method calls
-            for (MethodCallExpr methodCallExpr : methodCalls) {
-
-                //We are looking for a call in the scope of the variable deceleration
-                if (methodCallExpr.getScope().isPresent()) {
-
-                    //Resolve the type of the scope
-                    ResolvedType scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
-                    if (scopeType instanceof ReferenceTypeImpl) {
-                        ResolvedReferenceTypeDeclaration scopeResolvedReferenceType
-                                = ((ReferenceTypeImpl) scopeType).getTypeDeclaration();
-                        if (scopeResolvedReferenceType instanceof JavaParserInterfaceDeclaration) {
-
-                            //If the scope is the same type as the strategy interface
-                            if (((JavaParserInterfaceDeclaration) scopeResolvedReferenceType)
-                                    .getWrappedNode().equals(strategyInterface)) {
-                                classCallsStrategy = true;
-                            }
-                        }
-                    }
-                }
-            }
+            boolean strategyCalled = doesClassCallStrategy(methodCalls, strategyInterface);
 
             //If the context doesn't call the strategy it isn't a working strategy pattern
-            if (!classCallsStrategy) {
+            if (!strategyCalled) {
                 continue;
             }
 
-            ArrayList<ClassOrInterfaceDeclaration> strategies = new ArrayList<>();
-
-            //For each file
-            for (CompilationUnit compilationUnit : files) {
-                //Reset the visitor
-                implementationFinder.reset();
-
-                //Visit all nodes
-                implementationFinder.visit(compilationUnit, strategyInterfaceType);
-
-                //Add the buffer to the collection
-                strategies.addAll(implementationFinder.getClasses());
-            }
+            List<ClassOrInterfaceDeclaration> strategies = findStrategies(files, interfaceType);
 
             //We should at least have one implementation of the strategy interface, else the pattern won't work
-            if (strategies.size() == 0) {
+            if (strategies.isEmpty()) {
                 continue;
             }
 
             //At this point every requirement has been met so we make the Strategy class
-
-            Strategy strategyPattern = new Strategy();
-
-            //Resolve the file and part of the file where the context class is defined
-            strategyPattern.setContext(
-                    new ClassOrInterface()
-                            .setFilePart(FilePartResolver.getFilePartOfNode(context))
-                            .setName(context.getNameAsString())
-                            .setDeceleration(context)
-            );
-
-            //Because of the way the strategy interface is found it doesn't have a file linked to it
-            // So we need to find a instance which has one
-            CompilationUnit newStrategyInterface = FilePartResolver.findCompilationUnitOfNode(files, strategyInterface);
-
-            if (newStrategyInterface != null) {
-                //Resolve the file and part of the file where the strategy interface is defined
-                strategyPattern.setStrategyInterface(new ClassOrInterface()
-                            .setFilePart(FilePartResolver.getFilePartOfNode(newStrategyInterface))
-                            .setName(strategyInterface.getNameAsString())
-                            .setDeceleration(strategyInterface));
-            }
-
-            ArrayList<ClassOrInterface> strategiesFileParts = new ArrayList<>();
-            for (ClassOrInterfaceDeclaration strategy : strategies) {
-
-                //Resolve the file and part of the file where the strategy is defined
-                strategiesFileParts.add(new ClassOrInterface()
-                        .setFilePart(FilePartResolver.getFilePartOfNode(strategy))
-                        .setName(strategy.getNameAsString())
-                        .setDeceleration(strategy));
-            }
-
-            strategyPattern.setStrategies(strategiesFileParts);
+            Strategy strategyPattern = createStrategy(files, context, strategyInterface, strategies);
 
             patterns.add(strategyPattern);
         }
 
         return patterns;
+    }
+
+    /**
+     * Create a strategy pattern object.
+     * @param files the files in which we found the pattern
+     * @param context the context class
+     * @param strategyInterface the strategy interface
+     * @param strategies the strategies
+     * @return the strategy pattern object
+     */
+    private Strategy createStrategy(
+            final List<CompilationUnit> files,
+            final ClassOrInterfaceDeclaration context,
+            final ClassOrInterfaceDeclaration strategyInterface,
+            final List<ClassOrInterfaceDeclaration> strategies
+    ) {
+        //At this point every requirement has been met so we make the Strategy class
+        Strategy strategyPattern = new Strategy();
+
+        //Resolve the file and part of the file where the context class is defined
+        strategyPattern.setContext(
+                new ClassOrInterface()
+                        .setFilePart(FilePartResolver.getFilePartOfNode(context))
+                        .setName(context.getNameAsString())
+                        .setDeceleration(context)
+        );
+
+        //Because of the way the strategy interface is found it doesn't have a file linked to it
+        // So we need to find a instance which has one
+        CompilationUnit newStrategy = FilePartResolver.findCompilationUnitOfNode(files, strategyInterface);
+
+        if (newStrategy != null) {
+            //Resolve the file and part of the file where the strategy interface is defined
+            strategyPattern.setStrategyInterface(new ClassOrInterface()
+                    .setFilePart(FilePartResolver.getFilePartOfNode(newStrategy))
+                    .setName(strategyInterface.getNameAsString())
+                    .setDeceleration(strategyInterface));
+        }
+
+        ArrayList<ClassOrInterface> fileParts = new ArrayList<>();
+        for (ClassOrInterfaceDeclaration strategy : strategies) {
+
+            //Resolve the file and part of the file where the strategy is defined
+            fileParts.add(new ClassOrInterface()
+                    .setFilePart(FilePartResolver.getFilePartOfNode(strategy))
+                    .setName(strategy.getNameAsString())
+                    .setDeceleration(strategy));
+        }
+
+        strategyPattern.setStrategies(fileParts);
+
+        return strategyPattern;
+    }
+
+    /**
+     * Finds a list of classes which are strategy interface implementations.
+     * @param files the files in which to search
+     * @param interfaceType the strategy interface
+     * @return a list of classes
+     */
+    private List<ClassOrInterfaceDeclaration> findStrategies(
+            final List<CompilationUnit> files,
+            final ClassOrInterfaceType interfaceType
+    ) {
+        ArrayList<ClassOrInterfaceDeclaration> strategies = new ArrayList<>();
+
+        //For each file
+        for (CompilationUnit compilationUnit : files) {
+            //Reset the visitor
+            implFinder.reset();
+
+            //Visit all nodes
+            implFinder.visit(compilationUnit, interfaceType);
+
+            //Add the buffer to the collection
+            strategies.addAll(implFinder.getClasses());
+        }
+
+        return strategies;
+    }
+
+    /**
+     * Determins if a context class ever calls a strategy interface.
+     * @param methodCalls list of method calls of the context class
+     * @param strategyInterface the strategy interface which should be called
+     * @return a boolean
+     */
+    private boolean doesClassCallStrategy(
+            final List<MethodCallExpr> methodCalls,
+            final ClassOrInterfaceDeclaration strategyInterface
+    ) {
+
+        boolean strategyCalled = false;
+
+        //Loop over the method calls
+        for (MethodCallExpr methodCallExpr : methodCalls) {
+
+            //We are looking for a call in the scope of the variable deceleration
+            if (!methodCallExpr.getScope().isPresent()) {
+                continue;
+            }
+
+            //Resolve the type of the scope
+            ResolvedType scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+            if (!(scopeType instanceof ReferenceTypeImpl)) {
+                continue;
+            }
+
+            ResolvedReferenceTypeDeclaration referenceType
+                    = ((ReferenceTypeImpl) scopeType).getTypeDeclaration();
+            if (!(referenceType instanceof JavaParserInterfaceDeclaration)) {
+                continue;
+            }
+            //If the scope is the same type as the strategy interface
+            if (((JavaParserInterfaceDeclaration) referenceType)
+                    .getWrappedNode().equals(strategyInterface)) {
+                strategyCalled = true;
+            }
+        }
+
+        return strategyCalled;
+    }
+
+    /**
+     * Finds a list of eligible context classes.
+     * @param files the files to be searched
+     * @return a list of eligible contexts
+     */
+    private List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>>
+        findEligibleContexts(final List<CompilationUnit> files
+    ) {
+
+        List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = new ArrayList<>();
+
+        //For each file
+        for (CompilationUnit compilationUnit : files) {
+            //Reset the state of the visitor
+            contextFinder.reset();
+
+            //visit all nodes and save eligible contexts in buffer
+            contextFinder.visit(compilationUnit, typeSolver);
+
+            //Read buffer into collection
+            eligibleContexts.addAll(contextFinder.getClasses());
+        }
+
+        return eligibleContexts;
     }
 }
 

@@ -45,11 +45,11 @@ public class FileAnalysisProvider {
         File fileInputStream = new File(fileName.getFile());
 
         //The type solver can now solve types from the standard library and the code we are analyzing
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(new JavaParserTypeSolver(fileInputStream));
+        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+        typeSolver.add(new ReflectionTypeSolver());
+        typeSolver.add(new JavaParserTypeSolver(fileInputStream));
 
-        analyzer.setTypeSolver(combinedTypeSolver);
+        analyzer.setTypeSolver(typeSolver);
 
         CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
@@ -71,11 +71,11 @@ public class FileAnalysisProvider {
         sourceRoot.tryToParse();
 
         //The type solver can now solve types from the standard library and the code we are analyzing
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(new JavaParserTypeSolver(directoryPath));
+        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+        typeSolver.add(new ReflectionTypeSolver());
+        typeSolver.add(new JavaParserTypeSolver(directoryPath));
 
-        analyzer.setTypeSolver(combinedTypeSolver);
+        analyzer.setTypeSolver(typeSolver);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());

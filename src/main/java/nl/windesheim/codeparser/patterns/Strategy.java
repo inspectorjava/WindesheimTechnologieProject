@@ -2,12 +2,13 @@ package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by caveman on 4/19/18.
  */
 public class Strategy implements IDesignPattern {
+
     /**
      * The file part which contains the context class of the strategy pattern.
      */
@@ -21,7 +22,7 @@ public class Strategy implements IDesignPattern {
     /**
      * A list of file parts of strategies which can be used in this strategy patterns.
      */
-    private ArrayList<ClassOrInterface> strategies;
+    private List<ClassOrInterface> strategies;
 
     /**
      * @return the context of the strategy pattern
@@ -58,7 +59,7 @@ public class Strategy implements IDesignPattern {
     /**
      * @return a list of strategies which can be used in this strategy pattern
      */
-    public ArrayList<ClassOrInterface> getStrategies() {
+    public List<ClassOrInterface> getStrategies() {
         return strategies;
     }
 
@@ -66,32 +67,8 @@ public class Strategy implements IDesignPattern {
      * @param strategies a list of strategies which can be used in this strategy pattern
      * @return this
      */
-    public Strategy setStrategies(final ArrayList<ClassOrInterface> strategies) {
+    public Strategy setStrategies(final List<ClassOrInterface> strategies) {
         this.strategies = strategies;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Strategy pattern\n");
-
-        stringBuilder.append("\tContext: \n\t\t");
-            stringBuilder.append(this.context);
-        stringBuilder.append("\n");
-
-        stringBuilder.append("\tStrategy interface: \n\t\t");
-            stringBuilder.append(this.strategyInterface);
-        stringBuilder.append("\n");
-
-        stringBuilder.append("\tStrategies: \n");
-            for (ClassOrInterface strategy : this.strategies) {
-                stringBuilder.append("\t\t- ");
-                stringBuilder.append(strategy);
-                stringBuilder.append("\n");
-            }
-        stringBuilder.append("\n");
-
-        return stringBuilder.toString();
     }
 }

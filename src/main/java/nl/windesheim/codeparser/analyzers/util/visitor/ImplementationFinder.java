@@ -5,6 +5,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Searches for classes which implement the given interface.
@@ -14,19 +15,21 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceTyp
     /**
      * The classes which implement the given interface.
      */
-    private ArrayList<ClassOrInterfaceDeclaration> classes;
+    private List<ClassOrInterfaceDeclaration> classes;
 
     /**
      * Make a new EligibleStrategyContextFinder.
      */
     public ImplementationFinder() {
+        super();
+
         classes = new ArrayList<>();
     }
 
     /**
      * @return A of classes which implement the given interface.
      */
-    public ArrayList<ClassOrInterfaceDeclaration> getClasses() {
+    public List<ClassOrInterfaceDeclaration> getClasses() {
         return classes;
     }
 
@@ -41,8 +44,8 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceTyp
     public void visit(final ClassOrInterfaceDeclaration classToCheck, final ClassOrInterfaceType interfaceType) {
         super.visit(classToCheck, interfaceType);
 
-        for (ClassOrInterfaceType implementedInterface : classToCheck.getImplementedTypes()) {
-            if (implementedInterface.equals(interfaceType)) {
+        for (ClassOrInterfaceType implInterface : classToCheck.getImplementedTypes()) {
+            if (implInterface.equals(interfaceType)) {
                 classes.add(classToCheck);
             }
         }

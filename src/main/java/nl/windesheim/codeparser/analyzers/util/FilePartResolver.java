@@ -34,17 +34,21 @@ public final class FilePartResolver {
         }
 
         //Set the ClassOrInterface part for the strategy context
-        if (currentNode instanceof CompilationUnit) {
-            if (((CompilationUnit) currentNode).getStorage().isPresent()) {
-                String filename = ((CompilationUnit) currentNode).getStorage().get().getFileName();
-                File file = new File(filename);
+        if (!(currentNode instanceof CompilationUnit)) {
+            return null;
+        }
 
-                if (node.getRange().isPresent()) {
-                    return new FilePart()
-                            .setFile(file)
-                            .setRange(node.getRange().get());
-                }
-            }
+        if (!((CompilationUnit) currentNode).getStorage().isPresent()) {
+            return null;
+        }
+
+        String filename = ((CompilationUnit) currentNode).getStorage().get().getFileName();
+        File file = new File(filename);
+
+        if (node.getRange().isPresent()) {
+            return new FilePart()
+                    .setFile(file)
+                    .setRange(node.getRange().get());
         }
 
         return null;

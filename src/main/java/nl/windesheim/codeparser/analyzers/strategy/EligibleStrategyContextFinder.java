@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import nl.windesheim.codeparser.analyzers.util.visitor.SetterFinder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Visitor which finds all classes which can be 'context' classes.
@@ -26,17 +27,18 @@ public class EligibleStrategyContextFinder
     /**
      * The context, interface pairs found in the last visit.
      */
-    private ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes;
+    private List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes;
 
     /**
      * A visitor which is used to tell if there exists a setter for a field.
      */
-    private SetterFinder setterFinder;
+    private final SetterFinder setterFinder;
 
     /**
      * Make a new EligibleStrategyContextFinder.
      */
-    EligibleStrategyContextFinder() {
+    public EligibleStrategyContextFinder() {
+        super();
         classes = new ArrayList<>();
         setterFinder = new SetterFinder();
     }
@@ -44,7 +46,7 @@ public class EligibleStrategyContextFinder
     /**
      * @return A list of context, interface pairs which were found in the last visit
      */
-    public ArrayList<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> getClasses() {
+    public List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> getClasses() {
         return classes;
     }
 

@@ -42,28 +42,47 @@ public class SetterFinder extends GenericVisitorAdapter<Boolean, VariableDeclara
         BlockStmt body = optionalBody.get();
 
         for (Statement statement : body.getStatements()) {
-            if (statement instanceof ExpressionStmt) {
-                ExpressionStmt expressionStmt = (ExpressionStmt) statement;
-
-                Expression expression = expressionStmt.getExpression();
-                if (expression instanceof AssignExpr) {
-                    Expression target = ((AssignExpr) expression).getTarget();
-                    if (target instanceof FieldAccessExpr) {
-                        if (((FieldAccessExpr) target).getScope() instanceof ThisExpr) {
-                            if (((FieldAccessExpr) target).getName().equals(variable.getName())) {
-                                return true;
-                            }
-                        }
-                    } else if (target instanceof NameExpr) {
-                        if (((NameExpr) target).getName().equals(variable.getName())) {
-                            return true;
-                        }
-                    }
-
-                }
+            if (isSetter(statement, variable)) {
+                return true;
             }
         }
         return null;
+    }
+
+    /**
+     * Checks of a statement is a setter for a variable.
+     *
+     * @param statement the statement to check
+     * @param variable  the variable to check
+     * @return boolean
+     */
+    private boolean isSetter(final Statement statement, final VariableDeclarator variable) {
+        if (!(statement instanceof ExpressionStmt)) {
+            return false;
+        }
+
+        ExpressionStmt expressionStmt = (ExpressionStmt) statement;
+
+        Expression expression = expressionStmt.getExpression();
+
+        if (!(expression instanceof AssignExpr)) {
+            return false;
+        }
+
+        Expression target = ((AssignExpr) expression).getTarget();
+        if (target instanceof FieldAccessExpr) {
+            if (((FieldAccessExpr) target).getScope() instanceof ThisExpr
+                    && ((FieldAccessExpr) target).getName().equals(variable.getName())
+            ) {
+                return true;
+            }
+        } else if (target instanceof NameExpr
+                && ((NameExpr) target).getName().equals(variable.getName())
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
 }
