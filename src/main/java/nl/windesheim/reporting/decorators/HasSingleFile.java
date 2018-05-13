@@ -27,6 +27,6 @@ public class HasSingleFile extends FoundPatternReport implements IFoundPatternRe
      */
     @Override
     public String getReport() {
-        return super.getReport() + "\n\r" + "Found in file: " + this.fileName;;
+        return super.getReport() + "\n\r" + "Found in file: " + this.fileName;
     }
 }
