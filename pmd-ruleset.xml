@@ -69,7 +69,6 @@ under the License.
     <rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty" />
 
     <rule ref="category/java/codestyle.xml/AbstractNaming" />
-    <rule ref="category/java/codestyle.xml/AtLeastOneConstructor" />
     <rule ref="category/java/codestyle.xml/AvoidDollarSigns" />
     <rule ref="category/java/codestyle.xml/AvoidFinalLocalVariable" />
     <rule ref="category/java/codestyle.xml/AvoidPrefixingMethodParameters" />
