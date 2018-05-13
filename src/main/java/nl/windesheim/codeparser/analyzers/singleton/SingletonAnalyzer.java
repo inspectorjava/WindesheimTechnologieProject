@@ -32,31 +32,17 @@ public class SingletonAnalyzer extends PatternAnalyzer {
         ArrayList<IDesignPattern> singletons = new ArrayList<IDesignPattern>();
 
         //For each file
-        for (CompilationUnit cu : files) {
+        for (CompilationUnit compilationUnit : files) {
 
             //For each class
-            for (TypeDeclaration<?> type : cu.getTypes()) {
+            for (TypeDeclaration<?> type : compilationUnit.getTypes()) {
                 if (type instanceof ClassOrInterfaceDeclaration) {
                     ClassOrInterfaceDeclaration classDeclaration = (ClassOrInterfaceDeclaration) type;
                     if (classDeclaration.isInterface()) {
                         continue;
                     }
 
-                    boolean onlyHasPrivateConstructors = true;
-
-                    //There are no constructors defined, so there is a default non private constructor
-                    //So this is not a singleton class
-                    if (classDeclaration.getConstructors().size() == 0) {
-                        onlyHasPrivateConstructors = false;
-                    } else {
-                        for (ConstructorDeclaration constructor : classDeclaration.getConstructors()) {
-                            if (!constructor.getModifiers().contains(Modifier.PRIVATE)) {
-                                onlyHasPrivateConstructors = false;
-                            }
-                        }
-                    }
-
-                    if (!onlyHasPrivateConstructors) {
+                    if (!onlyHasPrivateConstructors(classDeclaration)) {
                         continue;
                     }
 
@@ -78,23 +64,57 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                         continue;
                     }
 
-                    Singleton singleton = new Singleton();
-
-                    if (cu.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
-                        String fileName = cu.getStorage().get().getFileName();
-                        File file = new File(fileName);
-
-                        ClassPart classPart = new ClassPart().setFile(file);
-                        classPart.setRange(classDeclaration.getRange().get());
-
-                        singleton.setClassPart(classPart);
-                    }
-
-                    singletons.add(singleton);
+                    singletons.add(generateSingleton(compilationUnit, classDeclaration));
                 }
             }
         }
 
         return singletons;
+    }
+
+    /**
+     * Checks if a class only has a private constructor.
+     *
+     * @param classDeclaration the class to check
+     * @return boolean result
+     */
+    private boolean onlyHasPrivateConstructors(final ClassOrInterfaceDeclaration classDeclaration) {
+        //There are no constructors defined, so there is a default non private constructor
+        //So this is not a singleton class
+        if (classDeclaration.getConstructors().size() == 0) {
+            return false;
+        } else {
+            for (ConstructorDeclaration constructor : classDeclaration.getConstructors()) {
+                if (!constructor.getModifiers().contains(Modifier.PRIVATE)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param compilationUnit  the compilation unit which contains the class
+     * @param classDeclaration the class deceleration
+     * @return the singleton
+     */
+    private Singleton generateSingleton(
+            final CompilationUnit compilationUnit,
+            final ClassOrInterfaceDeclaration classDeclaration) {
+
+        Singleton singleton = new Singleton();
+
+        if (compilationUnit.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
+            String fileName = compilationUnit.getStorage().get().getFileName();
+            File file = new File(fileName);
+
+            ClassPart classPart = new ClassPart().setFile(file);
+            classPart.setRange(classDeclaration.getRange().get());
+
+            singleton.setClassPart(classPart);
+        }
+
+        return singleton;
     }
 }
