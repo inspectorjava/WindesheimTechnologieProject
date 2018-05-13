@@ -14,7 +14,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
     /**
      * The children for this composite.
      */
-    private ArrayList<PatternAnalyzer> children = new ArrayList<PatternAnalyzer>();
+    private final List<PatternAnalyzer> children = new ArrayList<>();
 
     /**
      * Adds a child to the list of PatternAnalyzers which makes this composite.
@@ -39,7 +39,7 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
     /**
      * @return the children of this analyzer
      */
-    public ArrayList<PatternAnalyzer> getChildren() {
+    public List<PatternAnalyzer> getChildren() {
         return children;
     }
 

@@ -1,7 +1,6 @@
 package nl.windesheim.codeparser.analyzers;
 
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
-import nl.windesheim.codeparser.patterns.Singleton;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
