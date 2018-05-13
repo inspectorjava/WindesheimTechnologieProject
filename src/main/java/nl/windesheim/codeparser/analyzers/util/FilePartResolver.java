@@ -5,7 +5,7 @@ import com.github.javaparser.ast.Node;
 import nl.windesheim.codeparser.FilePart;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Resolves FileParts.
@@ -60,7 +60,7 @@ public final class FilePartResolver {
      * @return a compilation unit or null if non were found
      */
     public static CompilationUnit findCompilationUnitOfNode(
-            final ArrayList<CompilationUnit> compilationUnits, final Node node) {
+            final List<CompilationUnit> compilationUnits, final Node node) {
 
         Node currentNode = node;
         while (!(currentNode instanceof CompilationUnit)) {

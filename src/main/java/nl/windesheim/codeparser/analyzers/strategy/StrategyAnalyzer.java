@@ -35,7 +35,7 @@ import java.util.List;
 public class StrategyAnalyzer extends PatternAnalyzer {
 
     @Override
-    public ArrayList<IDesignPattern> analyze(final ArrayList<CompilationUnit> files) {
+    public ArrayList<IDesignPattern> analyze(final List<CompilationUnit> files) {
         CombinedTypeSolver typeSolver = getParent().getTypeSolver();
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
 

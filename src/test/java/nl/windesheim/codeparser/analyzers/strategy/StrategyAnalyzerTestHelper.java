@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -29,7 +30,7 @@ class StrategyAnalyzerTestHelper {
         classLoader = this.getClass().getClassLoader();
     }
 
-    ArrayList<IDesignPattern> analyzeDirectory(File dir) throws IOException{
+    List<IDesignPattern> analyzeDirectory(File dir) throws IOException{
         Path directoryPath = dir.toPath();
 
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
@@ -52,7 +53,7 @@ class StrategyAnalyzerTestHelper {
     }
 
      void testStrategyPattern(TestSettings settings) throws IOException{
-        ArrayList<IDesignPattern> patterns = analyzeDirectory(settings.codeDir);
+        List<IDesignPattern> patterns = analyzeDirectory(settings.codeDir);
 
         assertEquals(1, patterns.size());
         assertTrue(patterns.get(0) instanceof Strategy);

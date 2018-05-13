@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by caveman on 4/19/18.
@@ -40,7 +41,7 @@ public class FileAnalysisProvider {
      * @return a list of patterns which were found
      * @throws FileNotFoundException if the file that was passed doesn't exist
      */
-    public ArrayList<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
+    public List<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
         File fileInputStream = new File(fileName.getFile());
 
         //The type solver can now solve types from the standard library and the code we are analyzing
@@ -50,13 +51,12 @@ public class FileAnalysisProvider {
 
         analyzer.setTypeSolver(combinedTypeSolver);
 
-        CompilationUnit cu = JavaParser.parse(fileInputStream);
+        CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.add(cu);
+        compilationUnits.add(compilationUnit);
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
-        return patterns;
+        return analyzer.analyze(compilationUnits);
     }
 
     /**
@@ -65,7 +65,7 @@ public class FileAnalysisProvider {
      * @return a list of found patterns
      * @throws IOException if the directory doesn't exist
      */
-    public ArrayList<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
+    public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
 
         sourceRoot.tryToParse();
@@ -80,8 +80,7 @@ public class FileAnalysisProvider {
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
-        return patterns;
+        return analyzer.analyze(compilationUnits);
     }
 
     /**
@@ -108,7 +107,6 @@ public class FileAnalysisProvider {
         composite.addChild(new SingletonAnalyzer());
         composite.addChild(new StrategyAnalyzer());
 
-        FileAnalysisProvider analysisProvider = new FileAnalysisProvider(composite);
-        return analysisProvider;
+        return new FileAnalysisProvider(composite);
     }
 }

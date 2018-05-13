@@ -15,7 +15,7 @@ public abstract class DeclarationFinder extends VoidVisitorAdapter<Void> {
     /**
      * The name of the type the desired declaration should have.
      */
-    private String targetType;
+    private final String targetType;
 
     /**
      * StaticInstancePropertyFinder constructor.
@@ -23,6 +23,8 @@ public abstract class DeclarationFinder extends VoidVisitorAdapter<Void> {
      * @param targetType The name of the type that the declaration should have
      */
     public DeclarationFinder(final String targetType) {
+        super();
+
         this.hasDeclaration = false;
         this.targetType = targetType;
     }

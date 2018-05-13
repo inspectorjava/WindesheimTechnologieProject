@@ -15,7 +15,7 @@ public class FoundPatternReport {
     /**
      * Result.
      */
-    private Result result;
+    private final Result result;
 
     /**
      * Constructor.
