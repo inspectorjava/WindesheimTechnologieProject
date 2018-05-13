@@ -18,7 +18,6 @@ public class Strategy implements IDesignPattern {
      */
     private ClassOrInterface strategyInterface;
 
-
     /**
      * A list of file parts of strategies which can be used in this strategy patterns.
      */
