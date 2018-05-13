@@ -12,6 +12,7 @@ import nl.windesheim.codeparser.patterns.Singleton;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This analyzer tries to detect a singleton pattern.
@@ -27,7 +28,7 @@ public class SingletonAnalyzer extends PatternAnalyzer {
      * @inheritDoc
      */
     @Override
-    public ArrayList<IDesignPattern> analyze(final ArrayList<CompilationUnit> files) {
+    public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         ArrayList<IDesignPattern> singletons = new ArrayList<IDesignPattern>();
 
         //For each file

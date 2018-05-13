@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +31,7 @@ public class SingletonAnalyzerEdgeCases {
         ArrayList<CompilationUnit> units = new ArrayList<>();
         units.add(JavaParser.parse(new File(filename.getFile())));
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(units);
+        List<IDesignPattern> patterns = analyzer.analyze(units);
 
         assertEquals(0, patterns.size());
     }
