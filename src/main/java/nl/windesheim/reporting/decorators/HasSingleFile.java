@@ -36,4 +36,6 @@ public class HasSingleFile extends FoundPatternReportDecorator {
     public String getReport() {
         return super.getReport() + "\n\r" + "Found in file: " + this.fileName;
     }
+
+
 }

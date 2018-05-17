@@ -2,6 +2,8 @@ package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.TreeBuilder;
+import nl.windesheim.reporting.components.TreeNode;
 
 /**
  * The found pattern has a contexxt
@@ -35,5 +37,12 @@ public class HasContext extends FoundPatternReportDecorator{
      */
     public String getReport() {
         return super.getReport() + " - Context: " + this.context + "\n\r";
+    }
+
+    @Override
+    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+        TreeNode node = new TreeNode("Context: " + this.context);
+        builder.addNode(node);
+        return super.buildTreeReport(builder);
     }
 }

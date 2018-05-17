@@ -1,6 +1,8 @@
 package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.TreeBuilder;
+import nl.windesheim.reporting.components.TreeNode;
 
 import java.util.List;
 
@@ -39,5 +41,19 @@ public class HasFiles extends FoundPatternReportDecorator{
                     .append("\n\r");
         }
         return reportString.toString();
+    }
+
+    @Override
+    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+        TreeNode node = new TreeNode();
+        node.setName("Files");
+
+        for (String file : this.files) {
+            node.addChild(new TreeNode(file));
+        }
+
+        builder.addNode(node);
+
+        return super.buildTreeReport(builder);
     }
 }

@@ -51,6 +51,21 @@ public class CodeReport {
     }
 
     /**
+     * @return TreeBuilder
+     */
+    public TreePresentation getTreePresentation() {
+        TreePresentation presentation = new TreePresentation();
+
+        presentation.setRoot(new TreeNode("Result"));
+        for (IFoundPatternReport foundReport : this.foundReports) {
+            TreeNode node = foundReport.buildTreeReport(new TreeBuilder()).build();
+            presentation.addNode(node);
+        }
+
+        return presentation;
+    }
+
+    /**
      * Are any patterns found.
      * @return boolean for found or not
      */

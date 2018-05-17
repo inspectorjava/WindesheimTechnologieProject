@@ -1,6 +1,8 @@
 package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.TreeBuilder;
+import nl.windesheim.reporting.components.TreeNode;
 
 import java.util.List;
 
@@ -42,5 +44,15 @@ public class HasStrategies extends FoundPatternReportDecorator {
         }
 
         return baseString.toString();
+    }
+
+    @Override
+    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+        TreeNode node = new TreeNode("Strategies");
+        for (String strategy : this.strategies) {
+            node.addChild(new TreeNode(strategy));
+        }
+        builder.addNode(node);
+        return super.buildTreeReport(builder);
     }
 }
