@@ -7,19 +7,20 @@ import java.io.File;
 /**
  * Created by caveman on 4/19/18.
  */
-public class ClassPart {
+public class FilePart {
     /**
-     * The file the ClassPart points to.
+     * The file the FilePart points to.
      */
     private File file;
 
     /**
-     * The position in the file where the ClassPart ends at.
+     * The position in the file where the FilePart ends at.
      */
     private Range range;
 
     /**
-     * Returns the file of the ClassPart.
+     * Returns the file of the FilePart.
+     *
      * @return File
      */
     public File getFile() {
@@ -27,11 +28,12 @@ public class ClassPart {
     }
 
     /**
-     * Sets the file of the ClassPart.
+     * Sets the file of the FilePart.
+     *
      * @param file File
      * @return File
      */
-    public ClassPart setFile(final File file) {
+    public FilePart setFile(final File file) {
         this.file = file;
         return this;
     }
@@ -47,8 +49,16 @@ public class ClassPart {
      * @param range character range in file
      * @return instance of this
      */
-    public ClassPart setRange(final Range range) {
+    public FilePart setRange(final Range range) {
         this.range = range;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "FilePart{"
+                + "file=" + file
+                + ", range=" + range
+                + '}';
     }
 }

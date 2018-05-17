@@ -53,9 +53,9 @@ public class SingletonAnalyzerHappyPathTest {
 
         Singleton singleton = (Singleton) patterns.get(0);
 
-        assertNotNull(singleton.getClassPart().getFile());
+        assertNotNull(singleton.getFilePart().getFile());
 
-        assertNotNull(singleton.getClassPart().getRange());
+        assertNotNull(singleton.getFilePart().getRange());
     }
 
 }
