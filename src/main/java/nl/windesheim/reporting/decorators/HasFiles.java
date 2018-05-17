@@ -32,6 +32,10 @@ public class HasFiles extends FoundPatternReportDecorator{
      * @return
      */
     public String getReport() {
-        return super.getReport();
+        String reportString = super.getReport();
+        for (String file : this.files) {
+            reportString += "File: " + file + "\n\r";
+        }
+        return reportString;
     }
 }

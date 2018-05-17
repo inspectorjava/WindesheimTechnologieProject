@@ -14,7 +14,7 @@ public class CodeReportBuilderTest extends TestCase {
 
         CodeReport codeReport = codeReportBuilder.buildReport();
 
-        assertEquals(true, codeReport.anyPatterns());
+        assertTrue(codeReport.anyPatterns());
     }
 
 }
