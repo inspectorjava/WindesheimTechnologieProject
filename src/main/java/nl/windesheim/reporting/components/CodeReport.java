@@ -10,20 +10,20 @@ public class CodeReport {
     /**
      * Found Pattern Reports.
      */
-    private final List<FoundPatternReport> foundReports;
+    private final List<IFoundPatternReport> foundReports;
 
     /**
      * Instantiate the foundReports ArrayList.
      */
     public CodeReport() {
-        this.foundReports = new ArrayList<FoundPatternReport>();
+        this.foundReports = new ArrayList<IFoundPatternReport>();
     }
 
     /**
      * Add a FoundPatternReport to the CodeReport.
      * @param foundReport the report
      */
-    public void addFoundPatternReport(final FoundPatternReport foundReport) {
+    public void addFoundPatternReport(final IFoundPatternReport foundReport) {
         this.foundReports.add(foundReport);
     }
 
@@ -31,7 +31,7 @@ public class CodeReport {
      * Get all FoundPatternReports.
      * @return ArrayList foundReports
      */
-    public List<FoundPatternReport> getFoundReports() {
+    public List<IFoundPatternReport> getFoundReports() {
         return foundReports;
     }
 
@@ -42,7 +42,7 @@ public class CodeReport {
     public String getReport() {
         StringBuffer returnString = new StringBuffer();
 
-        for (FoundPatternReport foundReport : this.foundReports) {
+        for (IFoundPatternReport foundReport : this.foundReports) {
             returnString.append("\n\r");
             returnString.append(foundReport.getReport());
         }

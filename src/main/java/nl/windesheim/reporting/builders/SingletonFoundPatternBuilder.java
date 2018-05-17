@@ -3,6 +3,7 @@ package nl.windesheim.reporting.builders;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasSingleFile;
 
 /**
@@ -25,8 +26,8 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
     }
 
     @Override
-    public FoundPatternReport buildReport() {
-        HasSingleFile hasSingleFile = new HasSingleFile();
+    public IFoundPatternReport buildReport() {
+        HasSingleFile hasSingleFile = new HasSingleFile(new FoundPatternReport());
         hasSingleFile.setFileName(this.fileName);
         hasSingleFile.setDesignPatternType(DesignPatternType.SINGLETON);
         return hasSingleFile;
