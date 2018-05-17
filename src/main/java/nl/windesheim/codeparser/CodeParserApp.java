@@ -3,6 +3,7 @@ package nl.windesheim.codeparser;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Observer;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,22 +21,19 @@ public final class CodeParserApp {
 
         try {
             FileAnalysisProvider analysis = FileAnalysisProvider.getConfiguredFileAnalysisProvider();
-//            Path path = Paths.get("/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/");
-            Path path = Paths.get("/Users/rickbos/WindesheimTechnologieProject/src/test/resources/strategy/");
-//            Path path = Paths.get("/Users/rickbos/WindesheimTechnologieProject/src/test/resources/singleton/");
-            List<IDesignPattern> patterns = analysis.analyzeDirectory(path);
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer";
+            File codeDir = new File(pathString);
+
+            List<IDesignPattern> patterns = analysis.analyzeDirectory(codeDir.toPath());
 
             for (IDesignPattern p : patterns) {
                 Observer o = (Observer) p;
                 System.out.println("Found " + o.toString());
-
-//                Singleton s = (Singleton) p;
-//                System.out.println("Found" + s.toString() + " in file " + s.getClassPart().getFile().getName());
             }
         } catch (IOException ex) {
-            System.out.println("Krak: " + ex.getMessage());
+            System.out.println("Krak IOException: " + ex.getMessage());
         }
-
 
         System.out.println("[marslanden] done");
     }

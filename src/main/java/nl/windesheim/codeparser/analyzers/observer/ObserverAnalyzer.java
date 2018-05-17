@@ -14,12 +14,32 @@ import java.util.List;
 
 public class ObserverAnalyzer extends PatternAnalyzer {
 
+    /**
+     * Finds relations between symbols.
+     */
     private JavaSymbolSolver javaSymbolSolver;
 
+    /**
+     * A solver for data types.
+     */
     private CombinedTypeSolver typeSolver;
+
+    /**
+     *
+     */
+    private final AbstractSubjectFinder abstractSubjectFinder;
+
+    public ObserverAnalyzer() {
+        super();
+
+        abstractSubjectFinder = new AbstractSubjectFinder();
+    }
 
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
+        typeSolver = getParent().getTypeSolver();
+        javaSymbolSolver = new JavaSymbolSolver(typeSolver);
+
         //  Subject
             //  Een Subject is een (abstracte) klasse met de volgende kenmerken:
             //  Bevat een collectie van objecten
@@ -42,18 +62,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             //          Implementeert een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
             //  Het is mogelijk dat een klasse de in Java ingebouwde interface Observer implementeert, dit is een goede aanwijzing dat we te maken hebben met een Observer.
 
-        typeSolver = getParent().getTypeSolver();
-
-        javaSymbolSolver = new JavaSymbolSolver(typeSolver);
-
         for (CompilationUnit compilationUnit : files) {
-//            for (TypeDeclaration<?> type : compilationUnit.getTypes()) {
-//                if (type instanceof ClassOrInterfaceDeclaration) {
-//                    ClassOrInterfaceDeclaration classDeclaration = (ClassOrInterfaceDeclaration) type;
-//                    asf.visit(classDeclaration);
-//                }
-//
-//            }
+            abstractSubjectFinder.visit(compilationUnit, typeSolver);
         }
 
         return new ArrayList<>();

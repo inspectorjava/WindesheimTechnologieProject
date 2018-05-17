@@ -1,14 +1,8 @@
-package nl.windesheim.codeparser.resources.singleton;
-
-import nl.windesheim.codeparser.patterns.Observer;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractSubject {
-    private String str;
-    private Observer obs;
-    private List<Observer> observers;
+    private List<MyObserver> observers;
 
     public Subject() {
         observers = new ArrayList<>();

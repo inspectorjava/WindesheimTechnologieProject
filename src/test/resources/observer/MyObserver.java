@@ -1,4 +1,4 @@
-class Observer {
+class MyObserver {
     public void update() {
 
     }

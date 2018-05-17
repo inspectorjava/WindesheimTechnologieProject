@@ -107,6 +107,7 @@ public class FileAnalysisProvider {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
 //        composite.addChild(new SingletonAnalyzer());
         composite.addChild(new ObserverAnalyzer());
+//        composite.addChild(new StrategyAnalyzer());
 
         return new FileAnalysisProvider(composite);
     }
