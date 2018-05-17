@@ -5,7 +5,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import nl.windesheim.codeparser.ClassPart;
+import nl.windesheim.codeparser.FilePart;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
@@ -96,7 +96,7 @@ public class SingletonAnalyzer extends PatternAnalyzer {
 
     /**
      * @param compilationUnit  the compilation unit which contains the class
-     * @param classDeclaration the class deceleration
+     * @param classDeclaration the class declaration
      * @return the singleton
      */
     private Singleton generateSingleton(
@@ -109,10 +109,10 @@ public class SingletonAnalyzer extends PatternAnalyzer {
             String fileName = compilationUnit.getStorage().get().getFileName();
             File file = new File(fileName);
 
-            ClassPart classPart = new ClassPart().setFile(file);
-            classPart.setRange(classDeclaration.getRange().get());
+            FilePart filePart = new FilePart().setFile(file);
+            filePart.setRange(classDeclaration.getRange().get());
 
-            singleton.setClassPart(classPart);
+            singleton.setFilePart(filePart);
         }
 
         return singleton;
