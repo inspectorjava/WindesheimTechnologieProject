@@ -7,6 +7,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.observer.ObserverAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -104,8 +105,8 @@ public class FileAnalysisProvider {
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
-        composite.addChild(new SingletonAnalyzer());
-        composite.addChild(new StrategyAnalyzer());
+//        composite.addChild(new SingletonAnalyzer());
+        composite.addChild(new ObserverAnalyzer());
 
         return new FileAnalysisProvider(composite);
     }
