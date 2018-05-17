@@ -25,12 +25,10 @@ public class StrategyFoundPatternBuilderTest {
 
         String context = "Context";
 
-
         StrategyFoundPatternBuilder strategyFoundPatternBuilder = new StrategyFoundPatternBuilder(files, context, interfaceName, stratagies);
 
         IFoundPatternReport foundPatternReport = strategyFoundPatternBuilder.buildReport();
 
         System.out.println(foundPatternReport.getReport());
-
     }
 }

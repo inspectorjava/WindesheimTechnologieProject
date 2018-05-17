@@ -7,15 +7,45 @@ import nl.windesheim.reporting.DesignPatternType;
  */
 public class FoundPatternReport implements IFoundPatternReport{
 
+    /**
+     * Result.
+     */
+    private final Result result;
+
+    /**
+     * String pattern type i.e. Singleton, Strategy.
+     */
+    private DesignPatternType designPatternType;
+
+
+    public FoundPatternReport() {
+        this.result = new Result();
+        this.result.setCertainty(Result.Certainty.NOT);
+        this.designPatternType = DesignPatternType.NONE;
+    }
 
 
     /**
-     * Found pattern report
+     * Set the design pattern type of the found design pattern.
+     * @param designPatternType design pattern type enum
      */
-    private FoundPatternReport report;
+    public void setDesignPatternType(final DesignPatternType designPatternType) {
+        this.designPatternType = designPatternType;
+    }
 
-    @Override
+    /**
+     * Returns the design pattern type.
+     * @return DesignPatternType enum
+     */
+    public DesignPatternType getDesignPatternType() {
+        return this.designPatternType;
+    }
+
+    /**
+     * Get report.
+     * @return String report result
+     */
     public String getReport() {
-        return "";
+        return "Pattern: " + this.designPatternType.toString() + " found with certainty: " + this.result.toString();
     }
 }

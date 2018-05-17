@@ -27,9 +27,10 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     @Override
     public IFoundPatternReport buildReport() {
-        HasSingleFile hasSingleFile = new HasSingleFile(new FoundPatternReport());
+        FoundPatternReport foundPatternReport = new FoundPatternReport();
+        foundPatternReport.setDesignPatternType(DesignPatternType.SINGLETON);
+        HasSingleFile hasSingleFile = new HasSingleFile(foundPatternReport);
         hasSingleFile.setFileName(this.fileName);
-        hasSingleFile.setDesignPatternType(DesignPatternType.SINGLETON);
         return hasSingleFile;
     }
 }

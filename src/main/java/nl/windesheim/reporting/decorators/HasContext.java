@@ -34,6 +34,6 @@ public class HasContext extends FoundPatternReportDecorator{
      * @return String context
      */
     public String getReport() {
-        return super.getReport() + " - Context: " + this.context;
+        return super.getReport() + " - Context: " + this.context + "\n\r";
     }
 }

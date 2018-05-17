@@ -11,5 +11,9 @@ public enum DesignPatternType {
     /**
      * Singleton pattern.
      */
-    SINGLETON
+    SINGLETON,
+    /**
+     * Strategy pattern
+     */
+    STRATEGY
 }

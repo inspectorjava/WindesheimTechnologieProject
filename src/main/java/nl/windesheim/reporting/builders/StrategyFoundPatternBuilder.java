@@ -1,5 +1,6 @@
 package nl.windesheim.reporting.builders;
 
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
@@ -36,6 +37,7 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
     @Override
     public IFoundPatternReport buildReport() {
         FoundPatternReport foundPatternReport = new FoundPatternReport();
+        foundPatternReport.setDesignPatternType(DesignPatternType.STRATEGY);
 
         HasStrategies strategy = new HasStrategies(foundPatternReport);
         strategy.setStrategies(this.strategies);
