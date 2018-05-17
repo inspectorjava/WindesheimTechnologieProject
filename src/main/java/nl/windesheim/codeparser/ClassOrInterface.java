@@ -19,7 +19,7 @@ public class ClassOrInterface {
     /**
      * The AST node which was found.
      */
-    private ClassOrInterfaceDeclaration deceleration;
+    private ClassOrInterfaceDeclaration declaration;
 
     /**
      * @return the filepart
@@ -54,18 +54,18 @@ public class ClassOrInterface {
     }
 
     /**
-     * @return the deceleration
+     * @return the declaration
      */
-    public ClassOrInterfaceDeclaration getDeceleration() {
-        return deceleration;
+    public ClassOrInterfaceDeclaration getDeclaration() {
+        return declaration;
     }
 
     /**
-     * @param deceleration the deceleration to be set
+     * @param declaration the declaration to be set
      * @return this
      */
-    public ClassOrInterface setDeceleration(final ClassOrInterfaceDeclaration deceleration) {
-        this.deceleration = deceleration;
+    public ClassOrInterface setDeclaration(final ClassOrInterfaceDeclaration declaration) {
+        this.declaration = declaration;
         return this;
     }
 

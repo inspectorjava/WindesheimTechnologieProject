@@ -96,7 +96,7 @@ public class SingletonAnalyzer extends PatternAnalyzer {
 
     /**
      * @param compilationUnit  the compilation unit which contains the class
-     * @param classDeclaration the class deceleration
+     * @param classDeclaration the class declaration
      * @return the singleton
      */
     private Singleton generateSingleton(

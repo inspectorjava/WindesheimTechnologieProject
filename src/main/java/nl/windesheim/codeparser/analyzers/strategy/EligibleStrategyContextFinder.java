@@ -67,7 +67,7 @@ public class EligibleStrategyContextFinder
         //Get all fields in the class
         for (FieldDeclaration field : declaration.getFields()) {
 
-            //For every variable in a field deceleration
+            //For every variable in a field declaration
             for (VariableDeclarator variable : field.getVariables()) {
                 //Get the type of the field
                 Type variableType = variable.getType();

@@ -85,11 +85,11 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             //Get the strategy interface of which the context type has a variable
             ClassOrInterfaceDeclaration strategyInterface = eligibleContext.getValue();
 
-            //Get the variable deceleration
+            //Get the variable declaration
             VariableDeclarator strategyVariable = eligibleContext.getKey();
             ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) strategyVariable.getType();
 
-            //Walk up the tree until we have the class containing the variable deceleration, this is the context class
+            //Walk up the tree until we have the class containing the variable declaration, this is the context class
             Node currentNode = strategyVariable;
             while (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
                 if (!currentNode.getParentNode().isPresent()) {
@@ -98,7 +98,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
                 currentNode = currentNode.getParentNode().get();
             }
 
-            //If we broke out of the loop above but the current node is not a classOrInterfaceDeceleration
+            //If we broke out of the loop above but the current node is not a classOrInterfaceDeclaration
             // we have a issue, so continue to check other eligible contexts
             if (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
                 continue;
@@ -154,7 +154,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
                 new ClassOrInterface()
                         .setFilePart(FilePartResolver.getFilePartOfNode(context))
                         .setName(context.getNameAsString())
-                        .setDeceleration(context)
+                        .setDeclaration(context)
         );
 
         //Because of the way the strategy interface is found it doesn't have a file linked to it
@@ -166,7 +166,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             strategyPattern.setStrategyInterface(new ClassOrInterface()
                     .setFilePart(FilePartResolver.getFilePartOfNode(newStrategy))
                     .setName(strategyInterface.getNameAsString())
-                    .setDeceleration(strategyInterface));
+                    .setDeclaration(strategyInterface));
         }
 
         ArrayList<ClassOrInterface> fileParts = new ArrayList<>();
@@ -176,7 +176,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             fileParts.add(new ClassOrInterface()
                     .setFilePart(FilePartResolver.getFilePartOfNode(strategy))
                     .setName(strategy.getNameAsString())
-                    .setDeceleration(strategy));
+                    .setDeclaration(strategy));
         }
 
         strategyPattern.setStrategies(fileParts);
@@ -227,7 +227,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
         //Loop over the method calls
         for (MethodCallExpr methodCallExpr : methodCalls) {
 
-            //We are looking for a call in the scope of the variable deceleration
+            //We are looking for a call in the scope of the variable declaration
             if (!methodCallExpr.getScope().isPresent()) {
                 continue;
             }
