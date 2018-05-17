@@ -85,10 +85,7 @@ under the License.
     <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract" />
     <rule ref="category/java/codestyle.xml/ExtendsObject" />
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
-    <rule ref="category/java/codestyle.xml/ForLoopsMustUseBraces" />
     <rule ref="category/java/codestyle.xml/GenericsNaming" />
-    <rule ref="category/java/codestyle.xml/IfElseStmtsMustUseBraces" />
-    <rule ref="category/java/codestyle.xml/IfStmtsMustUseBraces" />
     <rule ref="category/java/codestyle.xml/LocalHomeNamingConvention" />
     <rule ref="category/java/codestyle.xml/LocalInterfaceSessionNamingConvention" />
     <rule ref="category/java/codestyle.xml/LongVariable" />
@@ -114,7 +111,6 @@ under the License.
     <rule ref="category/java/codestyle.xml/UselessParentheses" />
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
     <rule ref="category/java/codestyle.xml/VariableNamingConventions" />
-    <rule ref="category/java/codestyle.xml/WhileLoopsMustUseBraces" />
 
     <rule ref="category/java/design.xml/AbstractClassWithoutAnyMethod" />
     <rule ref="category/java/design.xml/AvoidCatchingGenericException" />
@@ -139,11 +135,7 @@ under the License.
     <rule ref="category/java/design.xml/GodClass" />
     <rule ref="category/java/design.xml/ImmutableField" />
     <rule ref="category/java/design.xml/LogicInversion" />
-    <rule ref="category/java/design.xml/LoosePackageCoupling" />
-    <rule ref="category/java/design.xml/ModifiedCyclomaticComplexity" />
-    <rule ref="category/java/design.xml/NcssConstructorCount" />
-    <rule ref="category/java/design.xml/NcssMethodCount" />
-    <rule ref="category/java/design.xml/NcssTypeCount" />
+    <rule ref="category/java/design.xml/NcssCount" />
     <rule ref="category/java/design.xml/NPathComplexity" />
     <rule ref="category/java/design.xml/SignatureDeclareThrowsException" />
     <rule ref="category/java/design.xml/SimplifiedTernary" />
@@ -152,7 +144,6 @@ under the License.
     <rule ref="category/java/design.xml/SimplifyBooleanReturns" />
     <rule ref="category/java/design.xml/SimplifyConditional" />
     <rule ref="category/java/design.xml/SingularField" />
-    <rule ref="category/java/design.xml/StdCyclomaticComplexity" />
     <rule ref="category/java/design.xml/SwitchDensity" />
     <rule ref="category/java/design.xml/TooManyFields" />
     <rule ref="category/java/design.xml/TooManyMethods" />
