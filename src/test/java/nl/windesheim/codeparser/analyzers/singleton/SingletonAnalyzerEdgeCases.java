@@ -29,7 +29,7 @@ public class SingletonAnalyzerEdgeCases {
         SingletonAnalyzer analyzer = new SingletonAnalyzer();
 
         ArrayList<CompilationUnit> units = new ArrayList<>();
-        units.add(JavaParser.parse(new File(filename.getFile())));
+        units.add(JavaParser.parse(new File(filename.toURI())));
 
         List<IDesignPattern> patterns = analyzer.analyze(units);
 
