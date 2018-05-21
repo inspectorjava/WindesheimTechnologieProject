@@ -14,7 +14,6 @@ import nl.windesheim.codeparser.patterns.IDesignPattern;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,21 +36,19 @@ public class FileAnalysisProvider {
 
     /**
      * Analyzes a single file for design patterns.
-     * @param fileName the file that should be analyzed
+     * @param file the file that should be analyzed
      * @return a list of patterns which were found
      * @throws FileNotFoundException if the file that was passed doesn't exist
      */
-    public List<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
-        File fileInputStream = new File(fileName.getFile());
-
+    public List<IDesignPattern> analyzeFile(final File file) throws FileNotFoundException {
         //The type solver can now solve types from the standard library and the code we are analyzing
         CombinedTypeSolver typeSolver = new CombinedTypeSolver();
         typeSolver.add(new ReflectionTypeSolver());
-        typeSolver.add(new JavaParserTypeSolver(fileInputStream));
+        typeSolver.add(new JavaParserTypeSolver(file));
 
         analyzer.setTypeSolver(typeSolver);
 
-        CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
+        CompilationUnit compilationUnit = JavaParser.parse(file);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.add(compilationUnit);
