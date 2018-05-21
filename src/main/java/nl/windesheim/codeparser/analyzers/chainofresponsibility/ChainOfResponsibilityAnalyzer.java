@@ -17,8 +17,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
-import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationFinder;
-import nl.windesheim.codeparser.analyzers.util.visitor.SubclassFinder;
+import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
@@ -48,12 +47,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     /**
      * A finder which searches for implementations of a interface.
      */
-    private ImplementationFinder implFinder;
-
-    /**
-     * A finder which searches for subclasses of a class.
-     */
-    private SubclassFinder subclassFinder;
+    private ImplementationOrSuperclassFinder implFinder;
 
     /**
      * A visitor which checks if a 'link' ever calls the next link in the chain.
@@ -90,8 +84,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         }
 
         //Initialize the finders
-        implFinder = new ImplementationFinder(typeSolver);
-        subclassFinder = new SubclassFinder(typeSolver);
+        implFinder = new ImplementationOrSuperclassFinder(typeSolver);
 
         //Get a list of classes which could be 'common parent' classes or interfaces
         List<ClassOrInterfaceDeclaration> eligibleParents
@@ -163,22 +156,11 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             final List<CompilationUnit> files
     ) {
         ArrayList<ClassOrInterfaceDeclaration> links = new ArrayList<>();
-        //If the 'common parent' is a interface we need to look for implementations of that interface
-        if (parent.isInterface()) {
-            for (CompilationUnit compilationUnit : files) {
-                implFinder.reset();
-                implFinder.visit(compilationUnit, parent);
-                links.addAll(implFinder.getClasses());
-            }
 
-        //the 'common parent' is not a interface so it must be a class.
-            // so we need to look for subclasses
-        } else {
-            for (CompilationUnit compilationUnit : files) {
-                subclassFinder.reset();
-                subclassFinder.visit(compilationUnit, parent);
-                links.addAll(subclassFinder.getClasses());
-            }
+        for (CompilationUnit compilationUnit : files) {
+            implFinder.reset();
+            implFinder.visit(compilationUnit, parent);
+            links.addAll(implFinder.getClasses());
         }
 
         return links;

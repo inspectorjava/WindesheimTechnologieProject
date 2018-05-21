@@ -15,7 +15,7 @@ import javafx.util.Pair;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
-import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationFinder;
+import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Strategy;
 
@@ -46,7 +46,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
     /**
      * A finder which searches for implementations of a interface.
      */
-    private ImplementationFinder implFinder;
+    private ImplementationOrSuperclassFinder implFinder;
 
     /**
      * A finder which searches for eligible strategy context classes.
@@ -77,7 +77,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             return patterns;
         }
 
-        implFinder = new ImplementationFinder(typeSolver);
+        implFinder = new ImplementationOrSuperclassFinder(typeSolver);
 
         List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = findEligibleContexts(files);
 

@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Searches for classes which implement the given interface.
  */
-public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDeclaration> {
+public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOrInterfaceDeclaration> {
 
     /**
      * The classes which implement the given interface.
@@ -26,10 +27,10 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDec
     private final TypeSolver typeSolver;
 
     /**
-     * Make a new ImplementationFinder.
+     * Make a new ImplementationOrSuperclassFinder.
      * @param typeSolver a type solver
      */
-    public ImplementationFinder(final TypeSolver typeSolver) {
+    public ImplementationOrSuperclassFinder(final TypeSolver typeSolver) {
         super();
 
         classes = new ArrayList<>();
@@ -55,15 +56,29 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDec
                       final ClassOrInterfaceDeclaration classDeclaration) {
         super.visit(classToCheck, classDeclaration);
 
-        for (ClassOrInterfaceType type : classToCheck.getImplementedTypes()) {
+        if (classDeclaration.isInterface()) {
+            for (ClassOrInterfaceType type : classToCheck.getImplementedTypes()) {
 
-            ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
-            if (!(solved instanceof JavaParserInterfaceDeclaration)) {
-                continue;
+                ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
+                if (!(solved instanceof JavaParserInterfaceDeclaration)) {
+                    continue;
+                }
+
+                if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
+                    classes.add(classToCheck);
+                }
             }
+        } else {
+            for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
 
-            if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
-                classes.add(classToCheck);
+                ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
+                if (!(solved instanceof JavaParserClassDeclaration)) {
+                    continue;
+                }
+
+                if (((JavaParserClassDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
+                    classes.add(classToCheck);
+                }
             }
         }
     }
