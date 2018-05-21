@@ -19,6 +19,10 @@ public class TreePresentation {
      * Add a new node to the tree.
      * @param node the new node to be added
      */
+    public TreeNode getRoot() {
+        return this.root;
+    }
+
     public void addNode(final TreeNode node) {
         this.root.addChild(node);
     }

@@ -62,6 +62,10 @@ public class TreeNode {
         this.nextSibling = node;
     }
 
+    /**
+     * Has this node a next sibling.
+     * @return boolean
+     */
     public boolean hasNextSibling() {
         return this.nextSibling != null;
     }
