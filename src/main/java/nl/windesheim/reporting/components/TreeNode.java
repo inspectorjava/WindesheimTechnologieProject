@@ -62,6 +62,22 @@ public class TreeNode {
         this.nextSibling = node;
     }
 
+    /**
+     * Get the first child.
+     * @return the first child
+     */
+    public TreeNode getFirstChild() {
+        return firstChild;
+    }
+
+    /**
+     * Get the first next sibling.
+     * @return the first next sibling
+     */
+    public TreeNode getNextSibling() {
+        return nextSibling;
+    }
+
     public boolean hasNextSibling() {
         return this.nextSibling != null;
     }
