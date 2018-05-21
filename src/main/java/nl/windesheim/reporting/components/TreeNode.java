@@ -3,7 +3,7 @@ package nl.windesheim.reporting.components;
 import java.util.List;
 
 /**
- * TreeNode
+ * TreeNode.
  */
 public class TreeNode {
 
@@ -50,7 +50,7 @@ public class TreeNode {
     }
 
     /**
-     * Add the node to the
+     * Add the node to the.
      * @param node the new node
      */
     public void setNextSibling(TreeNode node) {
@@ -75,11 +75,27 @@ public class TreeNode {
     }
 
     /**
-     * Check if the node has children
+     * Check if the node has children.
      * @return boolean
      */
     public boolean hasChildren() {
         return this.firstChild != null;
+    }
+
+    /**
+     * Return FirstChild node.
+     * @return TreeNode
+     */
+    public TreeNode getFirstChild() {
+        return this.firstChild;
+    }
+
+    /**
+     * Return the next Sibling
+     * @return TreeNode
+     */
+    public TreeNode getNextSibling() {
+        return this.nextSibling;
     }
 
     @Override

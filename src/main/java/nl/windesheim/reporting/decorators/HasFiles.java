@@ -7,7 +7,7 @@ import nl.windesheim.reporting.components.TreeNode;
 import java.util.List;
 
 /**
- * HasFiles report decorator
+ * HasFiles report decorator.
  */
 public class HasFiles extends FoundPatternReportDecorator{
 
@@ -22,7 +22,7 @@ public class HasFiles extends FoundPatternReportDecorator{
     }
 
     /**
-     * Set the files
+     * Set the files.
      * @param files
      */
     public void setFiles(final List<String> files) {
@@ -30,8 +30,8 @@ public class HasFiles extends FoundPatternReportDecorator{
     }
 
     /**
-     *
-     * @return
+     * Get report of all files found.
+     * @return string report
      */
     public String getReport() {
         StringBuilder reportString = new StringBuilder(super.getReport());

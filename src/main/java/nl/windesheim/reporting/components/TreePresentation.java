@@ -2,16 +2,23 @@ package nl.windesheim.reporting.components;
 
 public class TreePresentation {
 
+    /**
+     * Root TreeNode.
+     */
     TreeNode root;
 
-    public TreePresentation() {
-
-    }
-
+    /**
+     * Set the root for the tree to this node.
+     * @param node the new rootnode.
+     */
     public void setRoot(final TreeNode node) {
         this.root = node;
     }
 
+    /**
+     * Add a new node to the tree.
+     * @param node the new node to be added
+     */
     public void addNode(final TreeNode node) {
         this.root.addChild(node);
     }
@@ -21,6 +28,11 @@ public class TreePresentation {
         return printRow(this.root);
     }
 
+    /**
+     * Print single row.
+     * @param node node to print.
+     * @return string
+     */
     private String printRow(TreeNode node) {
         StringBuilder returnString = new StringBuilder(node.toString());
 
