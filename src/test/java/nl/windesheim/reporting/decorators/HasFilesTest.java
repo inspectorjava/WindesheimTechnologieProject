@@ -32,16 +32,17 @@ public class HasFilesTest {
         System.out.println(report);
     }
 
+
     @Test
     public void buildTreeReport() {
         TreeBuilder builder = this.hasFilesDecorator.buildTreeReport(new TreeBuilder());
         TreeNode node = builder.build();
         TreeNode filesNode = node.getFirstChild();
+
         assertEquals("Files", filesNode.toString());
 
         TreeNode firstNode = filesNode.getFirstChild();
         assertEquals("File1", firstNode.toString());
-        System.out.println(firstNode.getNextSibling());
         assertEquals("File2", firstNode.getNextSibling().toString());
     }
 }

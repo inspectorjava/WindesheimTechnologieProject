@@ -40,7 +40,7 @@ public class HasStrategies extends FoundPatternReportDecorator {
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
         for (String strategy : this.strategies) {
-            baseString.append("Stratagy: ").append(strategy).append("\n\r");
+            baseString.append("Strategy: ").append(strategy).append("\n\r");
         }
 
         return baseString.toString();

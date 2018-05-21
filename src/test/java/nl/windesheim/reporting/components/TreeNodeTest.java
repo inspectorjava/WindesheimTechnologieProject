@@ -19,11 +19,11 @@ public class TreeNodeTest {
 
         TreeNode anotherNode = new TreeNode();
         node.addChild(anotherNode);
-        assertEquals(anotherNode, node.getNextSibling());
+        assertEquals(anotherNode, node.getFirstChild().getNextSibling());
 
         TreeNode anotherAnotherNode = new TreeNode();
         node.addChild(anotherAnotherNode);
-        assertEquals(anotherAnotherNode, node.getNextSibling().getNextSibling());
+        assertEquals(anotherAnotherNode, node.getFirstChild().getNextSibling().getNextSibling());
     }
 
     @Test

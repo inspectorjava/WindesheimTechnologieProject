@@ -46,7 +46,7 @@ public class TreeNode {
             this.firstChild = node;
             return;
         }
-        this.setNextSibling(node);
+        this.setNextSiblingForChild(node);
     }
 
     /**
@@ -60,6 +60,21 @@ public class TreeNode {
         }
 
         this.nextSibling = node;
+    }
+
+    /**
+     * Set the next sibling of the first child
+     * @param node node
+     */
+    private void setNextSiblingForChild(TreeNode node) {
+        if (this.hasChildren()) {
+            TreeNode child = this.firstChild;
+            while(child.getNextSibling() != null) {
+                child = child.getNextSibling();
+            }
+
+            child.setNextSibling(node);
+        }
     }
 
     /**
