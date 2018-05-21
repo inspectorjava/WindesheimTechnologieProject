@@ -5,7 +5,6 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -45,14 +44,14 @@ public class StrategyAnalyzer extends PatternAnalyzer {
     private CombinedTypeSolver typeSolver;
 
     /**
-     *
+     * A finder which searches for implementations of a interface.
      */
-    private final EligibleStrategyContextFinder contextFinder;
+    private ImplementationFinder implFinder;
 
     /**
-     *
+     * A finder which searches for eligible strategy context classes.
      */
-    private final ImplementationFinder implFinder;
+    private final EligibleStrategyContextFinder contextFinder;
 
     /**
      * Init the strategy analyzer.
@@ -62,7 +61,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
         //Create visitors which will find classes with special properties
         contextFinder = new EligibleStrategyContextFinder();
-        implFinder = new ImplementationFinder();
+
     }
 
     @Override
@@ -78,6 +77,8 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             return patterns;
         }
 
+        implFinder = new ImplementationFinder(typeSolver);
+
         List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = findEligibleContexts(files);
 
         //foreach eligible context class
@@ -85,12 +86,8 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             //Get the strategy interface of which the context type has a variable
             ClassOrInterfaceDeclaration strategyInterface = eligibleContext.getValue();
 
-            //Get the variable declaration
-            VariableDeclarator strategyVariable = eligibleContext.getKey();
-            ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) strategyVariable.getType();
-
             //Walk up the tree until we have the class containing the variable declaration, this is the context class
-            Node currentNode = strategyVariable;
+            Node currentNode = eligibleContext.getKey();
             while (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
                 if (!currentNode.getParentNode().isPresent()) {
                     break;
@@ -116,7 +113,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
                 continue;
             }
 
-            List<ClassOrInterfaceDeclaration> strategies = findStrategies(files, interfaceType);
+            List<ClassOrInterfaceDeclaration> strategies = findStrategies(files, strategyInterface);
 
             //We should at least have one implementation of the strategy interface, else the pattern won't work
             if (strategies.isEmpty()) {
@@ -187,12 +184,12 @@ public class StrategyAnalyzer extends PatternAnalyzer {
     /**
      * Finds a list of classes which are strategy interface implementations.
      * @param files the files in which to search
-     * @param interfaceType the strategy interface
+     * @param declaration the strategy interface
      * @return a list of classes
      */
     private List<ClassOrInterfaceDeclaration> findStrategies(
             final List<CompilationUnit> files,
-            final ClassOrInterfaceType interfaceType
+            final ClassOrInterfaceDeclaration declaration
     ) {
         ArrayList<ClassOrInterfaceDeclaration> strategies = new ArrayList<>();
 
@@ -202,7 +199,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             implFinder.reset();
 
             //Visit all nodes
-            implFinder.visit(compilationUnit, interfaceType);
+            implFinder.visit(compilationUnit, declaration);
 
             //Add the buffer to the collection
             strategies.addAll(implFinder.getClasses());

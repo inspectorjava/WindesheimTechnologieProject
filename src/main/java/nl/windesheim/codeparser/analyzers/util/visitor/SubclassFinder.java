@@ -4,19 +4,19 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Searches for classes which implement the given interface.
+ * Searches for classes which extend the given class.
  */
-public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDeclaration> {
+public class SubclassFinder extends VoidVisitorAdapter<ClassOrInterfaceDeclaration> {
 
     /**
-     * The classes which implement the given interface.
+     * The classes which extend the given class.
      */
     private List<ClassOrInterfaceDeclaration> classes;
 
@@ -26,10 +26,10 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDec
     private final TypeSolver typeSolver;
 
     /**
-     * Make a new ImplementationFinder.
+     * Make a new SubclassFinder.
      * @param typeSolver a type solver
      */
-    public ImplementationFinder(final TypeSolver typeSolver) {
+    public SubclassFinder(final TypeSolver typeSolver) {
         super();
 
         classes = new ArrayList<>();
@@ -37,7 +37,7 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDec
     }
 
     /**
-     * @return A list of classes which extend the given class.
+     * @return A list of classes which implement the given interface.
      */
     public List<ClassOrInterfaceDeclaration> getClasses() {
         return classes;
@@ -52,17 +52,17 @@ public class ImplementationFinder extends VoidVisitorAdapter<ClassOrInterfaceDec
 
     @Override
     public void visit(final ClassOrInterfaceDeclaration classToCheck,
-                      final ClassOrInterfaceDeclaration classDeclaration) {
-        super.visit(classToCheck, classDeclaration);
+                      final ClassOrInterfaceDeclaration iDeclaration) {
+        super.visit(classToCheck, iDeclaration);
 
-        for (ClassOrInterfaceType type : classToCheck.getImplementedTypes()) {
+        for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
 
             ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
-            if (!(solved instanceof JavaParserInterfaceDeclaration)) {
+            if (!(solved instanceof JavaParserClassDeclaration)) {
                 continue;
             }
 
-            if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
+            if (((JavaParserClassDeclaration) solved).getWrappedNode().equals(iDeclaration)) {
                 classes.add(classToCheck);
             }
         }
