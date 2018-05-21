@@ -12,6 +12,10 @@ public class TreePresentation {
         this.root = node;
     }
 
+    public TreeNode getRoot() {
+        return this.root;
+    }
+
     public void addNode(final TreeNode node) {
         this.root.addChild(node);
     }
