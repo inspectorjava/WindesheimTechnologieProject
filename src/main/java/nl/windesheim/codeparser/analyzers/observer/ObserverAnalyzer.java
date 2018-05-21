@@ -24,21 +24,16 @@ public class ObserverAnalyzer extends PatternAnalyzer {
      */
     private CombinedTypeSolver typeSolver;
 
-    /**
-     *
-     */
-    private final AbstractSubjectFinder abstractSubjectFinder;
-
     public ObserverAnalyzer() {
         super();
-
-        abstractSubjectFinder = new AbstractSubjectFinder();
     }
 
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
         typeSolver = getParent().getTypeSolver();
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
+
+        AbstractSubjectFinder abstractSubjectFinder = new AbstractSubjectFinder(typeSolver);
 
         //  Subject
             //  Een Subject is een (abstracte) klasse met de volgende kenmerken:
@@ -47,6 +42,10 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             //  Bevat een methode om objecten uit deze collectie te verwijderen (detach)
             //  Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
             //  Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.
+
+        for (CompilationUnit compilationUnit : files) {
+            abstractSubjectFinder.visit(compilationUnit, null);
+        }
 
         //  ConcreteSubject
             //  Als een klasse een uitbreiding is van de Java-klasse Observable, is dit ook een aanknopingspunt om verder te zoeken naar de implementatie van het Observer-patroon. In dit geval wordt de naam die als generic type wordt meegegeven aan de Observable gezien als als typenaam van de Observer-klasse (*checken*).
@@ -61,10 +60,6 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             //  Bevat een referentie naar de Subject of een van zijn subclasses. Deze referentie mag in de superclass staan.
             //          Implementeert een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
             //  Het is mogelijk dat een klasse de in Java ingebouwde interface Observer implementeert, dit is een goede aanwijzing dat we te maken hebben met een Observer.
-
-        for (CompilationUnit compilationUnit : files) {
-            abstractSubjectFinder.visit(compilationUnit, typeSolver);
-        }
 
         return new ArrayList<>();
     }

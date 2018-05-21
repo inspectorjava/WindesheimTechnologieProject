@@ -1,7 +1,11 @@
 package nl.windesheim.codeparser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.resolution.SymbolResolver;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
@@ -52,6 +56,10 @@ public class FileAnalysisProvider {
 
         analyzer.setTypeSolver(typeSolver);
 
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        ParserConfiguration configuration = JavaParser.getStaticConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        JavaParser.setStaticConfiguration(configuration);
+
         CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
@@ -67,14 +75,18 @@ public class FileAnalysisProvider {
      * @throws IOException if the directory doesn't exist
      */
     public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
-        SourceRoot sourceRoot = new SourceRoot(directoryPath);
-
-        sourceRoot.tryToParse();
-
         //The type solver can now solve types from the standard library and the code we are analyzing
         CombinedTypeSolver typeSolver = new CombinedTypeSolver();
         typeSolver.add(new ReflectionTypeSolver());
         typeSolver.add(new JavaParserTypeSolver(directoryPath));
+
+        SymbolResolver symbolResolver = new JavaSymbolSolver(typeSolver);
+        ParserConfiguration configuration = JavaParser.getStaticConfiguration().setSymbolResolver(symbolResolver);
+        JavaParser.setStaticConfiguration(configuration);
+
+        SourceRoot sourceRoot = new SourceRoot(directoryPath);
+
+        sourceRoot.tryToParse();
 
         analyzer.setTypeSolver(typeSolver);
 
