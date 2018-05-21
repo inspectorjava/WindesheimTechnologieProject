@@ -29,6 +29,11 @@ public class StrategyFoundPatternBuilderTest {
 
         IFoundPatternReport foundPatternReport = strategyFoundPatternBuilder.buildReport();
 
-        System.out.println(foundPatternReport.getReport());
+        assertEquals("Pattern: STRATEGY found with certainty: NOTStrategy: Strategy1\n\r" +
+                "Strategy: Strategy2\n\r" +
+                "File: File1\n\r" +
+                "File: File2\n\r" +
+                " - Context: Context\n\r" +
+                " and uses interface: Interfacename", foundPatternReport.getReport());
     }
 }

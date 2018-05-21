@@ -29,7 +29,8 @@ public class HasFilesTest {
     @Test
     public void getReport() {
         String report = this.hasFilesDecorator.getReport();
-        System.out.println(report);
+        assertEquals("Pattern: NONE found with certainty: NOTFile: File1\n\r" +
+                "File: File2\n\r", report);
     }
 
 

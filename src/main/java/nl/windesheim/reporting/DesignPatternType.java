@@ -15,5 +15,9 @@ public enum DesignPatternType {
     /**
      * Strategy pattern
      */
-    STRATEGY
+    STRATEGY,
+    /**
+     * Chain of responsibility pattern
+     */
+    CHAIN_OF_RESPONSIBILITY
 }
