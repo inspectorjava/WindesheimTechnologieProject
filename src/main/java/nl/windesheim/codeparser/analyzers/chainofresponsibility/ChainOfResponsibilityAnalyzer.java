@@ -232,7 +232,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     }
 
     /**
-     * Finds resolved field declerations in 'link' classes and it's superclasses.
+     * Finds resolved field declarations in 'link' classes and it's superclasses.
      * @param link the link in which fields must be searched
      * @param files the files in which to search
      * @return a list of resolved field declarations

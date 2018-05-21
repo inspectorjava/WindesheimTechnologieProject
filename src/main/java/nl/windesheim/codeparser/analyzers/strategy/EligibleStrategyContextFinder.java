@@ -88,16 +88,16 @@ public class EligibleStrategyContextFinder
                     continue;
                 }
 
-                ResolvedReferenceTypeDeclaration typeDecleration
+                ResolvedReferenceTypeDeclaration typeDeclaration
                         = ((ResolvedReferenceType) resolvedType).getTypeDeclaration();
 
                 //If the type is a interface
-                if (!(typeDecleration instanceof JavaParserInterfaceDeclaration)) {
+                if (!(typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
                     continue;
                 }
 
                 ClassOrInterfaceDeclaration resolvedInterface =
-                        ((JavaParserInterfaceDeclaration) typeDecleration).getWrappedNode();
+                        ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
 
 
                 //If the interface has at least one method it is eligible as strategy interface
