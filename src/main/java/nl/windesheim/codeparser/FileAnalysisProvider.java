@@ -1,11 +1,17 @@
 package nl.windesheim.codeparser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
+import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.File;
@@ -14,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by caveman on 4/19/18.
@@ -22,12 +29,12 @@ public class FileAnalysisProvider {
     /**
      * The patter analyzer composite which will be called in the analyzeFile and analyzeDirectory functions.
      */
-    private PatternAnalyzer analyzer;
+    private PatternAnalyzerComposite analyzer;
 
     /**
      * @param analyzer the pattern analyzer which will be used to analyze files
      */
-    public FileAnalysisProvider(final PatternAnalyzer analyzer) {
+    public FileAnalysisProvider(final PatternAnalyzerComposite analyzer) {
         this.analyzer = analyzer;
     }
 
@@ -37,16 +44,22 @@ public class FileAnalysisProvider {
      * @return a list of patterns which were found
      * @throws FileNotFoundException if the file that was passed doesn't exist
      */
-    public ArrayList<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
+    public List<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
         File fileInputStream = new File(fileName.getFile());
 
-        CompilationUnit cu = JavaParser.parse(fileInputStream);
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+        typeSolver.add(new ReflectionTypeSolver());
+        typeSolver.add(new JavaParserTypeSolver(fileInputStream));
+
+        analyzer.setTypeSolver(typeSolver);
+
+        CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.add(cu);
+        compilationUnits.add(compilationUnit);
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
-        return patterns;
+        return analyzer.analyze(compilationUnits);
     }
 
     /**
@@ -55,22 +68,35 @@ public class FileAnalysisProvider {
      * @return a list of found patterns
      * @throws IOException if the directory doesn't exist
      */
-    public ArrayList<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
+    public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
 
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+        typeSolver.add(new ReflectionTypeSolver());
+        typeSolver.add(new JavaParserTypeSolver(directoryPath));
+
+        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
+
+        ParserConfiguration configuration = new ParserConfiguration();
+        configuration.setSymbolResolver(symbolSolver);
+
+        sourceRoot.setParserConfiguration(configuration);
+
         sourceRoot.tryToParse();
+
+        analyzer.setTypeSolver(typeSolver);
 
         ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());
 
-        ArrayList<IDesignPattern> patterns = analyzer.analyze(compilationUnits);
-        return patterns;
+        return analyzer.analyze(compilationUnits);
     }
 
     /**
      * @return the current analyzer that is used
      */
-    public PatternAnalyzer getAnalyzer() {
+    public PatternAnalyzerComposite getAnalyzer() {
         return analyzer;
     }
 
@@ -78,7 +104,7 @@ public class FileAnalysisProvider {
      * @param analyzer the analyzer that will be used to analyze files
      * @return this
      */
-    public FileAnalysisProvider setAnalyzer(final PatternAnalyzer analyzer) {
+    public FileAnalysisProvider setAnalyzer(final PatternAnalyzerComposite analyzer) {
         this.analyzer = analyzer;
         return this;
     }
@@ -89,8 +115,9 @@ public class FileAnalysisProvider {
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
         composite.addChild(new SingletonAnalyzer());
+        composite.addChild(new StrategyAnalyzer());
+        composite.addChild(new ChainOfResponsibilityAnalyzer());
 
-        FileAnalysisProvider analysisProvider = new FileAnalysisProvider(composite);
-        return analysisProvider;
+        return new FileAnalysisProvider(composite);
     }
 }

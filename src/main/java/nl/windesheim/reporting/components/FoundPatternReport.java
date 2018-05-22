@@ -5,7 +5,12 @@ import nl.windesheim.reporting.DesignPatternType;
 /**
  * Found a pattern. Report it
  */
-public class FoundPatternReport {
+public class FoundPatternReport implements IFoundPatternReport {
+
+    /**
+     * Result.
+     */
+    private final Result result;
 
     /**
      * String pattern type i.e. Singleton, Strategy.
@@ -13,18 +18,14 @@ public class FoundPatternReport {
     private DesignPatternType designPatternType;
 
     /**
-     * Result.
-     */
-    private Result result;
-
-    /**
-     * Constructor.
+     * Default constructor.
      */
     public FoundPatternReport() {
         this.result = new Result();
         this.result.setCertainty(Result.Certainty.NOT);
         this.designPatternType = DesignPatternType.NONE;
     }
+
 
     /**
      * Set the design pattern type of the found design pattern.
@@ -48,5 +49,12 @@ public class FoundPatternReport {
      */
     public String getReport() {
         return "Pattern: " + this.designPatternType.toString() + " found with certainty: " + this.result.toString();
+    }
+
+    @Override
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
+        TreeNode node = new TreeNode("Pattern: " + this.designPatternType);
+        builder.setRoot(node);
+        return builder;
     }
 }

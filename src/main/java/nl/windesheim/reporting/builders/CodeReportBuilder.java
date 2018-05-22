@@ -14,21 +14,21 @@ public class CodeReportBuilder {
     /**
      * All found pattern builders.
      */
-    private List<IFoundPatternBuilder> foundPatternBuilders;
+    private final List<IFoundPatternBuilder> foundBuilders;
 
     /**
      * Instantiate the arraylist.
      */
     public CodeReportBuilder() {
-        this.foundPatternBuilders = new ArrayList<IFoundPatternBuilder>();
+        this.foundBuilders = new ArrayList<IFoundPatternBuilder>();
     }
 
     /**
      * Add a foundPatternBuilder to the array.
-     * @param foundPatternBuilder foundPatternBuilder
+     * @param foundBuilder foundPatternBuilder
      */
-    public void addFoundPatternBuilder(final IFoundPatternBuilder foundPatternBuilder) {
-        this.foundPatternBuilders.add(foundPatternBuilder);
+    public void addFoundPatternBuilder(final IFoundPatternBuilder foundBuilder) {
+        this.foundBuilders.add(foundBuilder);
     }
 
     /**
@@ -37,8 +37,8 @@ public class CodeReportBuilder {
      */
     public CodeReport buildReport() {
         CodeReport codeReport = new CodeReport();
-        for (IFoundPatternBuilder foundPatternBuilder : this.foundPatternBuilders) {
-            codeReport.addFoundPatternReport(foundPatternBuilder.buildReport());
+        for (IFoundPatternBuilder foundBuilder : this.foundBuilders) {
+            codeReport.addFoundPatternReport(foundBuilder.buildReport());
         }
         return codeReport;
     }

@@ -18,4 +18,12 @@ public abstract class AbstractFoundPatternBuilder implements IFoundPatternBuilde
     public void setDesignPatternType(final DesignPatternType designPatternType) {
         this.designPatternType = designPatternType;
     }
+
+    /**
+     * Gets the design pattern type.
+     * @return designPatternType design pattern type.
+     */
+    public DesignPatternType getDesignPatternType() {
+        return designPatternType;
+    }
 }

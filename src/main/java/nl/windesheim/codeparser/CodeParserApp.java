@@ -1,13 +1,13 @@
 package nl.windesheim.codeparser;
 
 /**
- * App for console parser.
+ * CodeParserApp for console parser.
  */
-public final class App {
+public final class CodeParserApp {
     /**
      * Private constructor.
      */
-    private App() {
+    private CodeParserApp() {
         System.out.println("[marslanden] running");
 
         System.out.println("[marslanden] done");
@@ -19,6 +19,6 @@ public final class App {
      * @param args default arguments
      */
     public static void main(final String[] args) {
-        new App();
+        new CodeParserApp();
     }
 }

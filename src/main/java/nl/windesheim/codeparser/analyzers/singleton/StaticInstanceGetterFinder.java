@@ -25,11 +25,12 @@ public class StaticInstanceGetterFinder extends DeclarationFinder {
         // The method should be static and not private
         EnumSet<Modifier> modifiers = methodDeclaration.getModifiers();
 
-        if (!modifiers.contains(Modifier.PRIVATE) && modifiers.contains(Modifier.STATIC)) {
-            // The method should return the expected type
-            if (methodDeclaration.getType().asString().equals(this.getTargetType())) {
-                this.setHasDeclaration(true);
-            }
+        // The method should return the expected type
+        if (!modifiers.contains(Modifier.PRIVATE)
+                && modifiers.contains(Modifier.STATIC)
+                && methodDeclaration.getType().asString().equals(this.getTargetType())) {
+
+            this.setHasDeclaration(true);
         }
     }
 }
