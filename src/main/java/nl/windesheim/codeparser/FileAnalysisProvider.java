@@ -1,12 +1,15 @@
 package nl.windesheim.codeparser;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -68,12 +71,19 @@ public class FileAnalysisProvider {
     public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
 
-        sourceRoot.tryToParse();
-
         //The type solver can now solve types from the standard library and the code we are analyzing
         CombinedTypeSolver typeSolver = new CombinedTypeSolver();
         typeSolver.add(new ReflectionTypeSolver());
         typeSolver.add(new JavaParserTypeSolver(directoryPath));
+
+        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
+
+        ParserConfiguration configuration = new ParserConfiguration();
+        configuration.setSymbolResolver(symbolSolver);
+
+        sourceRoot.setParserConfiguration(configuration);
+
+        sourceRoot.tryToParse();
 
         analyzer.setTypeSolver(typeSolver);
 
@@ -106,6 +116,7 @@ public class FileAnalysisProvider {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
         composite.addChild(new SingletonAnalyzer());
         composite.addChild(new StrategyAnalyzer());
+        composite.addChild(new ChainOfResponsibilityAnalyzer());
 
         return new FileAnalysisProvider(composite);
     }
