@@ -1,17 +1,24 @@
 package nl.windesheim.reporting.decorators;
 
-import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 
 /**
  * Decorator for a report that has a single file.
  */
-public class HasSingleFile extends FoundPatternReport implements IFoundPatternReport {
+public class HasSingleFile extends FoundPatternReportDecorator {
 
     /**
      * Filename of found pattern.
      */
     private String fileName;
+
+    /**
+     * Default constructor.
+     * @param report for decorator
+     */
+    public HasSingleFile(final IFoundPatternReport report) {
+        super(report);
+    }
 
     /**
      * Set the filename.
@@ -29,4 +36,6 @@ public class HasSingleFile extends FoundPatternReport implements IFoundPatternRe
     public String getReport() {
         return super.getReport() + "\n\r" + "Found in file: " + this.fileName;
     }
+
+
 }

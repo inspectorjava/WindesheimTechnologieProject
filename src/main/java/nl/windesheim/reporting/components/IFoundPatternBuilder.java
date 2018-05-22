@@ -6,7 +6,7 @@ package nl.windesheim.reporting.components;
 public interface IFoundPatternBuilder {
     /**
      * Return a new FoundPatternReport.
-     * @return FoundPatternReport the report which has been created
+     * @return IFoundPatternReport the report which has been created
      */
-    FoundPatternReport buildReport();
+    IFoundPatternReport buildReport();
 }

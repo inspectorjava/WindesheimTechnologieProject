@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 public class PatternAnalyzerCompositeTest {
     @Test
-    public void addChild() throws Exception {
+    public void addChild() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
         composite.addChild(new SingletonAnalyzer());
         composite.addChild(new SingletonAnalyzer());
@@ -16,7 +16,7 @@ public class PatternAnalyzerCompositeTest {
     }
 
     @Test
-    public void removeChild() throws Exception {
+    public void removeChild() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
 
         SingletonAnalyzer singleton1 = new SingletonAnalyzer();

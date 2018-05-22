@@ -3,6 +3,9 @@ package nl.windesheim.reporting.builders;
 import junit.framework.TestCase;
 import nl.windesheim.reporting.components.CodeReport;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class CodeReportBuilderTest extends TestCase {
@@ -14,7 +17,6 @@ public class CodeReportBuilderTest extends TestCase {
 
         CodeReport codeReport = codeReportBuilder.buildReport();
 
-        assertEquals(true, codeReport.anyPatterns());
+        assertTrue(codeReport.anyPatterns());
     }
-
 }
