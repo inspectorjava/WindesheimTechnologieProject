@@ -16,10 +16,10 @@ public class HasInterface extends FoundPatternReportDecorator {
 
     /**
      * Default constructor.
-     * @param foundPatternReport decorator.
+     * @param patternFound decorator.
      */
-    public HasInterface(final IFoundPatternReport foundPatternReport) {
-        super(foundPatternReport);
+    public HasInterface(final IFoundPatternReport patternFound) {
+        super(patternFound);
     }
 
     /**

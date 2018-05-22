@@ -16,10 +16,10 @@ public class HasContext extends FoundPatternReportDecorator {
 
     /**
      * Decorator constructor.
-     * @param foundPatternReport the decorator.
+     * @param foundPattern the decorator.
      */
-    public HasContext(final IFoundPatternReport foundPatternReport) {
-        super(foundPatternReport);
+    public HasContext(final IFoundPatternReport foundPattern) {
+        super(foundPattern);
     }
 
     /**

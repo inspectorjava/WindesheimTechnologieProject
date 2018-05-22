@@ -20,8 +20,8 @@ public class HasFiles extends FoundPatternReportDecorator {
      * Found pattern report.
      * @param foundPatternReport the decorator
      */
-    public HasFiles(final IFoundPatternReport foundPatternReport) {
-        super(foundPatternReport);
+    public HasFiles(final IFoundPatternReport patternFound) {
+        super(patternFound);
     }
 
     /**

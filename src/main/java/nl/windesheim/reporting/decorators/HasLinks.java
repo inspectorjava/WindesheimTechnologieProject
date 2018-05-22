@@ -19,10 +19,10 @@ public class HasLinks extends FoundPatternReportDecorator {
 
     /**
      * Default constructor.
-     * @param foundPatternReport the decorator
+     * @param patternFound the decorator
      */
-    public HasLinks(final IFoundPatternReport foundPatternReport) {
-        super(foundPatternReport);
+    public HasLinks(final IFoundPatternReport patternFound) {
+        super(patternFound);
     }
 
     /**

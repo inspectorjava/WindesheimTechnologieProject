@@ -51,7 +51,7 @@ public class TreePresentation {
         while (newNode.hasNextSibling()) {
             newNode = newNode.getNextSibling();
             if (newNode.hasChildren()) {
-                returnString.append("-").append(this.printRow(newNode.getFirstChild()));
+                returnString.append(" - ").append(this.printRow(newNode.getFirstChild()));
             }
             returnString.append(newNode.toString()).append("\n\r");
         }

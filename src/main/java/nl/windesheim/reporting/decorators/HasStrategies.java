@@ -19,10 +19,10 @@ public class HasStrategies extends FoundPatternReportDecorator {
 
     /**
      * Default constructor.
-     * @param foundPatternReport the decorator
+     * @param patternFound the decorator
      */
-    public HasStrategies(final IFoundPatternReport foundPatternReport) {
-        super(foundPatternReport);
+    public HasStrategies(final IFoundPatternReport patternFound) {
+        super(patternFound);
     }
 
     /**

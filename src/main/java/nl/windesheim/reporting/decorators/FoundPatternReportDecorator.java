@@ -11,14 +11,14 @@ public abstract class FoundPatternReportDecorator implements IFoundPatternReport
     /**
      * FoundPatternReport.
      */
-    private IFoundPatternReport foundPatternReport;
+    private IFoundPatternReport foundPattern;
 
     /**
      * Default constructor.
-     * @param foundPatternReport the decorator
+     * @param foundPattern the decorator
      */
-    FoundPatternReportDecorator(final IFoundPatternReport foundPatternReport) {
-        this.foundPatternReport = foundPatternReport;
+    public FoundPatternReportDecorator(final IFoundPatternReport foundPattern) {
+        this.foundPattern = foundPattern;
     }
 
     /**
@@ -26,7 +26,7 @@ public abstract class FoundPatternReportDecorator implements IFoundPatternReport
      * @return string
      */
     public String getReport() {
-        return this.foundPatternReport.getReport();
+        return this.foundPattern.getReport();
     }
 
     /**
@@ -35,22 +35,22 @@ public abstract class FoundPatternReportDecorator implements IFoundPatternReport
      * @return TreeBuilder
      */
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        return this.foundPatternReport.buildTreeReport(builder);
+        return this.foundPattern.buildTreeReport(builder);
     }
 
     /**
      * Get found pattern report.
-     * @return foundPatternReport
+     * @return foundPattern
      */
     protected IFoundPatternReport getFoundPatternReport() {
-        return foundPatternReport;
+        return foundPattern;
     }
 
     /**
      * Set found pattern report.
-     * @param foundPatternReport the found pattern report.
+     * @param foundPattern the found pattern report.
      */
-    protected void setFoundPatternReport(final IFoundPatternReport foundPatternReport) {
-        this.foundPatternReport = foundPatternReport;
+    protected void setFoundPatternReport(final IFoundPatternReport foundPattern) {
+        this.foundPattern = foundPattern;
     }
 }

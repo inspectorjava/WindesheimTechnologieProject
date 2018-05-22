@@ -11,12 +11,12 @@ public class TreeBuilder {
     /**
      * The new tree.
      */
-    private TreePresentation tree;
+    private final TreePresentation tree;
 
     /**
      * Collect all nodes and add them later.
      */
-    private List<TreeNode> nodes;
+    private final List<TreeNode> nodes;
 
     /**
      * Create a new TreePresentation.

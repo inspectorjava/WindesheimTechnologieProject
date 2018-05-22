@@ -37,9 +37,9 @@ public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatte
 
     @Override
     public IFoundPatternReport buildReport() {
-        FoundPatternReport foundPatternReport = new FoundPatternReport();
-        foundPatternReport.setDesignPatternType(DesignPatternType.CHAIN_OF_RESPONSIBILITY);
-        HasInterface hasInterface = new HasInterface(foundPatternReport);
+        FoundPatternReport patternReport = new FoundPatternReport();
+        patternReport.setDesignPatternType(DesignPatternType.CHAIN_OF_RESPONSIBILITY);
+        HasInterface hasInterface = new HasInterface(patternReport);
         hasInterface.setInterfaceName(this.commonParent);
 
         HasLinks hasLinks = new HasLinks(hasInterface);

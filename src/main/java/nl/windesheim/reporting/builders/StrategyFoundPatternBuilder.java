@@ -19,22 +19,22 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
     /**
      * Files list.
      */
-    private List<String> files;
+    private final List<String> files;
 
     /**
      * Context of strategy.
      */
-    private String context;
+    private final String context;
 
     /**
      * Strategy interface.
      */
-    private String strategyInterface;
+    private final String strategyInterface;
 
     /**
      * Strategies list.
      */
-    private List<String> strategies;
+    private final  List<String> strategies;
 
     /**
      * Set the required parameters for the builder.
@@ -49,6 +49,7 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
             final String strategyInterface,
             final List<String> strategies
     ) {
+        super();
         this.files = files;
         this.context = context;
         this.strategyInterface = strategyInterface;
@@ -58,10 +59,10 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     @Override
     public IFoundPatternReport buildReport() {
-        FoundPatternReport foundPatternReport = new FoundPatternReport();
-        foundPatternReport.setDesignPatternType(DesignPatternType.STRATEGY);
+        FoundPatternReport patternReport = new FoundPatternReport();
+        patternReport.setDesignPatternType(DesignPatternType.STRATEGY);
 
-        HasStrategies strategy = new HasStrategies(foundPatternReport);
+        HasStrategies strategy = new HasStrategies(patternReport);
         strategy.setStrategies(this.strategies);
 
         HasFiles hasFiles = new HasFiles(strategy);
