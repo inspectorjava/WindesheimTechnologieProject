@@ -9,8 +9,11 @@ import java.util.List;
 /**
  * HasFiles report decorator.
  */
-public class HasFiles extends FoundPatternReportDecorator{
+public class HasFiles extends FoundPatternReportDecorator {
 
+    /**
+     * Files.
+     */
     private List<String> files;
 
     /**
@@ -23,7 +26,7 @@ public class HasFiles extends FoundPatternReportDecorator{
 
     /**
      * Set the files.
-     * @param files
+     * @param files files
      */
     public void setFiles(final List<String> files) {
         this.files = files;
@@ -44,7 +47,7 @@ public class HasFiles extends FoundPatternReportDecorator{
     }
 
     @Override
-    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode();
         node.setName("Files");
 

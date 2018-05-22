@@ -7,12 +7,12 @@ import nl.windesheim.reporting.components.TreeNode;
 import java.util.List;
 
 /**
- * Has strategies report decorator
+ * Has strategies report decorator.
  */
 public class HasLinks extends FoundPatternReportDecorator {
 
     /**
-     * List of strategies
+     * List of strategies.
      */
     private List<String> links;
 
@@ -26,15 +26,15 @@ public class HasLinks extends FoundPatternReportDecorator {
     }
 
     /**
-     * Set links
+     * Set links.
      * @param links list of links
      */
-    public void setLinks(List<String> links) {
+    public void setLinks(final List<String> links) {
         this.links = links;
     }
 
     /**
-     * Append the string with all links
+     * Append the string with all links.
      * @return appended string
      */
     public String getReport() {
@@ -47,7 +47,7 @@ public class HasLinks extends FoundPatternReportDecorator {
     }
 
     @Override
-    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Links");
         for (String link : this.links) {
             node.addChild(new TreeNode(link));

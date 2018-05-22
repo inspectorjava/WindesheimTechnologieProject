@@ -5,7 +5,7 @@ import nl.windesheim.reporting.DesignPatternType;
 /**
  * Found a pattern. Report it
  */
-public class FoundPatternReport implements IFoundPatternReport{
+public class FoundPatternReport implements IFoundPatternReport {
 
     /**
      * Result.
@@ -17,7 +17,9 @@ public class FoundPatternReport implements IFoundPatternReport{
      */
     private DesignPatternType designPatternType;
 
-
+    /**
+     * Default constructor.
+     */
     public FoundPatternReport() {
         this.result = new Result();
         this.result.setCertainty(Result.Certainty.NOT);
@@ -50,7 +52,7 @@ public class FoundPatternReport implements IFoundPatternReport{
     }
 
     @Override
-    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Pattern: " + this.designPatternType);
         builder.setRoot(node);
         return builder;

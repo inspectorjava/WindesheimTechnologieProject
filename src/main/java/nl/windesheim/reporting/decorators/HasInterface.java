@@ -5,12 +5,12 @@ import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
 /**
- * HasInterface report decorator
+ * HasInterface report decorator.
  */
-public class HasInterface extends FoundPatternReportDecorator{
+public class HasInterface extends FoundPatternReportDecorator {
 
     /**
-     * interface Name
+     * interface Name.
      */
     private String interfaceName;
 
@@ -39,7 +39,7 @@ public class HasInterface extends FoundPatternReportDecorator{
     }
 
     @Override
-    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Interface: " + this.interfaceName);
         builder.addNode(node);
         return super.buildTreeReport(builder);

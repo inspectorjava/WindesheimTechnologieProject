@@ -13,11 +13,11 @@ public enum DesignPatternType {
      */
     SINGLETON,
     /**
-     * Strategy pattern
+     * Strategy pattern.
      */
     STRATEGY,
     /**
-     * Chain of responsibility pattern
+     * Chain of responsibility pattern.
      */
     CHAIN_OF_RESPONSIBILITY
 }

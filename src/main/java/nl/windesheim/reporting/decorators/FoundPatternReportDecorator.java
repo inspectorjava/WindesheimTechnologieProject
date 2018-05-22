@@ -1,25 +1,23 @@
 package nl.windesheim.reporting.decorators;
 
-import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 
 /**
  * The base class for decorating a Found Pattern report.
  */
-abstract public class FoundPatternReportDecorator implements IFoundPatternReport {
+public abstract class FoundPatternReportDecorator implements IFoundPatternReport {
 
     /**
-     * FoundPatternReport
+     * FoundPatternReport.
      */
-    protected IFoundPatternReport foundPatternReport;
+    private IFoundPatternReport foundPatternReport;
 
     /**
      * Default constructor.
      * @param foundPatternReport the decorator
      */
-    public FoundPatternReportDecorator(final IFoundPatternReport foundPatternReport) {
+    FoundPatternReportDecorator(final IFoundPatternReport foundPatternReport) {
         this.foundPatternReport = foundPatternReport;
     }
 
@@ -38,5 +36,21 @@ abstract public class FoundPatternReportDecorator implements IFoundPatternReport
      */
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         return this.foundPatternReport.buildTreeReport(builder);
+    }
+
+    /**
+     * Get found pattern report.
+     * @return foundPatternReport
+     */
+    protected IFoundPatternReport getFoundPatternReport() {
+        return foundPatternReport;
+    }
+
+    /**
+     * Set found pattern report.
+     * @param foundPatternReport the found pattern report.
+     */
+    protected void setFoundPatternReport(final IFoundPatternReport foundPatternReport) {
+        this.foundPatternReport = foundPatternReport;
     }
 }

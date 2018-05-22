@@ -11,22 +11,44 @@ import nl.windesheim.reporting.decorators.HasStrategies;
 
 import java.util.List;
 
-
+/**
+ * Strategy pattern found builder.
+ */
 public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
-    List<String> files;
-    String context;
-    String strategyInterface;
-    List<String> strategies;
+    /**
+     * Files list.
+     */
+    private List<String> files;
 
     /**
-     * Set the required parameters for the builder
+     * Context of strategy.
+     */
+    private String context;
+
+    /**
+     * Strategy interface.
+     */
+    private String strategyInterface;
+
+    /**
+     * Strategies list.
+     */
+    private List<String> strategies;
+
+    /**
+     * Set the required parameters for the builder.
      * @param files the files used to create a strategy pattern
      * @param context the context of the strategy pattern
      * @param strategyInterface the interface of the strategy pattern
      * @param strategies the strategies provided inside the strategy pattern
      */
-    public StrategyFoundPatternBuilder(final List<String> files, final String context, final String strategyInterface, final List<String> strategies) {
+    public StrategyFoundPatternBuilder(
+            final List<String> files,
+            final String context,
+            final String strategyInterface,
+            final List<String> strategies
+    ) {
         this.files = files;
         this.context = context;
         this.strategyInterface = strategyInterface;

@@ -12,8 +12,9 @@ public interface IFoundPatternReport {
     String getReport();
 
     /**
-     * Build the tree report
+     * Build the tree report.
      * @return return a new node
+     * @param builder TreeBuilder builder
      */
     TreeBuilder buildTreeReport(TreeBuilder builder);
 }

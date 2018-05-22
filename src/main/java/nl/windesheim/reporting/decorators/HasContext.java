@@ -1,17 +1,16 @@
 package nl.windesheim.reporting.decorators;
 
-import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
 /**
- * The found pattern has a contexxt
+ * The found pattern has a context.
  */
-public class HasContext extends FoundPatternReportDecorator{
+public class HasContext extends FoundPatternReportDecorator {
 
     /**
-     * The context of found design pattern report
+     * The context of found design pattern report.
      */
     private String context;
 
@@ -24,10 +23,10 @@ public class HasContext extends FoundPatternReportDecorator{
     }
 
     /**
-     * Set the context of the file
-     * @param context
+     * Set the context of the file.
+     * @param context the context
      */
-    public void setContext(String context) {
+    public void setContext(final String context) {
         this.context = context;
     }
 
@@ -40,7 +39,7 @@ public class HasContext extends FoundPatternReportDecorator{
     }
 
     @Override
-    public TreeBuilder buildTreeReport(TreeBuilder builder) {
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Context: " + this.context);
         builder.addNode(node);
         return super.buildTreeReport(builder);

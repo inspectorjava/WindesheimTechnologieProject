@@ -6,7 +6,6 @@ import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasInterface;
 import nl.windesheim.reporting.decorators.HasLinks;
-import nl.windesheim.reporting.decorators.HasSingleFile;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatte
     private final String commonParent;
 
     /**
-     * List of links
+     * List of links.
      */
     private final List<String> links;
 
@@ -30,7 +29,7 @@ public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatte
      * @param commonParent filename of the file where singleton is found
      * @param links Links of the chain of responsiblity pattern
      */
-    public ChainOfResponsibilityFoundPatternBuilder(final String commonParent, List<String> links) {
+    public ChainOfResponsibilityFoundPatternBuilder(final String commonParent, final List<String> links) {
         super();
         this.commonParent = commonParent;
         this.links = links;

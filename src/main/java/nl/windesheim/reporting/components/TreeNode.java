@@ -1,7 +1,5 @@
 package nl.windesheim.reporting.components;
 
-import java.util.List;
-
 /**
  * TreeNode.
  */
@@ -10,17 +8,17 @@ public class TreeNode {
     /**
      * Child nodes to be added.
      */
-    TreeNode firstChild;
+    private TreeNode firstChild;
 
     /**
      *
      */
-    TreeNode nextSibling;
+    private TreeNode nextSibling;
 
     /**
      * The name of the node.
      */
-    String name;
+    private String name;
 
     /**
      * Default construct.
@@ -33,7 +31,7 @@ public class TreeNode {
      * Construct with name.
      * @param name name of the node
      */
-    public TreeNode(String name) {
+    public TreeNode(final String name) {
         this.name = name;
     }
 
@@ -41,7 +39,7 @@ public class TreeNode {
      * Add a child node.
      * @param node child node
      */
-    public void addChild(TreeNode node) {
+    public void addChild(final TreeNode node) {
         if (this.firstChild == null) {
             this.firstChild = node;
             return;
@@ -53,7 +51,7 @@ public class TreeNode {
      * Add the node to the.
      * @param node the new node
      */
-    public void setNextSibling(TreeNode node) {
+    public void setNextSibling(final TreeNode node) {
         if (this.hasNextSibling()) {
             this.nextSibling.setNextSibling(node);
             return;
@@ -63,13 +61,13 @@ public class TreeNode {
     }
 
     /**
-     * Set the next sibling of the first child
+     * Set the next sibling of the first child.
      * @param node node
      */
-    private void setNextSiblingForChild(TreeNode node) {
+    private void setNextSiblingForChild(final TreeNode node) {
         if (this.hasChildren()) {
             TreeNode child = this.firstChild;
-            while(child.getNextSibling() != null) {
+            while (child.getNextSibling() != null) {
                 child = child.getNextSibling();
             }
 
@@ -89,7 +87,7 @@ public class TreeNode {
      * Set the tree name.
      * @param name the name of the node.
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -110,7 +108,7 @@ public class TreeNode {
     }
 
     /**
-     * Return the next Sibling
+     * Return the next Sibling.
      * @return TreeNode
      */
     public TreeNode getNextSibling() {
