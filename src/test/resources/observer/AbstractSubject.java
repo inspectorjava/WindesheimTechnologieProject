@@ -9,11 +9,11 @@ public abstract class AbstractSubject {
     }
 
     public void attach(MyObserver observer) {
-        this.tools.add(observer);
+        this.observers.add(observer);
     }
 
     public void detach(MyObserver observer) {
-        this.tools.remove(observer);
+        this.observers.remove(observer);
     }
 
     public void signal() {

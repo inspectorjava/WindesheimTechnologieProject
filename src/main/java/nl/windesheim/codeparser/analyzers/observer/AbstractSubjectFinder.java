@@ -1,39 +1,19 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.SymbolResolver;
-import com.github.javaparser.resolution.UnsolvedSymbolException;
-import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.javaparser.Navigator;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
-import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
-import com.github.javaparser.symbolsolver.model.resolution.SymbolReference;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import javafx.util.Pair;
-import javassist.compiler.ast.MethodDecl;
-import javassist.compiler.ast.Symbol;
-import javassist.expr.MethodCall;
-import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.analyzers.util.visitor.SetterFinder;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 
 /**
@@ -46,8 +26,6 @@ public class AbstractSubjectFinder
 
     private TypeSolver typeSolver;
 
-    private Set<EligibleCollection> eligibleCollections;
-
     private ClassOrInterfaceDeclaration abstractSubject;
 
     private List<ClassOrInterfaceDeclaration> observers;
@@ -59,7 +37,6 @@ public class AbstractSubjectFinder
         super();
         this.typeSolver = typeSolver;
         this.symbolResolver = new JavaSymbolSolver(typeSolver);
-        eligibleCollections = new HashSet<>();
     }
 
     @Override
@@ -67,14 +44,13 @@ public class AbstractSubjectFinder
         // An AbstractSubject is an (abstract) class with the following characteristics
 
         // Contains a collection of objects (of a reference type)
-        eligibleCollections = this.findEligibleCollections(declaration);
-
+        List<EligibleCollection> eligibleCollections = this.findEligibleCollections(declaration);
         if (eligibleCollections.isEmpty()) {
             return;
         }
 
         // Contains attach- and detach methods
-        this.findSubscriptionMethods(declaration);
+        this.findSubscriptionMethods(declaration, eligibleCollections);
 
         // TODO Implement
         // Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
@@ -86,100 +62,74 @@ public class AbstractSubjectFinder
 
     }
 
-    private void findSubscriptionMethods (final ClassOrInterfaceDeclaration classDeclaration) {
-        // Vind alle methoden in de klasse die ingrijpen op de gevonden collecties, en de verwachte
-        // parameter (van het observertype) meegeven aan een add, remove, addAll of removeAll-functie op de
-        // collectie
-        Set<String> observerTypes = new HashSet<>();
-        for (EligibleCollection eligibleCollection : eligibleCollections) {
-            observerTypes.add(eligibleCollection.getReferType().getQualifiedName());
-        }
-
+    private void findSubscriptionMethods (final ClassOrInterfaceDeclaration classDeclaration, final List<EligibleCollection> eligibleCollections) {
+        // Vind alle methoden in de klasse die aangrijpen op een van de EligibleCollections, zij het door een add- of remove-methode
         // Find all methods operating on the found collections
-        for (MethodDeclaration methodDeclaration : classDeclaration.getMethods()) {
-            // Check if the method actually has any parameters with one of the observer types
+
+        // For each method
+        List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
+        for (MethodDeclaration methodDeclaration : methodDeclarations) {
+            // Does it take a parameter of the type in an eligible collection?
+                // No? Return
             NodeList<Parameter> parameters = methodDeclaration.getParameters();
-            JavaParserFacade javaParserFacade = JavaParserFacade.get(typeSolver);
+            List<EligibleSubscriptionParameter> eligibleParameters = new ArrayList<>();
 
-            // TODO Change to Map<Parameter, ResolvedReferenceType>?
-            Map<Parameter, String> parametersOfInterest = new HashMap<>();
             for (Parameter parameter : parameters) {
-                ResolvedType parameterType = javaParserFacade.convertToUsage(parameter.getType(), parameter);
-                if (!parameterType.isReferenceType()) {
-                    continue;
-                }
+                ResolvedType parameterType = parameter.getType().resolve();
+                if (parameterType.isReferenceType()) {
+                    ResolvedReferenceType parameterReferenceType = (ResolvedReferenceType) parameterType;
+                    String qualifiedName = ((ResolvedReferenceType)parameterType).getQualifiedName();
 
-                ResolvedReferenceType parameterReferenceType = parameterType.asReferenceType();
-                if (observerTypes.contains(parameterReferenceType.getQualifiedName())) {
-                    parametersOfInterest.put(parameter, parameterReferenceType.getQualifiedName());
+                    EligibleSubscriptionParameter eligibleParameter = new EligibleSubscriptionParameter();
+                    eligibleParameter.parameter = parameter;
+                    eligibleParameter.resolvedReferenceType = parameterReferenceType;
+
+                    for (EligibleCollection eligibleCollection : eligibleCollections) {
+                        if (parameterReferenceType.getQualifiedName().equals(eligibleCollection.getReferType().getQualifiedName())) {
+                            eligibleParameter.matchingCollections.add(eligibleCollection);
+                        }
+                    }
+
+                    if (eligibleCollections.size() > 0) {
+                        eligibleParameters.add(eligibleParameter);
+                    }
                 }
             }
 
-            // If there are no parameters with an observer type given, this cannot
-            // be the method we're looking for
-            if (parametersOfInterest.isEmpty()) {
+            if (eligibleParameters.isEmpty()) {
                 continue;
             }
 
-            // Check if the method contains any method calls that operate on one of the collections
+            // Does it contain a method declaration with scope of one of the eligible collections?
+                // No? Return
             List<MethodCallExpr> methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
             for (MethodCallExpr methodCall : methodCalls) {
-                if (methodCall.getNameAsString().equals("add") || methodCall.getNameAsString().equals("remove")) {
-                    Optional<Expression> optionalScope = methodCall.getScope();
+                Optional<Expression> optionalScope = methodCall.getScope();
+                if (!optionalScope.isPresent()) {
+                    continue;
+                }
 
-                    if (optionalScope.isPresent()) {
-                        Expression scope = optionalScope.get();
+                Expression scopeExpression = optionalScope.get();
 
-                        if (scope.isFieldAccessExpr()) {
-                            FieldAccessExpr fieldAccessExpr = scope.asFieldAccessExpr();
-                            String fieldAccessName = fieldAccessExpr.getNameAsString();
-                            EligibleCollection operatesOn = null;
+                if (!scopeExpression.isFieldAccessExpr()) {
+                    continue;
+                }
 
-                            for (EligibleCollection eligibleCollection : eligibleCollections) {
-                                if (eligibleCollection.getVariableDeclarator().getNameAsString().equals(fieldAccessName)) {
-                                    operatesOn = eligibleCollection;
-                                    break;
-                                }
-                            }
-
-                            if (operatesOn == null) {
-                                break;
-                            }
-
-                            // Does the method have a parameter which corresponds to the eligibleCollection,
-                            // and is this parameter passed as argument?
-                            // (ie. does the name one of the parameters match the argument of this function?)
-                            NodeList<Expression> arguments = methodCall.getArguments();
-                            Set<String> argumentSet = new HashSet<>();
-
-                            for (Expression argument : arguments) {
-                                if (argument.isNameExpr()) {
-                                    argumentSet.add(((NameExpr) argument).getNameAsString());
-                                }
-                            }
-
-                            for (Map.Entry<Parameter, String> parameterEntry : parametersOfInterest.entrySet()) {
-                                Parameter parameter = parameterEntry.getKey();
-                                String qualifiedName = parameterEntry.getValue();
-
-                                if (qualifiedName.equals(operatesOn.getReferType().getQualifiedName())
-                                        && argumentSet.contains(parameter.getNameAsString())) {
-                                    if (methodCall.getNameAsString().equals("add")) {
-                                        operatesOn.addAttachMethod(methodDeclaration);
-                                    } else if (methodCall.getNameAsString().equals("remove")) {
-                                        operatesOn.addDetachMethod(methodDeclaration);
-                                    }
-                                }
-                            }
-                        }
+                FieldAccessExpr fieldAccessExpression = scopeExpression.asFieldAccessExpr();
+                for (EligibleCollection eligibleCollection : eligibleCollections) {
+                    // TODO Resolve scope?
+                    if (fieldAccessExpression.getNameAsString().equals(eligibleCollection.getVariableDeclarator().getNameAsString())) {
+                        // Does that method declaration operate on the add or remove method of the collection type?
+                            // No? just keep looking
+                        System.out.println("Accessing method on field " + eligibleCollection.getVariableDeclarator().getNameAsString());
                     }
                 }
             }
         }
     }
 
-    private Set<EligibleCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
-        Set<EligibleCollection> collections = new HashSet<>();
+    private List<EligibleCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
+        List<EligibleCollection> collections = new ArrayList<>();
 
         for (FieldDeclaration field : classDeclaration.getFields()) {
             Type variableType = field.getVariable(0).getType();
@@ -228,5 +178,16 @@ public class AbstractSubjectFinder
         }
 
         return null;
+    }
+
+    private class EligibleSubscriptionParameter {
+        private Parameter parameter;
+        private ResolvedReferenceType resolvedReferenceType;
+        private String parameterName;
+        private List<EligibleCollection> matchingCollections;
+
+        private EligibleSubscriptionParameter () {
+            matchingCollections = new ArrayList<>();
+        }
     }
 }
