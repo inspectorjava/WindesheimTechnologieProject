@@ -11,5 +11,13 @@ public enum DesignPatternType {
     /**
      * Singleton pattern.
      */
-    SINGLETON
+    SINGLETON,
+    /**
+     * Strategy pattern.
+     */
+    STRATEGY,
+    /**
+     * Chain of responsibility pattern.
+     */
+    CHAIN_OF_RESPONSIBILITY
 }

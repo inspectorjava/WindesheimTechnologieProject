@@ -3,15 +3,14 @@ package nl.windesheim.codeparser;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.resolution.SymbolResolver;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.analyzers.observer.ObserverAnalyzer;
+import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -75,16 +74,19 @@ public class FileAnalysisProvider {
      * @throws IOException if the directory doesn't exist
      */
     public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
+        SourceRoot sourceRoot = new SourceRoot(directoryPath);
+
         //The type solver can now solve types from the standard library and the code we are analyzing
         CombinedTypeSolver typeSolver = new CombinedTypeSolver();
         typeSolver.add(new ReflectionTypeSolver());
         typeSolver.add(new JavaParserTypeSolver(directoryPath));
 
-        SymbolResolver symbolResolver = new JavaSymbolSolver(typeSolver);
-        ParserConfiguration configuration = JavaParser.getStaticConfiguration().setSymbolResolver(symbolResolver);
-        JavaParser.setStaticConfiguration(configuration);
+        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
 
-        SourceRoot sourceRoot = new SourceRoot(directoryPath);
+        ParserConfiguration configuration = new ParserConfiguration();
+        configuration.setSymbolResolver(symbolSolver);
+
+        sourceRoot.setParserConfiguration(configuration);
 
         sourceRoot.tryToParse();
 
@@ -118,8 +120,9 @@ public class FileAnalysisProvider {
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
 //        composite.addChild(new SingletonAnalyzer());
-        composite.addChild(new ObserverAnalyzer());
 //        composite.addChild(new StrategyAnalyzer());
+//        composite.addChild(new ChainOfResponsibilityAnalyzer());
+        composite.addChild(new ObserverAnalyzer());
 
         return new FileAnalysisProvider(composite);
     }
