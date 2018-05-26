@@ -50,7 +50,14 @@ public class AbstractSubjectFinder
         }
 
         // Contains attach- and detach methods
-        this.findSubscriptionMethods(declaration, eligibleCollections);
+        SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, eligibleCollections);
+        subscriptionMethodFinder.findSubscriptionMethods(declaration, eligibleCollections);
+
+        for (EligibleCollection collection : eligibleCollections) {
+            System.out.print("Collection " + collection.getVariableDeclarator().getNameAsString() + " ");
+            System.out.println(collection.isObserverCollection() ? "Ja!" : "Nee");
+            System.out.println();
+        }
 
         // TODO Implement
         // Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
@@ -62,71 +69,9 @@ public class AbstractSubjectFinder
 
     }
 
-    private void findSubscriptionMethods (final ClassOrInterfaceDeclaration classDeclaration, final List<EligibleCollection> eligibleCollections) {
-        // Vind alle methoden in de klasse die aangrijpen op een van de EligibleCollections, zij het door een add- of remove-methode
-        // Find all methods operating on the found collections
 
-        // For each method
-        List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
-        for (MethodDeclaration methodDeclaration : methodDeclarations) {
-            // Does it take a parameter of the type in an eligible collection?
-                // No? Return
-            NodeList<Parameter> parameters = methodDeclaration.getParameters();
-            List<EligibleSubscriptionParameter> eligibleParameters = new ArrayList<>();
 
-            for (Parameter parameter : parameters) {
-                ResolvedType parameterType = parameter.getType().resolve();
-                if (parameterType.isReferenceType()) {
-                    ResolvedReferenceType parameterReferenceType = (ResolvedReferenceType) parameterType;
-                    String qualifiedName = ((ResolvedReferenceType)parameterType).getQualifiedName();
 
-                    EligibleSubscriptionParameter eligibleParameter = new EligibleSubscriptionParameter();
-                    eligibleParameter.parameter = parameter;
-                    eligibleParameter.resolvedReferenceType = parameterReferenceType;
-
-                    for (EligibleCollection eligibleCollection : eligibleCollections) {
-                        if (parameterReferenceType.getQualifiedName().equals(eligibleCollection.getReferType().getQualifiedName())) {
-                            eligibleParameter.matchingCollections.add(eligibleCollection);
-                        }
-                    }
-
-                    if (eligibleCollections.size() > 0) {
-                        eligibleParameters.add(eligibleParameter);
-                    }
-                }
-            }
-
-            if (eligibleParameters.isEmpty()) {
-                continue;
-            }
-
-            // Does it contain a method declaration with scope of one of the eligible collections?
-                // No? Return
-            List<MethodCallExpr> methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
-            for (MethodCallExpr methodCall : methodCalls) {
-                Optional<Expression> optionalScope = methodCall.getScope();
-                if (!optionalScope.isPresent()) {
-                    continue;
-                }
-
-                Expression scopeExpression = optionalScope.get();
-
-                if (!scopeExpression.isFieldAccessExpr()) {
-                    continue;
-                }
-
-                FieldAccessExpr fieldAccessExpression = scopeExpression.asFieldAccessExpr();
-                for (EligibleCollection eligibleCollection : eligibleCollections) {
-                    // TODO Resolve scope?
-                    if (fieldAccessExpression.getNameAsString().equals(eligibleCollection.getVariableDeclarator().getNameAsString())) {
-                        // Does that method declaration operate on the add or remove method of the collection type?
-                            // No? just keep looking
-                        System.out.println("Accessing method on field " + eligibleCollection.getVariableDeclarator().getNameAsString());
-                    }
-                }
-            }
-        }
-    }
 
     private List<EligibleCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
         List<EligibleCollection> collections = new ArrayList<>();
@@ -140,15 +85,15 @@ public class AbstractSubjectFinder
                 continue;
             }
 
-            ResolvedReferenceType referenceType = resolvedType.asReferenceType();
+            ResolvedReferenceType fieldType = resolvedType.asReferenceType();
 
             // Try to determine if this is a collection
             String targetName = "java.util.Collection";
             ResolvedReferenceType parameterType = null;
-            for (ResolvedReferenceType ancestor : referenceType.getAllAncestors()) {
+            for (ResolvedReferenceType ancestor : fieldType.getAllAncestors()) {
                 if (ancestor.getQualifiedName().equals(targetName)) {
                     // Determine the type that's stored in the collection
-                    parameterType = this.determineParameterType(referenceType);
+                    parameterType = this.determineParameterType(fieldType);
                     break;
                 }
             }
@@ -156,7 +101,7 @@ public class AbstractSubjectFinder
             // If a parameter type has been found, this is an eligible collection
             if (parameterType != null) {
                 for (VariableDeclarator variableDeclarator : field.getVariables()) {
-                    EligibleCollection collection = new EligibleCollection(variableDeclarator, parameterType);
+                    EligibleCollection collection = new EligibleCollection(variableDeclarator, fieldType, parameterType);
                     collections.add(collection);
                 }
             }
@@ -178,16 +123,5 @@ public class AbstractSubjectFinder
         }
 
         return null;
-    }
-
-    private class EligibleSubscriptionParameter {
-        private Parameter parameter;
-        private ResolvedReferenceType resolvedReferenceType;
-        private String parameterName;
-        private List<EligibleCollection> matchingCollections;
-
-        private EligibleSubscriptionParameter () {
-            matchingCollections = new ArrayList<>();
-        }
     }
 }

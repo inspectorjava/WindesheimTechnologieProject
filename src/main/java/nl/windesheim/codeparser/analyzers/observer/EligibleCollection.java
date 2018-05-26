@@ -11,14 +11,16 @@ import java.util.List;
 
 public class EligibleCollection {
     private VariableDeclarator variableDeclarator;
-    private ResolvedReferenceType referType;
+    private ResolvedReferenceType fieldType;
+    private ResolvedReferenceType parameterType;
     private List<MethodDeclaration> attachMethods;
     private List<MethodDeclaration> detachMethods;
     private List<MethodDeclaration> notifyMethods;
 
-    public EligibleCollection (VariableDeclarator variableDeclarator, ResolvedReferenceType referType) {
+    public EligibleCollection (VariableDeclarator variableDeclarator, ResolvedReferenceType fieldType, ResolvedReferenceType parameterType) {
         this.variableDeclarator = variableDeclarator;
-        this.referType = referType;
+        this.fieldType = fieldType;
+        this.parameterType = parameterType;
 
         attachMethods = new ArrayList<>();
         detachMethods = new ArrayList<>();
@@ -29,8 +31,12 @@ public class EligibleCollection {
         return variableDeclarator;
     }
 
-    public ResolvedReferenceType getReferType() {
-        return referType;
+    public ResolvedReferenceType getFieldType () {
+        return fieldType;
+    }
+
+    public ResolvedReferenceType getParameterType() {
+        return parameterType;
     }
 
     public boolean hasAttachMethods () {
@@ -58,7 +64,8 @@ public class EligibleCollection {
     }
 
     public boolean hasNotifyMethods () {
-        return notifyMethods.size() > 0;
+        return true;
+//        return notifyMethods.size() > 0;
     }
 
     public List<MethodDeclaration> getNotifyMethods() {
