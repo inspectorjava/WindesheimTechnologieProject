@@ -5,6 +5,7 @@ import java.util.List;
 
 public abstract class AbstractSubject {
     private ArrayList<MyObserver> observers, tools;
+    private ArrayList<String> test;
     private Set<MyObserver> observerSet;
 
     public Subject() {
@@ -21,8 +22,17 @@ public abstract class AbstractSubject {
     }
 
     public void signal() {
-        for (MyObserver o : observers) {
+        for (MyObserver o : observers)
+        {
             o.update();
+        }
+    }
+
+    public void signalTwo() {
+        ArrayList<String> test = new ArrayList<>();
+
+        for (String o : test) {
+            o.isEmpty();
         }
     }
 }

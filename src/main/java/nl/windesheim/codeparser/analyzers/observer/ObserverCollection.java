@@ -9,7 +9,7 @@ import javassist.compiler.ast.MethodDecl;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EligibleCollection {
+public class ObserverCollection {
     private VariableDeclarator variableDeclarator;
     private ResolvedReferenceType fieldType;
     private ResolvedReferenceType parameterType;
@@ -17,7 +17,7 @@ public class EligibleCollection {
     private List<MethodDeclaration> detachMethods;
     private List<MethodDeclaration> notifyMethods;
 
-    public EligibleCollection (VariableDeclarator variableDeclarator, ResolvedReferenceType fieldType, ResolvedReferenceType parameterType) {
+    public ObserverCollection(VariableDeclarator variableDeclarator, ResolvedReferenceType fieldType, ResolvedReferenceType parameterType) {
         this.variableDeclarator = variableDeclarator;
         this.fieldType = fieldType;
         this.parameterType = parameterType;
@@ -64,8 +64,7 @@ public class EligibleCollection {
     }
 
     public boolean hasNotifyMethods () {
-        return true;
-//        return notifyMethods.size() > 0;
+        return notifyMethods.size() > 0;
     }
 
     public List<MethodDeclaration> getNotifyMethods() {

@@ -40,16 +40,16 @@ public class AbstractSubjectFinder
         // An AbstractSubject is an (abstract) class with the following characteristics
 
         // Contains a collection of objects (of a reference type)
-        List<EligibleCollection> eligibleCollections = this.findEligibleCollections(classDeclaration);
-        if (eligibleCollections.isEmpty()) {
+        List<ObserverCollection> observerCollections = this.findEligibleCollections(classDeclaration);
+        if (observerCollections.isEmpty()) {
             return;
         }
 
-        // Contains attach- and detach methods
-        ObservableMethodFinder observableMethodFinder = new ObservableMethodFinder(typeSolver, eligibleCollections);
+        // Check if the class contains attach-, detach- and notify methods
+        ObservableMethodFinder observableMethodFinder = new ObservableMethodFinder(typeSolver, observerCollections);
         observableMethodFinder.findObservableMethods(classDeclaration);
 
-        for (EligibleCollection collection : eligibleCollections) {
+        for (ObserverCollection collection : observerCollections) {
             String result = collection.isObserverCollection() ? "may be an observer collection" : "is no observer collection";
             System.out.println(collection.getVariableDeclarator().getNameAsString() + " " + result);
         }
@@ -57,22 +57,13 @@ public class AbstractSubjectFinder
         System.out.println();
 
         // TODO Implement
-        // Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
-
-
-        // TODO Implement
         // Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.
         // Zoek in dat geval, als 'shortcut', naar welke interface door deze klasse wordt geimplementeerd die deze methodes afdwingt. Dan zijn andere
         // klassen die deze interface realiseren en deze methodes implementeren ook een abstractsubject
-
     }
 
-
-
-
-
-    private List<EligibleCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
-        List<EligibleCollection> collections = new ArrayList<>();
+    private List<ObserverCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
+        List<ObserverCollection> collections = new ArrayList<>();
 
         for (FieldDeclaration field : classDeclaration.getFields()) {
             Type variableType = field.getVariable(0).getType();
@@ -99,7 +90,7 @@ public class AbstractSubjectFinder
             // If a parameter type has been found, this is an eligible collection
             if (parameterType != null) {
                 for (VariableDeclarator variableDeclarator : field.getVariables()) {
-                    EligibleCollection collection = new EligibleCollection(variableDeclarator, fieldType, parameterType);
+                    ObserverCollection collection = new ObserverCollection(variableDeclarator, fieldType, parameterType);
                     collections.add(collection);
                 }
             }
