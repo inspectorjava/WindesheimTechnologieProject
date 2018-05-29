@@ -1,10 +1,6 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.SymbolResolver;
@@ -40,27 +36,29 @@ public class AbstractSubjectFinder
     }
 
     @Override
-    public void visit(final ClassOrInterfaceDeclaration declaration, Void arg) {
+    public void visit(final ClassOrInterfaceDeclaration classDeclaration, Void arg) {
         // An AbstractSubject is an (abstract) class with the following characteristics
 
         // Contains a collection of objects (of a reference type)
-        List<EligibleCollection> eligibleCollections = this.findEligibleCollections(declaration);
+        List<EligibleCollection> eligibleCollections = this.findEligibleCollections(classDeclaration);
         if (eligibleCollections.isEmpty()) {
             return;
         }
 
         // Contains attach- and detach methods
-        SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, eligibleCollections);
-        subscriptionMethodFinder.findSubscriptionMethods(declaration, eligibleCollections);
+        ObservableMethodFinder observableMethodFinder = new ObservableMethodFinder(typeSolver, eligibleCollections);
+        observableMethodFinder.findObservableMethods(classDeclaration);
 
         for (EligibleCollection collection : eligibleCollections) {
-            System.out.print("Collection " + collection.getVariableDeclarator().getNameAsString() + " ");
-            System.out.println(collection.isObserverCollection() ? "Ja!" : "Nee");
-            System.out.println();
+            String result = collection.isObserverCollection() ? "may be an observer collection" : "is no observer collection";
+            System.out.println(collection.getVariableDeclarator().getNameAsString() + " " + result);
         }
+
+        System.out.println();
 
         // TODO Implement
         // Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
+
 
         // TODO Implement
         // Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.

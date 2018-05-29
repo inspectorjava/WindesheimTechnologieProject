@@ -1,6 +1,5 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -9,48 +8,55 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedParameterDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import javassist.compiler.ast.MethodDecl;
 
 import java.util.*;
 
-public class SubscriptionMethodFinder {
+public class ObservableMethodFinder {
     private TypeSolver typeSolver;
 
     private List<EligibleCollection> eligibleCollections;
     private Map<EligibleCollection, List<EligibleSubscriptionParameter>> eligibleParameters;
 
-    public SubscriptionMethodFinder (TypeSolver typeSolver, List<EligibleCollection> eligibleCollections) {
+    public ObservableMethodFinder(TypeSolver typeSolver, List<EligibleCollection> eligibleCollections) {
         this.typeSolver = typeSolver;
         this.eligibleCollections = eligibleCollections;
         this.eligibleParameters = new HashMap<>();
     }
 
-    public void findSubscriptionMethods (final ClassOrInterfaceDeclaration classDeclaration, final List<EligibleCollection> eligibleCollections) {
+    public void findObservableMethods (final ClassOrInterfaceDeclaration classDeclaration) {
+        // TODO The method should be public (or protected/package access?)
         // Find all methods operating on the found collections
 
-        List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
-        for (MethodDeclaration methodDeclaration : methodDeclarations) {
-            // Does the method take parameters of the type of one of the eligible collections?
-            eligibleParameters = this.findCollectionParameters(methodDeclaration, eligibleCollections);
+        if (!classDeclaration.isInterface()) {
+            List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
+            for (MethodDeclaration methodDeclaration : methodDeclarations) {
+                determineSubscriptionMethod(methodDeclaration);
 
-            if (eligibleParameters.isEmpty()) {
-                continue;
+                // TODO Implement
+                // A notify method is a method that loops over an eligible collection, and calls a method
+                // on the elements in the collection
+                // The method should be public (or protected/package access?)
             }
-
-            // Does it contain a method declaration with one of the eligible collections as scope?
-            findEligibleMethodCalls(methodDeclaration);
         }
     }
 
-    private void findEligibleMethodCalls (final MethodDeclaration methodDeclaration) {
+    private void determineSubscriptionMethod (final MethodDeclaration methodDeclaration) {
+        // Does the method take parameters of the type of one of the eligible collections?
+        eligibleParameters = this.findCollectionParameters(methodDeclaration, eligibleCollections);
+
+        if (!eligibleParameters.isEmpty()) {
+            // Does it contain a method declaration with one of the eligible collections as scope?
+            findSubscriptionMethodCalls(methodDeclaration);
+        }
+    }
+
+    private void findSubscriptionMethodCalls (final MethodDeclaration methodDeclaration) {
         List<MethodCallExpr> methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
         for (MethodCallExpr methodCall : methodCalls) {
             Optional<Expression> optionalScope = methodCall.getScope();
@@ -103,14 +109,12 @@ public class SubscriptionMethodFinder {
                 }
             }
 
-            if (!passesParameter) {
-                continue;
-            }
-
-            if (possibleAttach) {
-                operatesOn.addAttachMethod(methodDeclaration);
-            } else if (possibleDetach) {
-                operatesOn.addDetachMethod(methodDeclaration);
+            if (passesParameter) {
+                if (possibleAttach) {
+                    operatesOn.addAttachMethod(methodDeclaration);
+                } else {
+                    operatesOn.addDetachMethod(methodDeclaration);
+                }
             }
         }
     }
