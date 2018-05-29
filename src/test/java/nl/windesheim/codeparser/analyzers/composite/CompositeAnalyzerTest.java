@@ -6,7 +6,6 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
-import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +29,11 @@ public class CompositeAnalyzerTest {
 
     @Test
     public void analyze() {
-        CompositeAnalyzer analyzer = new CompositeAnalyzer();
-
+        try {
+            this.test(new File(classLoader.getResource("composite/composite").getPath()));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     private List<IDesignPattern> test(File dir) throws IOException {
@@ -50,8 +52,9 @@ public class CompositeAnalyzerTest {
 
         analyzer.setTypeSolver(combinedTypeSolver);
 
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
+        ArrayList<CompilationUnit> compilationUnits = new ArrayList<>();
         compilationUnits.addAll(sourceRoot.getCompilationUnits());
+        System.out.println(sourceRoot.getCompilationUnits());
 
         return analyzer.analyze(compilationUnits);
     }
