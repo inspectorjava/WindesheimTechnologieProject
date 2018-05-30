@@ -32,6 +32,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         super();
     }
 
+    
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
