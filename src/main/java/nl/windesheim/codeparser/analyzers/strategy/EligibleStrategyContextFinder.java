@@ -27,7 +27,12 @@ public class EligibleStrategyContextFinder
     /**
      * The context, interface pairs found in the last visit.
      */
-    private List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes;
+    private final List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes = new ArrayList<>();
+
+    /**
+     * A list of errors which were encountered.
+     */
+    private final List<Exception> errors = new ArrayList<>();
 
     /**
      * A visitor which is used to tell if there exists a setter for a field.
@@ -39,7 +44,6 @@ public class EligibleStrategyContextFinder
      */
     public EligibleStrategyContextFinder() {
         super();
-        classes = new ArrayList<>();
         setterFinder = new SetterFinder();
     }
 
@@ -51,10 +55,18 @@ public class EligibleStrategyContextFinder
     }
 
     /**
+     * @return a list of errors which were encountered
+     */
+    public List<Exception> getErrors() {
+        return errors;
+    }
+
+    /**
      * Reset the list of classes.
      */
     public void reset() {
-        classes = new ArrayList<>();
+        errors.clear();
+        classes.clear();
     }
 
     @Override
@@ -77,9 +89,9 @@ public class EligibleStrategyContextFinder
                 try {
                     resolvedType = JavaParserFacade.get(typeSolver).convertToUsage(variableType);
                 } catch (UnsolvedSymbolException e) {
-                    System.err.println("Can't resolve symbol: " + variableType.asString()
+                    errors.add(new Exception("Can't resolve symbol: " + variableType.asString()
                             + ", can be caused by missing dependencies, "
-                            + "invalid java code or selection of invalid source root");
+                            + "invalid java code or selection of invalid source root", e));
                     continue;
                 }
 
