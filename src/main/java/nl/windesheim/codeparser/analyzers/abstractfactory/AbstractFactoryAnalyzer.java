@@ -14,6 +14,7 @@ import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.chainofresponsibility.EligibleCommonParentFinder;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
@@ -54,7 +55,13 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         ArrayList<ClassOrInterfaceDeclaration> factoryImplementations = this.findFactoryImplementations(factoryInterfaces, declarations);
 
         ArrayList<ClassOrInterfaceDeclaration> factoryClasses = this.findFactoryClasses(declarations, factoryImplementations);
-        return null;
+
+        for(ClassOrInterfaceDeclaration factory : factoryClasses){
+            AbstractFactory abstractFactory = new AbstractFactory();
+            abstractFactory.setFactoryInterface(factory);
+            patterns.add(abstractFactory);
+        }
+        return patterns;
     }
 
     private ArrayList<ClassOrInterfaceDeclaration> findFactoryClasses(ArrayList<ClassOrInterfaceDeclaration> declarations, ArrayList<ClassOrInterfaceDeclaration> factoryImplementations) {
