@@ -1,8 +1,10 @@
 package nl.windesheim.codeparser.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,5 +39,4 @@ public abstract class PatternAnalyzer {
         this.parent = parent;
         return this;
     }
-
 }
