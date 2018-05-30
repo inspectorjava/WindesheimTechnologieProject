@@ -32,7 +32,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         super();
     }
 
-    
+
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
@@ -43,7 +43,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         }
 
         this.typeSolver = getParent().getTypeSolver();
-        this.implFinder = new ImplementationOrSuperclassFinder(typeSolver);
+        this.implFinder = new ImplementationOrSuperclassFinder();
 
         ArrayList<ClassOrInterfaceDeclaration> declarations = this.findDeclarations(files);
 
