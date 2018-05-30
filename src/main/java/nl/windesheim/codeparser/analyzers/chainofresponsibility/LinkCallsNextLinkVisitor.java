@@ -15,6 +15,7 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
@@ -27,6 +28,25 @@ import java.util.List;
  * Checks if a 'link' classes a next 'link'.
  */
 public class LinkCallsNextLinkVisitor extends GenericVisitorAdapter<Boolean, ClassOrInterfaceDeclaration> {
+
+    /**
+     * A list of errors which were encountered.
+     */
+    private final List<Exception> errors = new ArrayList<>();
+
+    /**
+     * Clears the errors.
+     */
+    public void clearErrors() {
+        errors.clear();
+    }
+
+    /**
+     * @return a list of errors which were encountered
+     */
+    public List<Exception> getErrors() {
+        return errors;
+    }
 
     @Override
     public Boolean visit(final MethodCallExpr callExpr, final ClassOrInterfaceDeclaration commonParent) {
@@ -168,11 +188,19 @@ public class LinkCallsNextLinkVisitor extends GenericVisitorAdapter<Boolean, Cla
 
         //For each superclass of the 'link'
         for (ClassOrInterfaceType superClass : linkClass.getExtendedTypes()) {
-            //Find the ClassOrInterfaceDeclaration of the superclass
-            ResolvedReferenceType resolved = superClass.resolve();
+            ResolvedReferenceType resolved;
+            try {
+                //Find the ClassOrInterfaceDeclaration of the superclass
+                resolved = superClass.resolve();
+            } catch (UnsolvedSymbolException e) {
+                errors.add(e);
+                continue;
+            }
+
             if (!(resolved instanceof ReferenceTypeImpl)) {
                 continue;
             }
+
 
             ResolvedReferenceTypeDeclaration typeDeclaration = resolved.getTypeDeclaration();
 
