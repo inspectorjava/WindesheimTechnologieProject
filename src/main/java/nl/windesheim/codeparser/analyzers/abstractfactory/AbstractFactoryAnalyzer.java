@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.analyzers.abstractfactory;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -18,6 +19,7 @@ import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,31 +38,47 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
 
-        if(files.size() == 0) return patterns;
+        if(files.size() == 0) {
+            this.log("Got 0 files. Aborting.");
+            return patterns;
+        }
 
         this.typeSolver = getParent().getTypeSolver();
         this.implFinder = new ImplementationOrSuperclassFinder(typeSolver);
 
         ArrayList<ClassOrInterfaceDeclaration> declarations = this.findDeclarations(files);
 
+        ArrayList<ClassOrInterfaceDeclaration> factoryClasses = new ArrayList<>();
+
         // If there are no interfaces, it is never possible to have an abstract factory pattern.
-        if(!this.hasInterfaces(declarations)) return patterns;
-
         // If there are interfaces, but they are not implemented. Ignore this pattern too.
-        if(!this.interfacesAreImplemented(declarations)) return patterns;
+        if(this.hasInterfaces(declarations) && this.interfacesAreImplemented(declarations)) {
+            // These are all the factory interfaces
+            ArrayList<ClassOrInterfaceDeclaration> factoryInterfaces = this.findFactoryInterfaces(declarations);
+            this.log("I was able to find " + factoryInterfaces.size() + " of factory interfaces.");
 
-        // These are all the factory interfaces
-        ArrayList<ClassOrInterfaceDeclaration> factoryInterfaces = this.findFactoryInterfaces(declarations);
+            ArrayList<ClassOrInterfaceDeclaration> factoryImplementations = this.findFactoryImplementations(factoryInterfaces, declarations);
+            this.log("I was able to find " + factoryImplementations.size() + " of factory implementations.");
 
-        ArrayList<ClassOrInterfaceDeclaration> factoryImplementations = this.findFactoryImplementations(factoryInterfaces, declarations);
+            factoryClasses.addAll(this.findFactoryClasses(declarations, factoryImplementations));
+            this.log("I was able to find " + factoryClasses.size() + " Factory classes.");
+        }
 
-        ArrayList<ClassOrInterfaceDeclaration> factoryClasses = this.findFactoryClasses(declarations, factoryImplementations);
+        // Now that is done, lets try to find factories without interfaces. These are a bit simpler.
+        ArrayList<ClassOrInterfaceDeclaration> factoryAbstractClasses = this.findFactoryAbstractClasses(declarations);
+        this.log("I was able to find " + factoryAbstractClasses.size() + " of abstract factory classes.");
+
+        ArrayList<ClassOrInterfaceDeclaration> factoryAbstractImplementations = this.findFactoryAbstractImplementations(factoryAbstractClasses, declarations);
+        this.log("I was able to find " + factoryAbstractImplementations.size() + " of abstract factory implementations.");
+
+        factoryClasses.addAll(this.findFactoryClasses(declarations, factoryAbstractImplementations));
 
         for(ClassOrInterfaceDeclaration factory : factoryClasses){
             AbstractFactory abstractFactory = new AbstractFactory();
             abstractFactory.setFactoryInterface(factory);
             patterns.add(abstractFactory);
         }
+
         return patterns;
     }
 
@@ -76,18 +94,25 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
                     if(!(methodDeclaration.getType() instanceof ClassOrInterfaceType)) continue;
                     ClassOrInterfaceType type = (ClassOrInterfaceType) method.getType();
                     ResolvedReferenceTypeDeclaration typeDeclaration = ((ResolvedReferenceType) type.resolve()).getTypeDeclaration();
-                    if(!typeDeclaration.getName().equals("KingdomFactory")) continue;
-                    //If the type is a interface
-                    if (!(typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
-                        continue;
-                    }
 
-                    ClassOrInterfaceDeclaration resolvedInterface = ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
-                    String declerationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
-                    String interfaceName   = factoryImplementation.getImplementedTypes().get(0).getNameAsString();
-                    if(declerationName.equals(interfaceName)){
-                        if(!factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
-                            factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
+                    //If the type is a interface
+                    if ((typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
+                        ClassOrInterfaceDeclaration resolvedInterface = ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
+                        String declerationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+                        String interfaceName   = factoryImplementation.getImplementedTypes().get(0).getNameAsString();
+                        if(declerationName.equals(interfaceName)){
+                            if(!factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
+                                factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
+                            }
+                        }
+                    }else if((typeDeclaration instanceof JavaParserClassDeclaration)){
+                        ClassOrInterfaceDeclaration resolvedInterface = ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
+                        String declerationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+                        String interfaceName   = factoryImplementation.getExtendedTypes().get(0).getNameAsString();
+                        if(declerationName.equals(interfaceName)){
+                            if(!factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
+                                factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
+                            }
                         }
                     }
                 }
@@ -113,14 +138,20 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         ArrayList<ClassOrInterfaceDeclaration> factoryImplementations = new ArrayList<>();
 
         for(ClassOrInterfaceDeclaration factory : factoryInterfaces){
-            this.implFinder.reset();
-            for(ClassOrInterfaceDeclaration allClass : declerations){
-                this.implFinder.visit(allClass, factory);
-            }
-            factoryImplementations.addAll(this.implFinder.getClasses());
+            factoryImplementations.addAll(this.findImplementations(factory, declerations));
         }
 
         return factoryImplementations;
+    }
+
+    private ArrayList<ClassOrInterfaceDeclaration> findFactoryAbstractImplementations(ArrayList<ClassOrInterfaceDeclaration> factoryAbstracts, ArrayList<ClassOrInterfaceDeclaration> declarations) {
+        ArrayList<ClassOrInterfaceDeclaration> factoryAbstractImplementations = new ArrayList<>();
+
+        for(ClassOrInterfaceDeclaration factory : factoryAbstracts){
+            factoryAbstractImplementations.addAll(this.findImplementations(factory, declarations));
+        }
+
+        return factoryAbstractImplementations;
     }
 
     /**
@@ -163,6 +194,25 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         return interfaces;
     }
 
+    private ArrayList<ClassOrInterfaceDeclaration> findFactoryAbstractClasses(ArrayList<ClassOrInterfaceDeclaration> declarations) {
+        ArrayList<ClassOrInterfaceDeclaration> abstractClasses = new ArrayList<>();
+
+        for(ClassOrInterfaceDeclaration declaration : declarations){
+            // Check if the declaration is abstract.
+            boolean isAbstract = false;
+            for(Modifier modifier : declaration.getModifiers()){
+                if(modifier.name().equals("ABSTRACT")){
+                    isAbstract = true;
+                    break;
+                }
+            }
+            if(!isAbstract) continue;
+
+            abstractClasses.add(declaration);
+        }
+
+        return abstractClasses;
+    }
 
     private boolean interfacesAreImplemented(ArrayList<ClassOrInterfaceDeclaration> declarations) {
         for(ClassOrInterfaceDeclaration declaration : declarations){
@@ -195,5 +245,17 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
             }
         }
         return declarations;
+    }
+
+    private Collection<? extends ClassOrInterfaceDeclaration> findImplementations(ClassOrInterfaceDeclaration factory, ArrayList<ClassOrInterfaceDeclaration> declerations) {
+        this.implFinder.reset();
+        for(ClassOrInterfaceDeclaration allClass : declerations){
+            this.implFinder.visit(allClass, factory);
+        }
+        return this.implFinder.getClasses();
+    }
+
+    private void log(String message) {
+        System.out.println(message);
     }
 }

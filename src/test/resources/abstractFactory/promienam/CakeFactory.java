@@ -1,5 +1,3 @@
-package promiennam.designpattern.factorymethod;
-
 public class CakeFactory {
 	
 	public static Cake getCake(String type) {

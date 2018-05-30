@@ -1,4 +1,3 @@
-package promiennam.designpattern.factorymethod;
 
 public class Muffin extends Cake {
 

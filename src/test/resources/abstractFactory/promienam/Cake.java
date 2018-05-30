@@ -1,4 +1,3 @@
-package promiennam.designpattern.factorymethod;
 
 public abstract class Cake {
 	
