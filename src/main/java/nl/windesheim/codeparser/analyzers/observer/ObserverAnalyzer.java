@@ -1,13 +1,11 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         typeSolver = getParent().getTypeSolver();
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
-        AbstractSubjectFinder abstractSubjectFinder = new AbstractSubjectFinder(typeSolver);
+        AbstractObservableFinder abstractObservableFinder = new AbstractObservableFinder(typeSolver);
 
         //  Subject
             //  Een Subject is een (abstracte) klasse met de volgende kenmerken:
@@ -44,7 +42,14 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             //  Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.
 
         for (CompilationUnit compilationUnit : files) {
-            abstractSubjectFinder.visit(compilationUnit, null);
+            abstractObservableFinder.visit(compilationUnit, null);
+        }
+
+        List<AbstractObservable> abstractObservables = abstractObservableFinder.getAbstractObservables();
+
+        for (AbstractObservable abstractObservable : abstractObservables) {
+            System.out.println("Found abstract observable: " + abstractObservable.getClassDeclaration().getNameAsString()
+                    + " which has " + abstractObservable.getObserverCollections().size() + " observer collections");
         }
 
         //  ConcreteSubject

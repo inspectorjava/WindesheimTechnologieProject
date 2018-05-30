@@ -4,14 +4,14 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.SymbolResolver;
+import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.NotificationMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
 import java.util.*;
@@ -19,41 +19,36 @@ import java.util.*;
 /**
  * Visitor which finds all classes which can be 'context' classes.
  */
-public class AbstractSubjectFinder
+public class AbstractObservableFinder
         extends VoidVisitorAdapter<Void> {
-
-    private SymbolResolver symbolResolver;
 
     private TypeSolver typeSolver;
 
-    private ClassOrInterfaceDeclaration abstractSubject;
-
-    private List<ClassOrInterfaceDeclaration> observers;
+    private List<AbstractObservable> abstractObservables;
 
     /**
-     * Make a new AbstractSubjectFinder.
+     * Make a new AbstractObservableFinder.
      */
-    public AbstractSubjectFinder(final TypeSolver typeSolver) {
+    public AbstractObservableFinder(final TypeSolver typeSolver) {
         super();
         this.typeSolver = typeSolver;
-        this.symbolResolver = new JavaSymbolSolver(typeSolver);
+        this.abstractObservables = new ArrayList<>();
     }
 
     @Override
     public void visit(final ClassOrInterfaceDeclaration classDeclaration, Void arg) {
-        // An AbstractSubject is an (abstract) class with the following characteristics
-
-        // Contains a collection of objects (of a reference type)
-        List<ObserverCollection> observerCollections = this.findEligibleCollections(classDeclaration);
-        if (observerCollections.isEmpty()) {
-            return;
-        }
-
-        // Check if the class contains attach-, detach- and notify methods
-        SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, observerCollections);
-        NotificationMethodFinder notificationMethodFinder = new NotificationMethodFinder(typeSolver, observerCollections);
-
         if (!classDeclaration.isInterface()) {
+            // Contains a collection of objects (of a reference type)
+            List<ObserverCollection> eligibleCollections = this.findEligibleCollections(classDeclaration);
+            if (eligibleCollections.isEmpty()) {
+                return;
+            }
+
+            // Check if the class contains attach-, detach- and notify methods
+            SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, eligibleCollections);
+            NotificationMethodFinder notificationMethodFinder = new NotificationMethodFinder(typeSolver, eligibleCollections);
+
+
             List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
             for (MethodDeclaration methodDeclaration : methodDeclarations) {
                 EnumSet<Modifier> modifiers = methodDeclaration.getModifiers();
@@ -62,19 +57,23 @@ public class AbstractSubjectFinder
                     notificationMethodFinder.determine(methodDeclaration);
                 }
             }
+
+            List<ObserverCollection> observerCollections = new ArrayList<>();
+            for (ObserverCollection collection : eligibleCollections) {
+                if (collection.isObserverCollection()) {
+                    observerCollections.add(collection);
+                }
+            }
+
+            // If an abstract observable has been found, store info
+            if (!observerCollections.isEmpty()) {
+                abstractObservables.add(new AbstractObservable(classDeclaration, observerCollections));
+            }
         }
+    }
 
-        for (ObserverCollection collection : observerCollections) {
-            String result = collection.isObserverCollection() ? "may be an observer collection" : "is no observer collection";
-            System.out.println(collection.getVariableDeclarator().getNameAsString() + " " + result);
-        }
-
-        System.out.println();
-
-        // TODO Implement
-        // Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.
-        // Zoek in dat geval, als 'shortcut', naar welke interface door deze klasse wordt geimplementeerd die deze methodes afdwingt. Dan zijn andere
-        // klassen die deze interface realiseren en deze methodes implementeren ook een abstractsubject
+    public List<AbstractObservable> getAbstractObservables () {
+        return abstractObservables;
     }
 
     private List<ObserverCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {
