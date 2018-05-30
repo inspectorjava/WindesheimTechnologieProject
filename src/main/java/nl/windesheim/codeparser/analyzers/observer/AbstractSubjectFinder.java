@@ -1,5 +1,6 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -9,6 +10,9 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import nl.windesheim.codeparser.analyzers.observer.componentfinders.NotificationMethodFinder;
+import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
+import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
 import java.util.*;
 
@@ -46,8 +50,19 @@ public class AbstractSubjectFinder
         }
 
         // Check if the class contains attach-, detach- and notify methods
-        ObservableMethodFinder observableMethodFinder = new ObservableMethodFinder(typeSolver, observerCollections);
-        observableMethodFinder.findObservableMethods(classDeclaration);
+        SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, observerCollections);
+        NotificationMethodFinder notificationMethodFinder = new NotificationMethodFinder(typeSolver, observerCollections);
+
+        if (!classDeclaration.isInterface()) {
+            List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
+            for (MethodDeclaration methodDeclaration : methodDeclarations) {
+                EnumSet<Modifier> modifiers = methodDeclaration.getModifiers();
+                if (!modifiers.contains(Modifier.PRIVATE)) {
+                    subscriptionMethodFinder.determine(methodDeclaration);
+                    notificationMethodFinder.determine(methodDeclaration);
+                }
+            }
+        }
 
         for (ObserverCollection collection : observerCollections) {
             String result = collection.isObserverCollection() ? "may be an observer collection" : "is no observer collection";

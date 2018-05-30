@@ -1,10 +1,8 @@
-package nl.windesheim.codeparser.analyzers.observer;
+package nl.windesheim.codeparser.analyzers.observer.components;
 
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
-import javassist.compiler.ast.MethodDecl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,7 @@ public class ObserverCollection {
     private ResolvedReferenceType parameterType;
     private List<MethodDeclaration> attachMethods;
     private List<MethodDeclaration> detachMethods;
-    private List<MethodDeclaration> notifyMethods;
+    private List<NotificationMethod> notificationMethods;
 
     public ObserverCollection(VariableDeclarator variableDeclarator, ResolvedReferenceType fieldType, ResolvedReferenceType parameterType) {
         this.variableDeclarator = variableDeclarator;
@@ -24,7 +22,7 @@ public class ObserverCollection {
 
         attachMethods = new ArrayList<>();
         detachMethods = new ArrayList<>();
-        notifyMethods = new ArrayList<>();
+        notificationMethods = new ArrayList<>();
     }
 
     public VariableDeclarator getVariableDeclarator() {
@@ -63,21 +61,21 @@ public class ObserverCollection {
         this.detachMethods.add(detach);
     }
 
-    public boolean hasNotifyMethods () {
-        return notifyMethods.size() > 0;
+    public boolean hasNotificationMethods () {
+        return notificationMethods.size() > 0;
     }
 
-    public List<MethodDeclaration> getNotifyMethods() {
-        return notifyMethods;
+    public List<NotificationMethod> getNotificationMethods() {
+        return notificationMethods;
     }
 
-    public void addNotifyMethod(final MethodDeclaration notify) {
-        this.notifyMethods.add(notify);
+    public void addNotificationMethod(final NotificationMethod notify) {
+        this.notificationMethods.add(notify);
     }
 
     public boolean isObserverCollection () {
         return hasAttachMethods()
                && hasDetachMethods()
-               && hasNotifyMethods();
+               && hasNotificationMethods();
     }
 }
