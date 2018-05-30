@@ -27,11 +27,9 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
 
     private CombinedTypeSolver typeSolver;
     private ImplementationOrSuperclassFinder implFinder;
-    private EligibleCommonParentFinder parentFinder;
 
     public AbstractFactoryAnalyzer() {
         super();
-        parentFinder    = new EligibleCommonParentFinder();
     }
 
     @Override
