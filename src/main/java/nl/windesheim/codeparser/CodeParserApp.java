@@ -1,12 +1,10 @@
 package nl.windesheim.codeparser;
 
 import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.Observer;
+import nl.windesheim.codeparser.patterns.ObserverPattern;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -28,7 +26,7 @@ public final class CodeParserApp {
             List<IDesignPattern> patterns = analysis.analyzeDirectory(codeDir.toPath());
 
             for (IDesignPattern p : patterns) {
-                Observer o = (Observer) p;
+                ObserverPattern o = (ObserverPattern) p;
                 System.out.println("Found " + o.toString());
             }
         } catch (IOException ex) {

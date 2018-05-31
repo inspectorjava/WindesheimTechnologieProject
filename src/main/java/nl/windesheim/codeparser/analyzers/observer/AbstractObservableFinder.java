@@ -4,9 +4,6 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.MethodUsage;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
@@ -15,6 +12,7 @@ import nl.windesheim.codeparser.analyzers.observer.componentfinders.Notification
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
+import nl.windesheim.codeparser.patterns.ObserverPattern;
 
 import java.util.*;
 
@@ -26,7 +24,7 @@ public class AbstractObservableFinder
 
     private TypeSolver typeSolver;
 
-    private List<AbstractObservable> abstractObservables;
+    private List<ObserverPattern> observerPatterns;
 
     /**
      * Make a new AbstractObservableFinder.
@@ -34,7 +32,7 @@ public class AbstractObservableFinder
     public AbstractObservableFinder(final TypeSolver typeSolver) {
         super();
         this.typeSolver = typeSolver;
-        this.abstractObservables = new ArrayList<>();
+        this.observerPatterns = new ArrayList<>();
     }
 
     @Override
@@ -69,13 +67,16 @@ public class AbstractObservableFinder
 
             // If an abstract observable has been found, store info
             if (!observerCollections.isEmpty()) {
-                abstractObservables.add(new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections));
+                AbstractObservable abstractObservable = new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections);
+                ObserverPattern observerPattern = new ObserverPattern();
+                observerPattern.setAbstractObservable(abstractObservable);
+                observerPatterns.add(observerPattern);
             }
         }
     }
 
-    public List<AbstractObservable> getAbstractObservables () {
-        return abstractObservables;
+    public List<ObserverPattern> getObserverPatterns () {
+        return observerPatterns;
     }
 
     private List<ObserverCollection> findEligibleCollections (final ClassOrInterfaceDeclaration classDeclaration) {

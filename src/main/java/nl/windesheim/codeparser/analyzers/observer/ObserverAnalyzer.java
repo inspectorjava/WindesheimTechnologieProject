@@ -8,6 +8,7 @@ import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.codeparser.patterns.ObserverPattern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
+        // TODO Modify ImplementationOrSuperclassFinder to check for more ClassOrInterfaceDeclarations at once
         typeSolver = getParent().getTypeSolver();
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
@@ -40,38 +42,31 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             abstractObservableFinder.visit(compilationUnit, null);
         }
 
-        List<AbstractObservable> abstractObservables = abstractObservableFinder.getAbstractObservables();
+        List<ObserverPattern> observerPatterns = abstractObservableFinder.getObserverPatterns();
 
         // Search for classes that extend the AbstractObservable
-        // TODO Figure something out for the built-in Observable class
-        ImplementationOrSuperclassFinder superFinder = new ImplementationOrSuperclassFinder(typeSolver);
-
-        ConcreteObservableFinder concreteObservableFinder = new ConcreteObservableFinder(typeSolver, abstractObservables);
-
-        // TODO Modify ImplementationOrSuperclassFinder to check for more ClassOrInterfaceDeclarations at once
-        for (AbstractObservable abstractObservable : abstractObservables) {
-            for (CompilationUnit compilationUnit : files) {
-                concreteObservableFinder.visit(compilationUnit, null);
-            }
+        ConcreteObservableFinder concreteObservableFinder = new ConcreteObservableFinder(typeSolver, observerPatterns);
+        for (CompilationUnit compilationUnit : files) {
+            concreteObservableFinder.visit(compilationUnit, null);
         }
 
-        for (AbstractObservable abstractObservable : abstractObservables) {
-            System.out.println("Abstract Observable: " + abstractObservable.getClassType().getQualifiedName());
-            System.out.println("\tNumber of observer collections: " + abstractObservable.getObserverCollections().size());
-            System.out.println("\tNumber of subclasses: " + abstractObservable.getConcreteClasses().size());
+        for (ObserverPattern observerPattern : observerPatterns) {
+            System.out.println("Abstract Observable: " + observerPattern.getAbstractObservable().getResolvedTypeDeclaration().getQualifiedName());
+            System.out.println("\tNumber of observer collections: " + observerPattern.getAbstractObservable().getObserverCollections().size());
+            System.out.println("\tNumber of subclasses: " + observerPattern.getConcreteObservables().size());
         }
 
-
-        //  Observer
+        //  ObserverPattern
             //  Om te weten of we te maken hebben met een observer pattern, moeten we weten of er ook klasses zijn gedefinieerd die als observers dienen. Een observer voldoet aan de volgende kenmerken:
             //  De klasse is van hetzelfde type als de collectie van observers in Subject, of als generic meegegeven aan de klasse Observable (*checken*).
             //  Bevat een update-methode, of dwingt deze af (zie ConcreteObserver).
             //  Bevat een referentie naar de Subject, of een van zn subclasses.
 
+
         //  ConcreteObserver
             //  Bevat een referentie naar de Subject of een van zijn subclasses. Deze referentie mag in de superclass staan.
             //          Implementeert een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
-            //  Het is mogelijk dat een klasse de in Java ingebouwde interface Observer implementeert, dit is een goede aanwijzing dat we te maken hebben met een Observer.
+            //  Het is mogelijk dat een klasse de in Java ingebouwde interface ObserverPattern implementeert, dit is een goede aanwijzing dat we te maken hebben met een ObserverPattern.
 
         return new ArrayList<>();
     }
