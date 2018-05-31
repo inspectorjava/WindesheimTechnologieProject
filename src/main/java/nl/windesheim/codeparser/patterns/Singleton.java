@@ -1,6 +1,6 @@
 package nl.windesheim.codeparser.patterns;
 
-import nl.windesheim.codeparser.FilePart;
+import nl.windesheim.codeparser.ClassOrInterface;
 
 /**
  * Created by caveman on 4/19/18.
@@ -9,21 +9,21 @@ public class Singleton implements IDesignPattern {
     /**
      * The part of the file in which the singeton was found.
      */
-    private FilePart filePart;
+    private ClassOrInterface singletonClass;
 
     /**
-     * @return the filePart in which the singeton is found
+     * @return the singletonClass in which the singeton is found
      */
-    public FilePart getFilePart() {
-        return filePart;
+    public ClassOrInterface getSingletonClass() {
+        return singletonClass;
     }
 
     /**
-     * @param filePart the filePart in which the singeton is found
+     * @param singletonClass the singletonClass in which the singeton is found
      * @return this
      */
-    public Singleton setFilePart(final FilePart filePart) {
-        this.filePart = filePart;
+    public Singleton setSingletonClass(final ClassOrInterface singletonClass) {
+        this.singletonClass = singletonClass;
         return this;
     }
 }

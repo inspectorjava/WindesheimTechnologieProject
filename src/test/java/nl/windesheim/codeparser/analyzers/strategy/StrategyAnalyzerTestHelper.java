@@ -6,7 +6,10 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
+import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Strategy;
 
@@ -25,31 +28,21 @@ import static org.junit.Assert.fail;
 
 class StrategyAnalyzerTestHelper {
     private ClassLoader classLoader;
+    private FileAnalysisProvider provider;
 
     StrategyAnalyzerTestHelper(){
         classLoader = this.getClass().getClassLoader();
+
+        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
+        composite.addChild(new StrategyAnalyzer());
+
+        provider = new FileAnalysisProvider(composite);
     }
 
     List<IDesignPattern> analyzeDirectory(File dir) throws IOException{
         Path directoryPath = dir.toPath();
 
-        SourceRoot sourceRoot = new SourceRoot(directoryPath);
-        sourceRoot.tryToParse();
-
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new StrategyAnalyzer());
-
-        //The type solver can now solve types from the standard library and the code we are analyzing
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(new JavaParserTypeSolver(directoryPath));
-
-        analyzer.setTypeSolver(combinedTypeSolver);
-
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.addAll(sourceRoot.getCompilationUnits());
-
-        return analyzer.analyze(compilationUnits);
+        return provider.analyzeDirectory(directoryPath);
     }
 
      void testStrategyPattern(TestSettings settings) throws IOException{
@@ -69,14 +62,14 @@ class StrategyAnalyzerTestHelper {
         assertEquals(settings.contextClassName, pattern.getContext().getName());
         assertEquals(
                 settings.contextfile,
-                new File(settings.codeDir, pattern.getContext().getFilePart().getFile().getPath())
+                new File(pattern.getContext().getFilePart().getFile().getPath())
         );
 
         //Check the interface
         assertEquals(settings.interfaceName, pattern.getStrategyInterface().getName());
         assertEquals(
                 settings.interfaceFile,
-                new File(settings.codeDir, pattern.getStrategyInterface().getFilePart().getFile().getPath())
+                new File(pattern.getStrategyInterface().getFilePart().getFile().getPath())
         );
 
         assertEquals(settings.strategies.size(), pattern.getStrategies().size());
@@ -87,7 +80,7 @@ class StrategyAnalyzerTestHelper {
 
             for (ClassOrInterface classOrInterface : pattern.getStrategies()){
 
-                File fullPathFile = new File(settings.codeDir, classOrInterface.getFilePart().getFile().getPath());
+                File fullPathFile = new File(classOrInterface.getFilePart().getFile().getPath());
                 if (classOrInterface.getName().equals(strategyName)){
 
                     //Check if the file is the same

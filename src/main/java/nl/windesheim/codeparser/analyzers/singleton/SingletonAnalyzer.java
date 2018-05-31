@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FilePart;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -106,13 +107,17 @@ public class SingletonAnalyzer extends PatternAnalyzer {
         Singleton singleton = new Singleton();
 
         if (compilationUnit.getStorage().isPresent() && classDeclaration.getRange().isPresent()) {
-            String fileName = compilationUnit.getStorage().get().getFileName();
-            File file = new File(fileName);
+            File file = compilationUnit.getStorage().get().getPath().toFile();
 
             FilePart filePart = new FilePart().setFile(file);
             filePart.setRange(classDeclaration.getRange().get());
 
-            singleton.setFilePart(filePart);
+            ClassOrInterface classOrInterface = new ClassOrInterface()
+                    .setFilePart(filePart)
+                    .setDeclaration(classDeclaration)
+                    .setName(classDeclaration.getName().asString());
+
+            singleton.setSingletonClass(classOrInterface);
         }
 
         return singleton;
