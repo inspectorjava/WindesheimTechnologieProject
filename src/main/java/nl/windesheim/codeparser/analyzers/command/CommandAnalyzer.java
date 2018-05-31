@@ -46,13 +46,14 @@ public class CommandAnalyzer extends PatternAnalyzer {
      */
     public CommandAnalyzer() {
         super();
+
         parentFinder = new EligibleCommonParentFinder();
+        implFinder = new ImplementationOrSuperclassFinder();
     }
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         typeSolver = getParent().getTypeSolver();
-        implFinder = new ImplementationOrSuperclassFinder(typeSolver);
 
         ArrayList<IDesignPattern> patterns = new ArrayList<IDesignPattern>();
 
