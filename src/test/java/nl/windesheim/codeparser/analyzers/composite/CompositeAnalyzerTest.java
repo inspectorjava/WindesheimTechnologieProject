@@ -1,6 +1,5 @@
 package nl.windesheim.codeparser.analyzers.composite;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.CompositePattern;
