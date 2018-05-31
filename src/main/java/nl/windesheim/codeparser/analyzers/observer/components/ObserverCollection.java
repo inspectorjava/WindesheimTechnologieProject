@@ -45,8 +45,9 @@ public class ObserverCollection {
         return attachMethods;
     }
 
-    public void addAttachMethod(final MethodDeclaration attach) {
+    public ObserverCollection addAttachMethod(final MethodDeclaration attach) {
         this.attachMethods.add(attach);
+        return this;
     }
 
     public boolean hasDetachMethods () {
@@ -57,8 +58,9 @@ public class ObserverCollection {
         return detachMethods;
     }
 
-    public void addDetachMethod(final MethodDeclaration detach) {
+    public ObserverCollection addDetachMethod(final MethodDeclaration detach) {
         this.detachMethods.add(detach);
+        return this;
     }
 
     public boolean hasNotificationMethods () {
@@ -69,8 +71,9 @@ public class ObserverCollection {
         return notificationMethods;
     }
 
-    public void addNotificationMethod(final NotificationMethod notify) {
+    public ObserverCollection addNotificationMethod(final NotificationMethod notify) {
         this.notificationMethods.add(notify);
+        return this;
     }
 
     public boolean isObserverCollection () {

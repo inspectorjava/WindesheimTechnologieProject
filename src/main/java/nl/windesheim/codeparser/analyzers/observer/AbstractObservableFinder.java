@@ -4,6 +4,8 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.MethodUsage;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -67,7 +69,7 @@ public class AbstractObservableFinder
 
             // If an abstract observable has been found, store info
             if (!observerCollections.isEmpty()) {
-                abstractObservables.add(new AbstractObservable(classDeclaration, observerCollections));
+                abstractObservables.add(new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections));
             }
         }
     }

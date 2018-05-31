@@ -1,10 +1,12 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
@@ -31,15 +33,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         typeSolver = getParent().getTypeSolver();
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
+        // Find 'abstract observable' classes
         AbstractObservableFinder abstractObservableFinder = new AbstractObservableFinder(typeSolver);
-
-        //  Subject
-            //  Een Subject is een (abstracte) klasse met de volgende kenmerken:
-            //  Bevat een collectie van objecten
-            //  Bevat een methode om objecten aan deze collectie toe te voegen (attach)
-            //  Bevat een methode om objecten uit deze collectie te verwijderen (detach)
-            //  Bevat een notify-methode, een methode waarin voor alle objecten in de collectie een bepaalde methode (update) wordt aangeroepen.
-            //  Het is mogelijk dat het subject als een interface is gedefinieerd, in dat geval moeten de attach, detach en notify-methodes door het interface worden afgedwongen, en moeten deze op bovenstaande manier worden geïmplementeerd door de realisaties van de interface.
 
         for (CompilationUnit compilationUnit : files) {
             abstractObservableFinder.visit(compilationUnit, null);
@@ -47,13 +42,25 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         List<AbstractObservable> abstractObservables = abstractObservableFinder.getAbstractObservables();
 
+        // Search for classes that extend the AbstractObservable
+        // TODO Figure something out for the built-in Observable class
+        ImplementationOrSuperclassFinder superFinder = new ImplementationOrSuperclassFinder(typeSolver);
+
+        ConcreteObservableFinder concreteObservableFinder = new ConcreteObservableFinder(typeSolver, abstractObservables);
+
+        // TODO Modify ImplementationOrSuperclassFinder to check for more ClassOrInterfaceDeclarations at once
         for (AbstractObservable abstractObservable : abstractObservables) {
-            System.out.println("Found abstract observable: " + abstractObservable.getClassDeclaration().getNameAsString()
-                    + " which has " + abstractObservable.getObserverCollections().size() + " observer collections");
+            for (CompilationUnit compilationUnit : files) {
+                concreteObservableFinder.visit(compilationUnit, null);
+            }
         }
 
-        //  ConcreteSubject
-            //  Als een klasse een uitbreiding is van de Java-klasse Observable, is dit ook een aanknopingspunt om verder te zoeken naar de implementatie van het Observer-patroon. In dit geval wordt de naam die als generic type wordt meegegeven aan de Observable gezien als als typenaam van de Observer-klasse (*checken*).
+        for (AbstractObservable abstractObservable : abstractObservables) {
+            System.out.println("Abstract Observable: " + abstractObservable.getClassType().getQualifiedName());
+            System.out.println("\tNumber of observer collections: " + abstractObservable.getObserverCollections().size());
+            System.out.println("\tNumber of subclasses: " + abstractObservable.getConcreteClasses().size());
+        }
+
 
         //  Observer
             //  Om te weten of we te maken hebben met een observer pattern, moeten we weten of er ook klasses zijn gedefinieerd die als observers dienen. Een observer voldoet aan de volgende kenmerken:

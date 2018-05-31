@@ -3,15 +3,9 @@ package nl.windesheim.codeparser.analyzers.observer.components;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 
-import java.util.List;
-
 public class NotificationMethod {
     private MethodDeclaration methodDeclaration;
     private MethodCallExpr methodCall;
-
-    public NotificationMethod () {
-        this(null, null);
-    }
 
     public NotificationMethod (final MethodDeclaration methodDeclaration, final MethodCallExpr methodCall) {
         this.methodDeclaration = methodDeclaration;
