@@ -1,6 +1,7 @@
 package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
@@ -25,13 +26,13 @@ public class HasContextTest {
     @Test
     public void getReport() {
         String report = this.contextDecorator.getReport();
-        assertEquals("Pattern: NONE found with certainty: NOT - Context: " + this.context.getName() + "\n\r", report);
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOT - Context: " + this.context.getName() + "\n\r", report);
     }
 
     @Test
     public void buildTreeReport() {
         TreeBuilder builder = this.contextDecorator.buildTreeReport(new TreeBuilder());
         TreeNode node = builder.build();
-        assertEquals("Context: " + this.context, builder.build().getFirstChild().toString());
+        assertEquals("Context: " + this.context.getName(), builder.build().getFirstChild().toString());
     }
 }

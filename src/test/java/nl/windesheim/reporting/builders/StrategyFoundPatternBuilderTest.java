@@ -3,6 +3,7 @@ package nl.windesheim.reporting.builders;
 import static org.junit.Assert.*;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ public class StrategyFoundPatternBuilderTest {
 
         IFoundPatternReport foundPatternReport = strategyFoundPatternBuilder.buildReport();
 
-        assertEquals("Pattern: STRATEGY found with certainty: NOTStrategy: Strategy1\n\r" +
+        assertEquals("Pattern: " + DesignPatternType.STRATEGY +" found with certainty: NOTStrategy: Strategy1\n\r" +
                 "Strategy: Strategy2\n\r" +
                 " - Context: Context\n\r" +
                 " and uses interface: Interfacename", foundPatternReport.getReport());

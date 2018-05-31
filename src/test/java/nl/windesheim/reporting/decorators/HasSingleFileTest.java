@@ -2,6 +2,7 @@ package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FilePart;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
 
 import java.io.File;
@@ -17,6 +18,6 @@ public class HasSingleFileTest {
 
         HasSingleFile hasSingleFile = new HasSingleFile(new FoundPatternReport());
         hasSingleFile.setFile(new ClassOrInterface().setFilePart(part));
-        assertEquals( "Pattern: NONE found with certainty: NOT\n\rFound in file: SomeTestClass.java",hasSingleFile.getReport());
+        assertEquals( "Pattern: "+ DesignPatternType.NONE +" found with certainty: NOT\n\rFound in file: SomeTestClass.java",hasSingleFile.getReport());
     }
 }

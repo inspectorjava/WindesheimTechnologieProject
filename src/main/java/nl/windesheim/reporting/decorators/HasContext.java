@@ -42,7 +42,7 @@ public class HasContext extends FoundPatternReportDecorator {
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Context: " + this.context)
+        TreeNode node = new TreeNode("Context: " + this.context.getName())
                 .setNodeType(NodeType.CLASS)
                 .setClassOrInterface(context);
         builder.addNode(node);

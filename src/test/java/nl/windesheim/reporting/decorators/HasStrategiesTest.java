@@ -1,6 +1,7 @@
 package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
@@ -39,7 +40,7 @@ public class HasStrategiesTest {
     @Test
     public void getReport() {
         String report = this.hasStrategies.getReport();
-        assertEquals("Pattern: NONE found with certainty: NOTStrategy: Test1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOTStrategy: Test1\n\r" +
                 "Strategy: Test2\n\r" +
                 "Strategy: Test3\n\r", report);
     }
@@ -48,7 +49,7 @@ public class HasStrategiesTest {
     public void buildTreeReport() {
         TreeBuilder builder = this.hasStrategies.buildTreeReport(new TreeBuilder());
         TreeNode node = builder.build();
-        assertEquals("Pattern: NONE", node.toString());
+        assertEquals("Pattern: " + DesignPatternType.NONE, node.toString());
         assertEquals("Strategies", node.getFirstChild().toString());
         assertEquals("Test1", node.getFirstChild().getFirstChild().toString());
         assertEquals("Test2", node.getFirstChild().getFirstChild().getNextSibling().toString());
