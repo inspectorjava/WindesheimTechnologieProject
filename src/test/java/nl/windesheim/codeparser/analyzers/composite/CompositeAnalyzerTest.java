@@ -1,7 +1,9 @@
 package nl.windesheim.codeparser.analyzers.composite;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,22 +25,82 @@ public class CompositeAnalyzerTest {
     }
 
     @Test
-    public void analyze() {
+    public void testSimpleComposite() {
         try {
-            this.test(new File(classLoader.getResource("composite/composite").getPath()));
+
+            File dir = new File(classLoader.getResource("composite/simpleComposite").getPath());
+            Path directoryPath = dir.toPath();
+
+            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
+            analyzer.addChild(new CompositeAnalyzer());
+
+            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+
+            List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
+
+            assertEquals(1, patterns.size());
+
+            CompositePattern compositePattern = (CompositePattern) patterns.get(0);
+
+            assertEquals(CompositePattern.class.getName(), compositePattern.getClass().getName());
+
+            assertEquals("Employee", compositePattern.getComponent().getNameAsString());
+            assertEquals("Manager", compositePattern.getComposites().get(0).getNameAsString());
+            assertEquals("Developer", compositePattern.getLeafs().get(0).getNameAsString());
+
         } catch (IOException e) {
-            System.out.println(e);
+            fail("IO Exception" + e.getMessage());
         }
     }
 
-    private List<IDesignPattern> test(File dir) throws IOException {
-        Path directoryPath = dir.toPath();
+    @Test
+    public void testShapeComposite() {
+        try {
 
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new CompositeAnalyzer());
+            File dir = new File(classLoader.getResource("composite/shapeComposite").getPath());
+            Path directoryPath = dir.toPath();
 
-        FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
+            analyzer.addChild(new CompositeAnalyzer());
 
-        return provider.analyzeDirectory(directoryPath);
+            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+
+            List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
+
+            assertEquals(1, patterns.size());
+
+            CompositePattern compositePattern = (CompositePattern) patterns.get(0);
+
+            assertEquals(CompositePattern.class.getName(), compositePattern.getClass().getName());
+
+            assertEquals("Shape", compositePattern.getComponent().getNameAsString());
+            assertEquals("Drawing", compositePattern.getComposites().get(0).getNameAsString());
+            assertEquals("StrangeDrawing", compositePattern.getComposites().get(1).getNameAsString());
+            assertEquals("Triangle", compositePattern.getLeafs().get(0).getNameAsString());
+            assertEquals("Circle", compositePattern.getLeafs().get(1).getNameAsString());
+
+        } catch (IOException e) {
+            fail("IO Exception" + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testNotAComposite() {
+        try {
+
+            File dir = new File(classLoader.getResource("composite/notAComposite").getPath());
+            Path directoryPath = dir.toPath();
+
+            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
+            analyzer.addChild(new CompositeAnalyzer());
+
+            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+
+            List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
+
+            assertEquals(0, patterns.size());
+        } catch (IOException e) {
+            fail("IO Exception" + e.getMessage());
+        }
     }
 }

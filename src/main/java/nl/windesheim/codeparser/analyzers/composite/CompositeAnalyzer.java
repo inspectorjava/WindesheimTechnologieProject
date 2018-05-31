@@ -2,9 +2,10 @@ package nl.windesheim.codeparser.analyzers.composite;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.FindAllInterfaces;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
+import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
@@ -35,33 +36,57 @@ public class CompositeAnalyzer extends PatternAnalyzer {
 
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
 
-        FindSelfReferringListDeclaration selfReferringVisitor = new FindSelfReferringListDeclaration();
+        List<IDesignPattern> designPatterns = new ArrayList<>();
+
+        // Get all interfaces
+        List<ClassOrInterfaceDeclaration> allInterfaceDeclarations = FindAllInterfaces.inFiles(files);
 
 
+        for (ClassOrInterfaceDeclaration interfaceDeclaration : allInterfaceDeclarations) {
+            ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
+            for (CompilationUnit file : files) {
+                implFinder.visit(file, interfaceDeclaration);
+            }
 
-        // Find component class
+            List<ClassOrInterfaceDeclaration> interfaceImplementations = implFinder.getClasses();
 
-        // 1. Find all interfaces.
-        // 2. Find all implementations of interface.
-        // 3. Find list implementations in implementations of interface.
-        // 4. Check if list type is of interface type of 1.
-        // 5. All implementations (3.) that aren't using a list of interface (1.) are leafs
+            // Declare lists of possible leafs and composites
+            List<ClassOrInterfaceDeclaration> potentialFoundLeafs = new ArrayList<>();
+            List<ClassOrInterfaceDeclaration> potentialFoundComposites = new ArrayList<>();
 
-        for (CompilationUnit file : files) {
-            for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration : file.findAll(ClassOrInterfaceDeclaration.class)) {
-                if (!classOrInterfaceDeclaration.isInterface()) {
-                    continue;
+            // Find list<> in each of the classes that implement it
+            for (ClassOrInterfaceDeclaration interfaceImplementation : interfaceImplementations) {
+                FindSelfReferringListDeclaration selfReferringVisitor = new FindSelfReferringListDeclaration();
+                selfReferringVisitor.visit(interfaceImplementation, interfaceDeclaration);
+                if (selfReferringVisitor.getFieldDeclerations().size() > 0) {
+                    potentialFoundComposites.add(interfaceImplementation);
+                } else {
+                    potentialFoundLeafs.add(interfaceImplementation);
                 }
+            }
 
-                ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
-                //selfReferringVisitor.visit(classOrInterfaceDeclaration, classOrInterfaceDeclaration);
+            if (potentialFoundComposites.size() > 0) {
+                CompositePattern compositePattern = createComposite(interfaceDeclaration, potentialFoundComposites, potentialFoundLeafs);
+                designPatterns.add(compositePattern);
             }
         }
 
-        List<FieldDeclaration> fieldDeclarations = selfReferringVisitor.getFieldDeclerations();
+        return designPatterns;
+    }
 
-        //System.out.println(fieldDeclarations);
 
-        return new ArrayList<>();
+    /**
+     * Create a composite pattern.
+     * @param component found component
+     * @param composites found composites
+     * @param leafs found leafs
+     * @return CompositePattern
+     */
+    private CompositePattern createComposite(
+            final ClassOrInterfaceDeclaration component,
+            final List<ClassOrInterfaceDeclaration> composites,
+            final List<ClassOrInterfaceDeclaration> leafs
+    ) {
+        return new CompositePattern(component, composites, leafs);
     }
 }

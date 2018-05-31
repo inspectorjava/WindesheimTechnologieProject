@@ -2,16 +2,14 @@ package nl.windesheim.codeparser.analyzers.composite;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import nl.windesheim.codeparser.ClassOrInterface;
-
+import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +21,14 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
 
 
     /**
-     * field declerations
+     * field declerations.
      */
     private List<FieldDeclaration> fieldDeclerations;
 
     /**
      * Default constructor.
      */
-    public FindSelfReferringListDeclaration() {
+    FindSelfReferringListDeclaration() {
         this.fieldDeclerations = new ArrayList<>();
     }
 
@@ -49,6 +47,7 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
                 continue;
             }
 
+            // Get type of property
             ResolvedReferenceTypeDeclaration typeDeclaration
                     = ((ResolvedReferenceType) resolvedType).getTypeDeclaration();
 
@@ -70,23 +69,25 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
             Type type = classOrInterfaceType.getTypeArguments().get().get(0);
             ResolvedType resolvedListType = type.resolve();
 
-            //if (resolvedListType instanceof ) {
+            // If type of list e.g. List<Foo> == compositeClass we found the right list
+            String listType = ((ReferenceTypeImpl) resolvedListType).getQualifiedName();
+            String conName = compositeClass.getName().toString();
 
-            //}
-            //variableDeclaration.getType().resolve().equals()
 
+            // Check if it isnt and return if possible
+            if (!listType.equals(conName)) {
+                continue;
+            }
 
+            this.fieldDeclerations.add(fieldDeclaration);
         }
-
-
-        this.fieldDeclerations.add(fieldDeclaration);
     }
 
     /**
      * Get field declarations.
      * @return
      */
-    public List<FieldDeclaration> getFieldDeclerations() {
+    List<FieldDeclaration> getFieldDeclerations() {
         return fieldDeclerations;
     }
 }
