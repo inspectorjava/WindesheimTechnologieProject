@@ -34,6 +34,6 @@ public class HasInterfaceTest {
         TreeBuilder builder = this.hasInterface.buildTreeReport(new TreeBuilder());
         TreeNode node = builder.build();
         assertEquals("Pattern: "+ DesignPatternType.NONE, node.toString());
-        assertEquals("INTERFACE: " + this.interfaceInstance.getName(), node.getFirstChild().toString());
+        assertEquals("Interface: " + this.interfaceInstance.getName(), node.getFirstChild().toString());
     }
 }
