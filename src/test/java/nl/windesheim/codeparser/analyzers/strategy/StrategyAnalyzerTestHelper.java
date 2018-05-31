@@ -62,14 +62,14 @@ class StrategyAnalyzerTestHelper {
         assertEquals(settings.contextClassName, pattern.getContext().getName());
         assertEquals(
                 settings.contextfile,
-                new File(settings.codeDir, pattern.getContext().getFilePart().getFile().getPath())
+                new File(pattern.getContext().getFilePart().getFile().getPath())
         );
 
         //Check the interface
         assertEquals(settings.interfaceName, pattern.getStrategyInterface().getName());
         assertEquals(
                 settings.interfaceFile,
-                new File(settings.codeDir, pattern.getStrategyInterface().getFilePart().getFile().getPath())
+                new File(pattern.getStrategyInterface().getFilePart().getFile().getPath())
         );
 
         assertEquals(settings.strategies.size(), pattern.getStrategies().size());
@@ -80,7 +80,7 @@ class StrategyAnalyzerTestHelper {
 
             for (ClassOrInterface classOrInterface : pattern.getStrategies()){
 
-                File fullPathFile = new File(settings.codeDir, classOrInterface.getFilePart().getFile().getPath());
+                File fullPathFile = new File(classOrInterface.getFilePart().getFile().getPath());
                 if (classOrInterface.getName().equals(strategyName)){
 
                     //Check if the file is the same
