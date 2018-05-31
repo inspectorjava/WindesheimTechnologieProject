@@ -10,14 +10,9 @@ import java.util.List;
 public class Command implements IDesignPattern {
 
     /**
-     * The file part which contains the context class of the command pattern.
-     */
-    private ClassOrInterface context;
-
-    /**
      * The file part which contains the command interface.
      */
-    private ClassOrInterface commandInterface;
+    private ClassOrInterface commandParent;
 
     /**
      * A list of file command files.
@@ -25,34 +20,23 @@ public class Command implements IDesignPattern {
     private List<ClassOrInterface> commands;
 
     /**
-     * @return the context of the command pattern
+     * A list of file who receives the command execution.
      */
-    public ClassOrInterface getContext() {
-        return context;
+    private List<ClassOrInterface> receivers;
+
+    /**
+     * @return the definition of the command method.
+     */
+    public ClassOrInterface getCommandParent() {
+        return commandParent;
     }
 
     /**
-     * @param context the context of the command pattern
+     * @param commandParent the definition of the command method.
      * @return this
      */
-    public Command setContext(final ClassOrInterface context) {
-        this.context = context;
-        return this;
-    }
-
-    /**
-     * @return the command action listener interface of the command pattern
-     */
-    public ClassOrInterface getCommandInterface() {
-        return commandInterface;
-    }
-
-    /**
-     * @param commandInterface the command action listener of the command pattern
-     * @return this
-     */
-    public Command setCommandInterface(final ClassOrInterface commandInterface) {
-        this.commandInterface = commandInterface;
+    public Command setCommandParent(final ClassOrInterface commandParent) {
+        this.commandParent = commandParent;
         return this;
     }
 
@@ -69,6 +53,22 @@ public class Command implements IDesignPattern {
      */
     public Command setCommands(final List<ClassOrInterface> commands) {
         this.commands = commands;
+        return this;
+    }
+
+    /**
+     * @return a list of file who receives the command execution.
+     */
+    public List<ClassOrInterface> getReceivers() {
+        return receivers;
+    }
+
+    /**
+     * @param receivers a list of file who receives the command execution.
+     * @return this
+     */
+    public Command setReceivers(List<ClassOrInterface> receivers) {
+        this.receivers = receivers;
         return this;
     }
 }
