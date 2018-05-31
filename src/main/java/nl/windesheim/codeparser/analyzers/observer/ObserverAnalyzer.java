@@ -56,11 +56,10 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             System.out.println("\tNumber of subclasses: " + observerPattern.getConcreteObservables().size());
         }
 
-        //  ObserverPattern
-            //  Om te weten of we te maken hebben met een observer pattern, moeten we weten of er ook klasses zijn gedefinieerd die als observers dienen. Een observer voldoet aan de volgende kenmerken:
-            //  De klasse is van hetzelfde type als de collectie van observers in Subject, of als generic meegegeven aan de klasse Observable (*checken*).
-            //  Bevat een update-methode, of dwingt deze af (zie ConcreteObserver).
-            //  Bevat een referentie naar de Subject, of een van zn subclasses.
+        AbstractObserverFinder abstractObserverFinder = new AbstractObserverFinder(typeSolver, observerPatterns);
+        for (CompilationUnit compilationUnit : files) {
+            abstractObserverFinder.visit(compilationUnit, null);
+        }
 
 
         //  ConcreteObserver
