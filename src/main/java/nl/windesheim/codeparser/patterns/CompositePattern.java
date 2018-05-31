@@ -49,9 +49,11 @@ public class CompositePattern implements IDesignPattern {
     /**
      * Set component.
      * @param component Component in composite pattern.
+     * @return CompositePattern the pattern
      */
-    public void setComponent(final ClassOrInterfaceDeclaration component) {
+    public CompositePattern setComponent(final ClassOrInterfaceDeclaration component) {
         this.component = component;
+        return this;
     }
 
     /**
@@ -65,9 +67,11 @@ public class CompositePattern implements IDesignPattern {
     /**
      * Set composites.
      * @param composites Composites in composite pattern.
+     * @return CompositePattern the pattern
      */
-    public void setComposites(final List<ClassOrInterfaceDeclaration> composites) {
+    public CompositePattern setComposites(final List<ClassOrInterfaceDeclaration> composites) {
         this.composites = composites;
+        return this;
     }
 
     /**
@@ -81,8 +85,10 @@ public class CompositePattern implements IDesignPattern {
     /**
      * set Leafs.
      * @param leafs Leafs in composite pattern.
+     * @return CompositePattern
      */
-    public void setLeafs(final List<ClassOrInterfaceDeclaration> leafs) {
+    public CompositePattern setLeafs(final List<ClassOrInterfaceDeclaration> leafs) {
         this.leafs = leafs;
+        return this;
     }
 }

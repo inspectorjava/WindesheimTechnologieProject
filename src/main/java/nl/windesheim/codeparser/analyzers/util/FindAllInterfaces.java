@@ -14,19 +14,19 @@ public class FindAllInterfaces {
     /**
      * List of classOrInterfaceDeclarations.
      */
-    private List<ClassOrInterfaceDeclaration> classOrInterfaceDeclarations;
+    private final List<ClassOrInterfaceDeclaration> clsOrInterfDeclrs;
 
     /**
      * Files to be searched.
      */
-    private List<CompilationUnit> files;
+    private final List<CompilationUnit> files;
 
     /**
      * Default constructor.
      * @param files files to be searched.
      */
     public FindAllInterfaces(final List<CompilationUnit> files) {
-        this.classOrInterfaceDeclarations = new ArrayList<>();
+        this.clsOrInterfDeclrs = new ArrayList<>();
         this.files = files;
     }
 
@@ -46,7 +46,7 @@ public class FindAllInterfaces {
      * @return list of interfaces.
      */
     public List<ClassOrInterfaceDeclaration> getInterfaces() {
-        return this.classOrInterfaceDeclarations;
+        return this.clsOrInterfDeclrs;
     }
 
     /**
@@ -55,13 +55,13 @@ public class FindAllInterfaces {
     public void find() {
         for (CompilationUnit file : this.files) {
             // Iterate over each of the class/interface declaration in the file
-            for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration
+            for (ClassOrInterfaceDeclaration clsOrInterfDecl
                     : file.findAll(ClassOrInterfaceDeclaration.class)) {
                 // Stop when the declration isnt an interface
-                if (!classOrInterfaceDeclaration.isInterface()) {
+                if (!clsOrInterfDecl.isInterface()) {
                     continue;
                 }
-                this.classOrInterfaceDeclarations.add(classOrInterfaceDeclaration);
+                this.clsOrInterfDeclrs.add(clsOrInterfDecl);
             }
         }
     }

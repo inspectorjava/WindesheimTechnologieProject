@@ -17,57 +17,40 @@ import java.util.List;
 public class CompositeAnalyzer extends PatternAnalyzer {
 
     @Override
-
-    /* A composite class is made of the following components
-
-    - A composite class
-        declares interface for objects in composition.
-        implements default behaviour for the interface common to all classes as appropriate.
-        declares an interface for accessing and managing its child components.
-    - A base class or interface
-        defines behaviour for components having children.
-        stores child components.
-        implements child related operations in the component interface.
-    - Leaf classes
-        represents leaf objects in the composition.
-        A leaf has no children.
-        defines behaviour for primitive objects in the composition
-     */
-
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
 
         List<IDesignPattern> designPatterns = new ArrayList<>();
 
         // Get all interfaces
-        List<ClassOrInterfaceDeclaration> allInterfaceDeclarations = FindAllInterfaces.inFiles(files);
+        List<ClassOrInterfaceDeclaration> allInterfaceDeclr = FindAllInterfaces.inFiles(files);
 
 
-        for (ClassOrInterfaceDeclaration interfaceDeclaration : allInterfaceDeclarations) {
+        for (ClassOrInterfaceDeclaration interfaceDeclr : allInterfaceDeclr) {
             ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
             for (CompilationUnit file : files) {
-                implFinder.visit(file, interfaceDeclaration);
+                implFinder.visit(file, interfaceDeclr);
             }
 
-            List<ClassOrInterfaceDeclaration> interfaceImplementations = implFinder.getClasses();
+            List<ClassOrInterfaceDeclaration> interfaceImpl = implFinder.getClasses();
 
-            // Declare lists of possible leafs and composites
-            List<ClassOrInterfaceDeclaration> potentialFoundLeafs = new ArrayList<>();
-            List<ClassOrInterfaceDeclaration> potentialFoundComposites = new ArrayList<>();
+            // Declare lists of potential leafs and composites
+            List<ClassOrInterfaceDeclaration> potLeafs = new ArrayList<>();
+            List<ClassOrInterfaceDeclaration> potComposites = new ArrayList<>();
 
             // Find list<> in each of the classes that implement it
-            for (ClassOrInterfaceDeclaration interfaceImplementation : interfaceImplementations) {
-                FindSelfReferringListDeclaration selfReferringVisitor = new FindSelfReferringListDeclaration();
-                selfReferringVisitor.visit(interfaceImplementation, interfaceDeclaration);
-                if (selfReferringVisitor.getFieldDeclerations().size() > 0) {
-                    potentialFoundComposites.add(interfaceImplementation);
+            for (ClassOrInterfaceDeclaration interfaceIntr : interfaceImpl) {
+                FindSelfReferringListDeclaration selfRefVisitor = new FindSelfReferringListDeclaration();
+                selfRefVisitor.visit(interfaceIntr, interfaceDeclr);
+                if (selfRefVisitor.getFieldDeclerations().size() > 0) {
+                    potComposites.add(interfaceIntr);
                 } else {
-                    potentialFoundLeafs.add(interfaceImplementation);
+                    potLeafs.add(interfaceIntr);
                 }
             }
 
-            if (potentialFoundComposites.size() > 0) {
+            if (!potComposites.isEmpty()) {
                 CompositePattern compositePattern
-                        = createComposite(interfaceDeclaration, potentialFoundComposites, potentialFoundLeafs);
+                        = createComposite(interfaceDeclr, potComposites, potLeafs);
                 designPatterns.add(compositePattern);
             }
         }

@@ -21,15 +21,17 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
 
 
     /**
-     * field declerations.
+     * field declarations.
      */
-    private List<FieldDeclaration> fieldDeclerations;
+    private final List<FieldDeclaration> fieldDeclarations;
 
     /**
      * Default constructor.
      */
-    FindSelfReferringListDeclaration() {
-        this.fieldDeclerations = new ArrayList<>();
+    public FindSelfReferringListDeclaration() {
+        super();
+        // Set a new array
+        this.fieldDeclarations = new ArrayList<>();
     }
 
     @Override
@@ -41,8 +43,8 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
 
         // Sub type of lists and generic type of sub class
 
-        for (VariableDeclarator variableDeclaration : fieldDeclaration.getVariables()) {
-            ResolvedType resolvedType = variableDeclaration.getType().resolve();
+        for (VariableDeclarator varDeclaration : fieldDeclaration.getVariables()) {
+            ResolvedType resolvedType = varDeclaration.getType().resolve();
             if (!resolvedType.isReferenceType()) {
                 continue;
             }
@@ -56,17 +58,17 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
                 continue;
             }
 
-            if (!(variableDeclaration.getType() instanceof ClassOrInterfaceType)) {
+            if (!(varDeclaration.getType() instanceof ClassOrInterfaceType)) {
                 continue;
             }
 
-            ClassOrInterfaceType classOrInterfaceType = (ClassOrInterfaceType) variableDeclaration.getType();
-            if (!classOrInterfaceType.getTypeArguments().isPresent()) {
+            ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) varDeclaration.getType();
+            if (!interfaceType.getTypeArguments().isPresent()) {
                 continue;
             }
 
 
-            Type type = classOrInterfaceType.getTypeArguments().get().get(0);
+            Type type = interfaceType.getTypeArguments().get().get(0);
             ResolvedType resolvedListType = type.resolve();
 
             // If type of list e.g. List<Foo> == compositeClass we found the right list
@@ -79,7 +81,7 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
                 continue;
             }
 
-            this.fieldDeclerations.add(fieldDeclaration);
+            this.fieldDeclarations.add(fieldDeclaration);
         }
     }
 
@@ -87,7 +89,7 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
      * Get field declarations.
      * @return list of fielddeclarations
      */
-    List<FieldDeclaration> getFieldDeclerations() {
-        return fieldDeclerations;
+    public List<FieldDeclaration> getFieldDeclerations() {
+        return fieldDeclarations;
     }
 }
