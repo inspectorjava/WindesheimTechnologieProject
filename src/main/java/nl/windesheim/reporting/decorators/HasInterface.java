@@ -1,6 +1,8 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.NodeType;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
@@ -12,7 +14,7 @@ public class HasInterface extends FoundPatternReportDecorator {
     /**
      * interface Name.
      */
-    private String interfaceName;
+    private ClassOrInterface interfaceName;
 
     /**
      * Default constructor.
@@ -26,7 +28,7 @@ public class HasInterface extends FoundPatternReportDecorator {
      * Set the interface name.
      * @param interfaceName the interface name.
      */
-    public void setInterfaceName(final String interfaceName) {
+    public void setInterfaceName(final ClassOrInterface interfaceName) {
         this.interfaceName = interfaceName;
     }
 
@@ -35,12 +37,14 @@ public class HasInterface extends FoundPatternReportDecorator {
      * @return interface report.
      */
     public String getReport() {
-        return super.getReport() + " and uses interface: " + this.interfaceName;
+        return super.getReport() + " and uses interface: " + this.interfaceName.getName();
     }
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Interface: " + this.interfaceName);
+        TreeNode node = new TreeNode("INTERFACE: " + this.interfaceName.getName())
+                .setClassOrInterface(interfaceName)
+                .setNodeType(NodeType.INTERFACE);
         builder.addNode(node);
         return super.buildTreeReport(builder);
     }

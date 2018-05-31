@@ -1,5 +1,6 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
@@ -13,20 +14,20 @@ import static org.junit.Assert.*;
 
 public class HasStrategiesTest {
 
-    private String strategy1;
-    private String strategy2;
-    private String strategy3;
+    private ClassOrInterface strategy1;
+    private ClassOrInterface strategy2;
+    private ClassOrInterface strategy3;
 
     private HasStrategies hasStrategies;
 
     @Before
     public void setUp() throws Exception {
         this.hasStrategies = new HasStrategies(new FoundPatternReport());
-        this.strategy1 = "Test1";
-        this.strategy2 = "Test2";
-        this.strategy3 = "Test3";
+        this.strategy1 = new ClassOrInterface().setName("Test1");
+        this.strategy2 = new ClassOrInterface().setName("Test2");
+        this.strategy3 = new ClassOrInterface().setName("Test3");
 
-        List<String> strategies = new ArrayList<>();
+        List<ClassOrInterface> strategies = new ArrayList<>();
 
         strategies.add(this.strategy1);
         strategies.add(this.strategy2);

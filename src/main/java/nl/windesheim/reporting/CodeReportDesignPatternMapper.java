@@ -10,9 +10,6 @@ import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Map the result from analyzers and return the correct builder.
  */
@@ -47,16 +44,10 @@ public class CodeReportDesignPatternMapper {
      * @return Strategy builder
      */
     private AbstractFoundPatternBuilder buildStrategyBuilder(final Strategy pattern) {
-        String interfaceName = pattern.getStrategyInterface().getName();
-        String context = pattern.getContext().getName();
-        List<String> files = new ArrayList<>();
-        List<String> strategies = new ArrayList<>();
+        ClassOrInterface interfaceName = pattern.getStrategyInterface();
+        ClassOrInterface context = pattern.getContext();
 
-        for (ClassOrInterface strategy : pattern.getStrategies()) {
-            strategies.add(strategy.getName());
-        }
-
-        return new StrategyFoundPatternBuilder(files, context, interfaceName, strategies);
+        return new StrategyFoundPatternBuilder(context, interfaceName, pattern.getStrategies());
     }
 
     /**
@@ -65,9 +56,7 @@ public class CodeReportDesignPatternMapper {
      * @return Singleton builder
      */
     private AbstractFoundPatternBuilder buildSingletonBuilder(final Singleton pattern) {
-        ClassOrInterface filePart = pattern.getSingletonClass();
-        String fileName = filePart.getFilePart().getFile().getName();
-        return new SingletonFoundPatternBuilder(fileName);
+        return new SingletonFoundPatternBuilder(pattern.getSingletonClass());
     }
 
     /**
@@ -76,14 +65,6 @@ public class CodeReportDesignPatternMapper {
      * @return ChainOfResponsibilityBuilder
      */
     private AbstractFoundPatternBuilder buildChainOfResponsibilityBuilder(final ChainOfResponsibility pattern) {
-
-        List<String> links = new ArrayList<>();
-
-
-        for (ClassOrInterface link : pattern.getChainLinks()) {
-            links.add(link.getName());
-        }
-
-        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent().getName(), links);
+        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent(), pattern.getChainLinks());
     }
 }
