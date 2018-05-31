@@ -6,8 +6,10 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
@@ -28,7 +30,6 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
     public void visit (ClassOrInterfaceDeclaration classDeclaration, Void arg) {
         // TODO Lookup van observercollection optimaliseren
         ResolvedReferenceTypeDeclaration classTypeDeclaration = classDeclaration.resolve();
-        System.out.println("Checking " + classTypeDeclaration.getQualifiedName());
 
         // Check whether the class is being called somewhere in an observercollection
         for (ObserverPattern observerPattern : observerPatterns) {
@@ -39,32 +40,28 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                 ResolvedReferenceTypeDeclaration parameterType = observerCollection.getParameterType().getTypeDeclaration();
 
                 if (parameterType.equals(classTypeDeclaration)) {
-                    System.out.println("- Found as parameter type in " + abstractObservable.getResolvedTypeDeclaration().getQualifiedName());
-
-                    // Class or interface contains the update-method as called in the notification method
-                    // TODO Efficienter fixen
-                    List<NotificationMethod> notificationMethods = observerCollection.getNotificationMethods();
-
-                    Set<ResolvedMethodDeclaration> methods = classTypeDeclaration.getDeclaredMethods();
-                    for (ResolvedMethodDeclaration method : methods) {
-                        System.out.println("-- " + method.getQualifiedSignature());
-
-                        for (NotificationMethod notificationMethod : notificationMethods) {
-                            ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
-
-                            if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
-                                System.out.println("Update-methode komt overeen");
-                            } else {
-                                System.out.println("Update-methode komt niet overeen");
-                            }
-                        }
-                    }
-
-                    // Bevat een referentie naar de Subject, of een van zn subclasses (nodig?)
+                    AbstractObserver abstractObserver = new AbstractObserver(classDeclaration, classTypeDeclaration);
+                    findUpdateMethod(abstractObserver, observerPattern, observerCollection);
                 }
             }
         }
+    }
 
-        System.out.println();
+    public void findUpdateMethod (final AbstractObserver abstractObserver, final ObserverPattern observerPattern, final ObserverCollection observerCollection) {
+        // TODO Efficienter maken?
+        // Class or interface contains the update-method as called in the notification method
+        List<NotificationMethod> notificationMethods = observerCollection.getNotificationMethods();
+
+        Set<ResolvedMethodDeclaration> methods = abstractObserver.getResolvedTypeDeclaration().getDeclaredMethods();
+        for (ResolvedMethodDeclaration method : methods) {
+            for (NotificationMethod notificationMethod : notificationMethods) {
+                ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
+
+                if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
+                    abstractObserver.setUpdateMethod(resolvedNotificationMethod);
+                    observerPattern.setAbstractObserver(abstractObserver);
+                }
+            }
+        }
     }
 }

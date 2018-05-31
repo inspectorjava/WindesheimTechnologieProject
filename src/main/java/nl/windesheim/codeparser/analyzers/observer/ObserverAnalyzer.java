@@ -50,22 +50,25 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             concreteObservableFinder.visit(compilationUnit, null);
         }
 
-        for (ObserverPattern observerPattern : observerPatterns) {
-            System.out.println("Abstract Observable: " + observerPattern.getAbstractObservable().getResolvedTypeDeclaration().getQualifiedName());
-            System.out.println("\tNumber of observer collections: " + observerPattern.getAbstractObservable().getObserverCollections().size());
-            System.out.println("\tNumber of subclasses: " + observerPattern.getConcreteObservables().size());
-        }
-
         AbstractObserverFinder abstractObserverFinder = new AbstractObserverFinder(typeSolver, observerPatterns);
         for (CompilationUnit compilationUnit : files) {
             abstractObserverFinder.visit(compilationUnit, null);
         }
 
+        for (ObserverPattern observerPattern : observerPatterns) {
+            System.out.println("Abstract Observable: " + observerPattern.getAbstractObservable().getResolvedTypeDeclaration().getQualifiedName());
+            System.out.println("\tNumber of observer collections: " + observerPattern.getAbstractObservable().getObserverCollections().size());
+            System.out.println("\tNumber of subclasses: " + observerPattern.getConcreteObservables().size());
+            System.out.println("\tAbstract Observer: " + observerPattern.getAbstractObserver().getResolvedTypeDeclaration().getQualifiedName());
+        }
+
 
         //  ConcreteObserver
             //  Bevat een referentie naar de Subject of een van zijn subclasses. Deze referentie mag in de superclass staan.
-            //          Implementeert een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
+            //          Implementeert of overerft een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
             //  Het is mogelijk dat een klasse de in Java ingebouwde interface ObserverPattern implementeert, dit is een goede aanwijzing dat we te maken hebben met een ObserverPattern.
+
+            // Bevat een referentie naar de Subject, of een van zn subclasses (nodig?)
 
         return new ArrayList<>();
     }

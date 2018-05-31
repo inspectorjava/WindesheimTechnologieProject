@@ -87,4 +87,13 @@ public class ObserverPattern implements IDesignPattern {
         this.concreteObservables.add(concreteObservable);
         return this;
     }
+
+    public AbstractObserver getAbstractObserver () {
+        return abstractObserver;
+    }
+
+    public ObserverPattern setAbstractObserver (final AbstractObserver abstractObserver) {
+        this.abstractObserver = abstractObserver;
+        return this;
+    }
 }
