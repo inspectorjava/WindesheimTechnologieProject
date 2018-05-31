@@ -111,6 +111,13 @@ public class FileAnalysisProvider {
     }
 
     /**
+     * @return a list of errors encountered while analyzing
+     */
+    public List<Exception> getErrors() {
+        return analyzer.getErrors();
+    }
+
+    /**
      * @return a default preconfigured FileAnalysisProvider
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {

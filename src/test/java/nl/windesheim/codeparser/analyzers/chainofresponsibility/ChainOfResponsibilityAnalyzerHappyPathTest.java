@@ -55,7 +55,7 @@ public class ChainOfResponsibilityAnalyzerHappyPathTest {
         assertEquals(settings.commonParentName, pattern.getCommonParent().getName());
         assertEquals(
                 settings.commonParentFile,
-                new File(settings.codeDir, pattern.getCommonParent().getFilePart().getFile().getPath())
+                new File(pattern.getCommonParent().getFilePart().getFile().getPath())
         );
 
         assertEquals(settings.links.size(), pattern.getChainLinks().size());
@@ -66,7 +66,7 @@ public class ChainOfResponsibilityAnalyzerHappyPathTest {
 
             for (ClassOrInterface classOrInterface : pattern.getChainLinks()){
 
-                File fullPathFile = new File(settings.codeDir, classOrInterface.getFilePart().getFile().getPath());
+                File fullPathFile = new File(classOrInterface.getFilePart().getFile().getPath());
                 if (classOrInterface.getName().equals(linkName)){
 
                     //Check if the file is the same

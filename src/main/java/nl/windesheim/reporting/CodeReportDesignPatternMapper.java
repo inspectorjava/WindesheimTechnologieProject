@@ -1,7 +1,6 @@
 package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.FilePart;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
@@ -66,8 +65,8 @@ public class CodeReportDesignPatternMapper {
      * @return Singleton builder
      */
     private AbstractFoundPatternBuilder buildSingletonBuilder(final Singleton pattern) {
-        FilePart filePart = pattern.getFilePart();
-        String fileName = filePart.getFile().getName();
+        ClassOrInterface filePart = pattern.getSingletonClass();
+        String fileName = filePart.getFilePart().getFile().getName();
         return new SingletonFoundPatternBuilder(fileName);
     }
 
