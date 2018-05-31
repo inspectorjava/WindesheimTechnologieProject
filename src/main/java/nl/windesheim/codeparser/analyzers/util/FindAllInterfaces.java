@@ -12,7 +12,7 @@ import java.util.List;
 public class FindAllInterfaces {
 
     /**
-     * List of classOrInterfaceDeclarations
+     * List of classOrInterfaceDeclarations.
      */
     private List<ClassOrInterfaceDeclaration> classOrInterfaceDeclarations;
 
@@ -32,8 +32,8 @@ public class FindAllInterfaces {
 
     /**
      * A easy-to-read and call static method.
-     * @param files
-     * @return
+     * @param files compilationunits
+     * @return list of interfaces
      */
     public static List<ClassOrInterfaceDeclaration> inFiles(final List<CompilationUnit> files) {
         FindAllInterfaces finder = new FindAllInterfaces(files);
@@ -55,7 +55,8 @@ public class FindAllInterfaces {
     public void find() {
         for (CompilationUnit file : this.files) {
             // Iterate over each of the class/interface declaration in the file
-            for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration : file.findAll(ClassOrInterfaceDeclaration.class)) {
+            for (ClassOrInterfaceDeclaration classOrInterfaceDeclaration
+                    : file.findAll(ClassOrInterfaceDeclaration.class)) {
                 // Stop when the declration isnt an interface
                 if (!classOrInterfaceDeclaration.isInterface()) {
                     continue;

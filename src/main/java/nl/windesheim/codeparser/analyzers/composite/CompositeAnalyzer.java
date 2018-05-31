@@ -66,7 +66,8 @@ public class CompositeAnalyzer extends PatternAnalyzer {
             }
 
             if (potentialFoundComposites.size() > 0) {
-                CompositePattern compositePattern = createComposite(interfaceDeclaration, potentialFoundComposites, potentialFoundLeafs);
+                CompositePattern compositePattern
+                        = createComposite(interfaceDeclaration, potentialFoundComposites, potentialFoundLeafs);
                 designPatterns.add(compositePattern);
             }
         }

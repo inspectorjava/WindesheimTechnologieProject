@@ -1,4 +1,4 @@
 /**
- * Analyze a Composite pattern
+ * Analyze a Composite pattern.
  */
 package nl.windesheim.codeparser.analyzers.composite;

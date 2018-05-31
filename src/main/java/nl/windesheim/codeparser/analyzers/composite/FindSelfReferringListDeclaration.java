@@ -85,7 +85,7 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
 
     /**
      * Get field declarations.
-     * @return
+     * @return list of fielddeclarations
      */
     List<FieldDeclaration> getFieldDeclerations() {
         return fieldDeclerations;
