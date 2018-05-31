@@ -20,9 +20,6 @@ public class CommandAnalyzerHappyPathTest {
         TestSettings settings = new TestSettings();
         settings.codeDir = new File(classLoader.getResource("command/switch").getPath());
 
-        settings.contextClassName = "PressSwitch";
-        settings.contextfile = new File(classLoader.getResource("command/switch/PressSwitch.java").getPath());
-
         settings.interfaceName = "Command";
         settings.interfaceFile = new File(classLoader.getResource("command/switch/Command.java").getPath());
 
@@ -35,6 +32,11 @@ public class CommandAnalyzerHappyPathTest {
                 new File(classLoader.getResource("command/switch/FlipDownCommand.java").getPath())
         );
 
+        settings.receivers.put(
+                "Light",
+                new File(classLoader.getResource("command/switch/Light.java").getPath())
+        );
+
         helper.testCommandPattern(settings);
     }
 
@@ -42,9 +44,6 @@ public class CommandAnalyzerHappyPathTest {
     public void testSwitchJava8Command() throws IOException {
         TestSettings settings = new TestSettings();
         settings.codeDir = new File(classLoader.getResource("command/switchJava8").getPath());
-
-        settings.contextClassName = "Main";
-        settings.contextfile = new File(classLoader.getResource("command/switchJava8/Main.java").getPath());
 
         settings.interfaceName = "Command";
         settings.interfaceFile = new File(classLoader.getResource("command/switchJava8/Command.java").getPath());
@@ -54,29 +53,7 @@ public class CommandAnalyzerHappyPathTest {
 
     @Test
     public void testDemoCommand() throws IOException {
-        TestSettings settings = new TestSettings();
-        settings.codeDir = new File(classLoader.getResource("command/commandDemo").getPath());
-
-        settings.contextClassName = "CommandDemo";
-        settings.contextfile = new File(classLoader.getResource("command/commandDemo/CommandDemo.java").getPath());
-
-        settings.interfaceName = "Command";
-        settings.interfaceFile = new File(classLoader.getResource("command/commandDemo/Command.java").getPath());
-
-        settings.commands.put(
-                "DomesticEngineer",
-                new File(classLoader.getResource("command/commandDemo/DomesticEngineer.java").getPath())
-        );
-        settings.commands.put(
-                "Politician",
-                new File(classLoader.getResource("command/commandDemo/Politician.java").getPath())
-        );
-        settings.commands.put(
-                "Programmer",
-                new File(classLoader.getResource("command/commandDemo/Programmer.java").getPath())
-        );
-
-        helper.testCommandPattern(settings);
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("command/commandDemo").getPath()));
     }
 
 }
