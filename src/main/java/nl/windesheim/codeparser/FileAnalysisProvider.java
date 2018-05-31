@@ -13,7 +13,6 @@ import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsib
 import nl.windesheim.codeparser.analyzers.command.CommandAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
-import nl.windesheim.codeparser.patterns.Command;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.File;

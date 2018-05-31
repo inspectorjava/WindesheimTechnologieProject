@@ -67,7 +67,7 @@ public class Command implements IDesignPattern {
      * @param receivers a list of file who receives the command execution.
      * @return this
      */
-    public Command setReceivers(List<ClassOrInterface> receivers) {
+    public Command setReceivers(final List<ClassOrInterface> receivers) {
         this.receivers = receivers;
         return this;
     }
