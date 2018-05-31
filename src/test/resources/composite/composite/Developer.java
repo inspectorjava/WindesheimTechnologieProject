@@ -1,4 +1,3 @@
-package nl.windesheim.codeparser.resources.composite.composite;
 /**
  * In this class,there are many methods which are not applicable to developer because
  * it is a leaf node.

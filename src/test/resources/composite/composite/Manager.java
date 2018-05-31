@@ -1,4 +1,3 @@
-package nl.windesheim.codeparser.resources.composite.composite;
 
 import java.util.ArrayList;
 import java.util.Iterator;
