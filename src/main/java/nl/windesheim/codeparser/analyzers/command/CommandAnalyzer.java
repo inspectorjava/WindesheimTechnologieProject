@@ -39,7 +39,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
     /**
      * A parentFinder which searches for implementations of a interface.
      */
-    private ImplementationOrSuperclassFinder implFinder;
+    private final ImplementationOrSuperclassFinder implFinder;
 
     /**
      * Command analyzer constructor.
@@ -53,6 +53,8 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
+        clearErrors();
+
         typeSolver = getParent().getTypeSolver();
 
         ArrayList<IDesignPattern> patterns = new ArrayList<IDesignPattern>();
@@ -182,6 +184,10 @@ public class CommandAnalyzer extends PatternAnalyzer {
             implFinder.reset();
             implFinder.visit(compilationUnit, parent);
             links.addAll(implFinder.getClasses());
+
+            for (Exception e : implFinder.getErrors()) {
+                addError(e);
+            }
         }
 
         return links;

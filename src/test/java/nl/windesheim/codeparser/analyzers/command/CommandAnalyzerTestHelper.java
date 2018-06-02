@@ -1,11 +1,7 @@
 package nl.windesheim.codeparser.analyzers.command;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.Command;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -13,39 +9,25 @@ import nl.windesheim.codeparser.patterns.IDesignPattern;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 class CommandAnalyzerTestHelper {
-    private ClassLoader classLoader;
+    private FileAnalysisProvider provider;
 
     CommandAnalyzerTestHelper() {
-        classLoader = this.getClass().getClassLoader();
+        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
+        composite.addChild(new CommandAnalyzer());
+
+        provider = new FileAnalysisProvider(composite);
     }
 
-    List<IDesignPattern> analyzeDirectory(File dir) throws IOException {
+    List<IDesignPattern> analyzeDirectory(File dir) throws IOException{
         Path directoryPath = dir.toPath();
 
-        SourceRoot sourceRoot = new SourceRoot(directoryPath);
-        sourceRoot.tryToParse();
-
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new CommandAnalyzer());
-
-        //The type solver can now solve types from the standard library and the code we are analyzing
-        CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        combinedTypeSolver.add(new ReflectionTypeSolver());
-        combinedTypeSolver.add(new JavaParserTypeSolver(directoryPath));
-
-        analyzer.setTypeSolver(combinedTypeSolver);
-
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.addAll(sourceRoot.getCompilationUnits());
-
-        return analyzer.analyze(compilationUnits);
+        return provider.analyzeDirectory(directoryPath);
     }
 
     /**
