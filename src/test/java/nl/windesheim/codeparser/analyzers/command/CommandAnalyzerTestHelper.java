@@ -43,11 +43,13 @@ class CommandAnalyzerTestHelper {
 
         Command pattern = (Command) patterns.get(0);
 
+        File f = new File(pattern.getCommandParent().getFilePart().getFile().getPath());
+
         // Test the interface.
         assertEquals(settings.interfaceName, pattern.getCommandParent().getName());
         assertEquals(
                 settings.interfaceFile,
-                new File(settings.codeDir, pattern.getCommandParent().getFilePart().getFile().getPath())
+                new File(pattern.getCommandParent().getFilePart().getFile().getPath())
         );
 
         // Test if all the commands are present.
@@ -56,7 +58,7 @@ class CommandAnalyzerTestHelper {
         for (String commandName : settings.commands.keySet()) {
             File expectedFile = settings.commands.get(commandName);
 
-            if (!checkIfClassExists(pattern, settings.codeDir, commandName, expectedFile)) {
+            if (!checkIfClassExists(pattern.getCommands(), commandName, expectedFile)) {
                 fail("Missing command class '" + commandName + "' which was expected to be found in '" + expectedFile + "'");
             }
         }
@@ -67,7 +69,7 @@ class CommandAnalyzerTestHelper {
         for (String commandReceivers : settings.receivers.keySet()) {
             File expectedFile = settings.receivers.get(commandReceivers);
 
-            if (!checkIfClassExists(pattern, settings.codeDir, commandReceivers, expectedFile)) {
+            if (!checkIfClassExists(pattern.getReceivers(), commandReceivers, expectedFile)) {
                 fail("Missing receiver class '" + commandReceivers + "' which was expected to be found in '" + expectedFile + "'");
             }
         }
@@ -86,18 +88,17 @@ class CommandAnalyzerTestHelper {
 
     /**
      * Check if the file exists in the files directory.
-     * @param pattern Command pattern definition.
-     * @param codeDir Code directory with the test resources.
+     * @param classes List of classes with the expected class.
      * @param name Name for the current class.
      * @param expectedFile Expected filename.
      * @return If the expected class exists.
      */
-    protected boolean checkIfClassExists(Command pattern, File codeDir, String name, File expectedFile) {
+    protected boolean checkIfClassExists(List<ClassOrInterface> classes, String name, File expectedFile) {
         boolean contains = false;
 
-        for (ClassOrInterface classOrInterface : pattern.getCommands()) {
+        for (ClassOrInterface classOrInterface : classes) {
 
-            File fullPathFile = new File(codeDir, classOrInterface.getFilePart().getFile().getPath());
+            File fullPathFile = new File(classOrInterface.getFilePart().getFile().getPath());
             if (classOrInterface.getName().equals(name)) {
 
                 // Check if the file is the same.

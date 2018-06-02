@@ -2,7 +2,6 @@ package nl.windesheim.codeparser.analyzers.command;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
@@ -13,7 +12,9 @@ import nl.windesheim.codeparser.patterns.Command;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This analyzer tries to detect a command pattern.
@@ -42,6 +43,11 @@ public class CommandAnalyzer extends PatternAnalyzer {
     private final ImplementationOrSuperclassFinder implFinder;
 
     /**
+     * A command receiver finder inside the command body.
+     */
+    private final CommandReceiverFinder commandReceiver;
+
+    /**
      * Command analyzer constructor.
      */
     public CommandAnalyzer() {
@@ -49,6 +55,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
         parentFinder = new EligibleCommonParentFinder();
         implFinder = new ImplementationOrSuperclassFinder();
+        commandReceiver = new CommandReceiverFinder();
     }
 
     @Override
@@ -76,22 +83,19 @@ public class CommandAnalyzer extends PatternAnalyzer {
             }
 
             List<ClassOrInterfaceDeclaration> commands = new ArrayList<>();
-            List<ClassOrInterfaceDeclaration> receivers = new ArrayList<>();
+            Set<ClassOrInterfaceDeclaration> receivers = new HashSet<>();
 
             // Check if methods of the parent contains a reference to the receiver.
             for (ClassOrInterfaceDeclaration implementation : implementations) {
                 commands.add(implementation);
 
-                // Get the methods from the interface.
-                for (MethodDeclaration methodDefinition : commandDefinition.getMethods()) {
-                    String methodName = methodDefinition.getNameAsString();
-                    List<MethodDeclaration> declarations = implementation.getMethodsByName(methodName);
-
-                    // TODO Check for the definition reference inside the declarations.
-                }
+                receivers.addAll(findCommandReceivers(commandDefinition, implementation));
             }
 
-            // TODO Test if the receives aren't empty.
+            // Whe couldn't detect the receivers for this command pattern.
+            if (receivers.isEmpty()) {
+                continue;
+            }
 
             Command command = createCommandPattern(commandDefinition, commands, receivers);
             patterns.add(command);
@@ -111,7 +115,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
     private Command createCommandPattern(
             final ClassOrInterfaceDeclaration commandParent,
             final List<ClassOrInterfaceDeclaration> commands,
-            final List<ClassOrInterfaceDeclaration> receivers
+            final Set<ClassOrInterfaceDeclaration> receivers
     ) {
         // At this point every requirement has been found to create a command pattern.
         Command commandPattern = new Command();
@@ -191,6 +195,35 @@ public class CommandAnalyzer extends PatternAnalyzer {
         }
 
         return links;
+    }
+
+    /**
+     * Finds the command receivers.
+     *
+     * @param parent the 'common parent' for which we are searching 'links'
+     * @param command the command definition.
+     * @return a list of found 'command receivers'
+     */
+    private List<ClassOrInterfaceDeclaration> findCommandReceivers(
+            final ClassOrInterfaceDeclaration parent,
+            final ClassOrInterfaceDeclaration command
+    ) {
+        ArrayList<ClassOrInterfaceDeclaration> receivers = new ArrayList<>();
+
+        if (command.findCompilationUnit().isPresent()) {
+            CompilationUnit compilationUnit = command.findCompilationUnit().get();
+
+            commandReceiver.reset();
+            commandReceiver.setTypeSolver(typeSolver);
+            commandReceiver.visit(compilationUnit, parent);
+            receivers.addAll(commandReceiver.getClasses());
+
+            for (Exception e : commandReceiver.getErrors()) {
+              addError(e);
+            }
+        }
+
+        return receivers;
     }
 
 }
