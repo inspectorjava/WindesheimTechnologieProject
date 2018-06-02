@@ -111,11 +111,13 @@ public class CommandAnalyzer extends PatternAnalyzer {
      * @param receivers     List with the receivers.
      * @return Command pattern definition.
      */
+    @SuppressWarnings("CPD-START")
     private Command createCommandPattern(
             final ClassOrInterfaceDeclaration commandParent,
             final List<ClassOrInterfaceDeclaration> commands,
             final Set<ClassOrInterfaceDeclaration> receivers
     ) {
+
         // At this point every requirement has been found to create a command pattern.
         Command commandPattern = new Command();
 
@@ -140,6 +142,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
                     .setName(receiver.getNameAsString())
                     .setDeclaration(receiver));
         }
+
 
         return commandPattern;
     }
@@ -192,6 +195,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
      * @param command the command definition.
      * @return a list of found 'command receivers'
      */
+    @SuppressWarnings("CPD-END")
     private List<ClassOrInterfaceDeclaration> findCommandReceivers(
             final ClassOrInterfaceDeclaration parent,
             final ClassOrInterfaceDeclaration command
