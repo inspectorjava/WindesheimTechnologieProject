@@ -19,7 +19,7 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     /**
      * Create the builder.
-     * @param fileName filename of the file where singleton is found
+     * @param file filename of the file where singleton is found
      */
     public SingletonFoundPatternBuilder(final ClassOrInterface file) {
         super();
