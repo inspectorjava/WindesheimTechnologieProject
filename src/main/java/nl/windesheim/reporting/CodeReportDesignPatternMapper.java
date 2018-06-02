@@ -2,10 +2,12 @@ package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
+import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
 import nl.windesheim.codeparser.patterns.Strategy;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CompositeFoundBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
@@ -33,6 +35,11 @@ public class CodeReportDesignPatternMapper {
         // Strategy
         if (pattern instanceof Strategy) {
             return buildStrategyBuilder((Strategy) pattern);
+        }
+
+        //Composite
+        if (pattern instanceof CompositePattern) {
+            return buildCompositeBuilder((CompositePattern) pattern);
         }
 
         return null;
@@ -66,5 +73,14 @@ public class CodeReportDesignPatternMapper {
      */
     private AbstractFoundPatternBuilder buildChainOfResponsibilityBuilder(final ChainOfResponsibility pattern) {
         return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent(), pattern.getChainLinks());
+    }
+
+    /**
+     * Build the CompositeFoundBuilder.
+     * @param pattern the pattern
+     * @return ChainOfResponsibilityBuilder
+     */
+    private AbstractFoundPatternBuilder buildCompositeBuilder(final CompositePattern pattern) {
+        return new CompositeFoundBuilder(pattern.getComponent(), pattern.getComposites(), pattern.getLeafs());
     }
 }

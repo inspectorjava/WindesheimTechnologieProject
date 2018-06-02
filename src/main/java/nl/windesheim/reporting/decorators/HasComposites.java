@@ -9,40 +9,40 @@ import nl.windesheim.reporting.components.TreeNode;
 import java.util.List;
 
 /**
- * Has links report decorator.
+ * Has composites report decorator.
  */
-public class HasLinks extends FoundPatternReportDecorator {
+public class HasComposites extends FoundPatternReportDecorator {
 
     /**
-     * List of links.
+     * List of composites.
      */
-    private List<ClassOrInterface> links;
+    private List<ClassOrInterface> composites;
 
 
     /**
      * Default constructor.
      * @param patternFound the decorator
      */
-    public HasLinks(final IFoundPatternReport patternFound) {
+    public HasComposites(final IFoundPatternReport patternFound) {
         super(patternFound);
     }
 
     /**
-     * Set links.
-     * @param links list of links
+     * Set composites.
+     * @param composites list of composites
      */
-    public void setLinks(final List<ClassOrInterface> links) {
-        this.links = links;
+    public void setComposites(final List<ClassOrInterface> composites) {
+        this.composites = composites;
     }
 
     /**
-     * Append the string with all links.
+     * Append the string with all composites.
      * @return appended string
      */
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (ClassOrInterface link : this.links) {
-            baseString.append("Link: ").append(link.getName()).append("\n\r");
+        for (ClassOrInterface link : this.composites) {
+            baseString.append("Composite: ").append(link.getName()).append("\n\r");
         }
 
         return baseString.toString();
@@ -50,9 +50,9 @@ public class HasLinks extends FoundPatternReportDecorator {
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Links");
+        TreeNode node = new TreeNode("Composites");
         node.setNodeType(NodeType.CLASS_LIST);
-        for (ClassOrInterface link : this.links) {
+        for (ClassOrInterface link : this.composites) {
             node.addChild(new TreeNode(link.getName())
                 .setClassOrInterface(link)
                 .setNodeType(NodeType.CLASS)

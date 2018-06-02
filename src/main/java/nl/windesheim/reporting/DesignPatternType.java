@@ -19,7 +19,11 @@ public enum DesignPatternType {
     /**
      * Chain of responsibility pattern.
      */
-    CHAIN_OF_RESPONSIBILITY("Chain of responsibility");
+    CHAIN_OF_RESPONSIBILITY("Chain of responsibility"),
+    /**
+     * Composite pattern.
+     */
+    COMPOSITE("Composite");
 
     /**
      * the name to display.
