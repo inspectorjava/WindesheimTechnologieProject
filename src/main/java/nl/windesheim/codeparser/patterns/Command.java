@@ -66,7 +66,7 @@ public class Command implements IDesignPattern {
      * @param command Single command.
      * @return this
      */
-    public Command addCommand(ClassOrInterface command) {
+    public Command addCommand(final ClassOrInterface command) {
         commands.add(command);
         return this;
     }
@@ -91,7 +91,7 @@ public class Command implements IDesignPattern {
      * @param receiver Single receiver.
      * @return this
      */
-    public Command addReceiver(ClassOrInterface receiver) {
+    public Command addReceiver(final ClassOrInterface receiver) {
         receivers.add(receiver);
         return this;
     }
