@@ -21,9 +21,9 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
      * Create the builder.
      * @param fileName filename of the file where singleton is found
      */
-    public SingletonFoundPatternBuilder(final ClassOrInterface fileName) {
+    public SingletonFoundPatternBuilder(final ClassOrInterface file) {
         super();
-        this.file = fileName;
+        this.file = file;
     }
 
     @Override
