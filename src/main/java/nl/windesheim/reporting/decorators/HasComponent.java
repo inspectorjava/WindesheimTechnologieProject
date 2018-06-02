@@ -7,45 +7,46 @@ import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
 /**
- * The found pattern has a context.
+ * Has component decorator.
  */
-public class HasContext extends FoundPatternReportDecorator {
+public class HasComponent extends FoundPatternReportDecorator {
 
     /**
-     * The context of found design pattern report.
+     * The component of found design pattern report.
      */
-    private ClassOrInterface context;
+    private ClassOrInterface component;
 
     /**
      * Decorator constructor.
      * @param foundPattern the decorator.
      */
-    public HasContext(final IFoundPatternReport foundPattern) {
+    public HasComponent(final IFoundPatternReport foundPattern) {
         super(foundPattern);
     }
 
     /**
-     * Set the context of the file.
-     * @param context the context
+     * Set the component of the file.
+     * @param component the component
      */
-    public void setContext(final ClassOrInterface context) {
-        this.context = context;
+    public void setComponent(final ClassOrInterface component) {
+        this.component = component;
     }
 
     /**
-     * Report context of given pattern.
-     * @return String context
+     * Report component of given pattern.
+     * @return String component
      */
     public String getReport() {
-        return super.getReport() + " - Context: " + this.context.getName() + "\n\r";
+        return super.getReport() + " - Component: " + this.component.getName() + "\n\r";
     }
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Context: " + this.context.getName())
+        TreeNode node = new TreeNode("Component: " + this.component.getName())
                 .setNodeType(NodeType.CLASS)
-                .setClassOrInterface(context);
+                .setClassOrInterface(component);
         builder.addNode(node);
         return super.buildTreeReport(builder);
     }
 }
+

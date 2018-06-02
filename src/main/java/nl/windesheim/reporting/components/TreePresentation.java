@@ -6,7 +6,7 @@ package nl.windesheim.reporting.components;
 public class TreePresentation {
 
     /**
-     * Root TreeNode.
+     * ROOT TreeNode.
      */
     private TreeNode root;
 

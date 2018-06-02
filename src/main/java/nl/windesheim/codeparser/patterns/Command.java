@@ -18,17 +18,12 @@ public class Command implements IDesignPattern {
     /**
      * A list of file command files.
      */
-    private List<ClassOrInterface> commands;
+    private List<ClassOrInterface> commands = new ArrayList<>();
 
     /**
      * A list of file who receives the command execution.
      */
-    private List<ClassOrInterface> receivers;
-
-    public Command() {
-        commands = new ArrayList<>();
-        receivers = new ArrayList<>();
-    }
+    private List<ClassOrInterface> receivers = new ArrayList<>();
 
     /**
      * @return the definition of the command method.

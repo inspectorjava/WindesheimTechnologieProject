@@ -1,6 +1,8 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.NodeType;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
@@ -14,7 +16,7 @@ public class HasReceivers extends FoundPatternReportDecorator {
     /**
      * List of receivers.
      */
-    private List<String> links;
+    private List<ClassOrInterface> receivers;
 
 
     /**
@@ -26,21 +28,21 @@ public class HasReceivers extends FoundPatternReportDecorator {
     }
 
     /**
-     * Set links.
-     * @param links list of links
+     * Set receivers.
+     * @param receivers list of receivers
      */
-    public void setLinks(final List<String> links) {
-        this.links = links;
+    public void setReceivers(final List<ClassOrInterface> receivers) {
+        this.receivers = receivers;
     }
 
     /**
-     * Append the string with all links.
+     * Append the string with all receivers.
      * @return appended string
      */
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (String strategy : this.links) {
-            baseString.append("Receiver: ").append(strategy).append("\n\r");
+        for (ClassOrInterface receiver : this.receivers) {
+            baseString.append("Receiver: ").append(receiver.getName()).append("\n\r");
         }
 
         return baseString.toString();
@@ -49,8 +51,12 @@ public class HasReceivers extends FoundPatternReportDecorator {
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Receivers");
-        for (String link : this.links) {
-            node.addChild(new TreeNode(link));
+        for (ClassOrInterface receiver : this.receivers) {
+            node.addChild(
+                    new TreeNode(receiver.getName())
+                        .setClassOrInterface(receiver)
+                        .setNodeType(NodeType.CLASS)
+            );
         }
         builder.addNode(node);
         return super.buildTreeReport(builder);

@@ -1,15 +1,18 @@
 package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.patterns.*;
+import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
+import nl.windesheim.codeparser.patterns.Command;
+import nl.windesheim.codeparser.patterns.CompositePattern;
+import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.codeparser.patterns.Singleton;
+import nl.windesheim.codeparser.patterns.Strategy;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
 import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CompositeFoundBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Map the result from analyzers and return the correct builder.
@@ -17,6 +20,7 @@ import java.util.List;
 public class CodeReportDesignPatternMapper {
     /**
      * Get the correct builder.
+     *
      * @param pattern IDesignPattern result
      * @return AbstractFoundPatternBuilder builder of matched result
      */
@@ -41,76 +45,66 @@ public class CodeReportDesignPatternMapper {
             return buildCommandBuilder((Command) pattern);
         }
 
+        //Composite
+        if (pattern instanceof CompositePattern) {
+            return buildCompositeBuilder((CompositePattern) pattern);
+        }
+
         return null;
     }
 
     /**
      * Build the strategy builder.
+     *
      * @param pattern strategy pattern
      * @return Strategy builder
      */
     private AbstractFoundPatternBuilder buildStrategyBuilder(final Strategy pattern) {
-        String interfaceName = pattern.getStrategyInterface().getName();
-        String context = pattern.getContext().getName();
-        List<String> files = new ArrayList<>();
-        List<String> strategies = new ArrayList<>();
+        ClassOrInterface interfaceName = pattern.getStrategyInterface();
+        ClassOrInterface context = pattern.getContext();
 
-        for (ClassOrInterface strategy : pattern.getStrategies()) {
-            strategies.add(strategy.getName());
-        }
-
-        return new StrategyFoundPatternBuilder(files, context, interfaceName, strategies);
+        return new StrategyFoundPatternBuilder(context, interfaceName, pattern.getStrategies());
     }
 
     /**
      * Build the singleton builder.
+     *
      * @param pattern singleton pattern
      * @return Singleton builder
      */
     private AbstractFoundPatternBuilder buildSingletonBuilder(final Singleton pattern) {
-        ClassOrInterface filePart = pattern.getSingletonClass();
-        String fileName = filePart.getFilePart().getFile().getName();
-        return new SingletonFoundPatternBuilder(fileName);
+        return new SingletonFoundPatternBuilder(pattern.getSingletonClass());
     }
 
     /**
      * Build the ChainOfResponsbilityBuilder.
+     *
      * @param pattern the pattern
      * @return ChainOfResponsibilityBuilder
      */
     private AbstractFoundPatternBuilder buildChainOfResponsibilityBuilder(final ChainOfResponsibility pattern) {
+        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent(), pattern.getChainLinks());
+    }
 
-        List<String> links = new ArrayList<>();
-
-
-        for (ClassOrInterface link : pattern.getChainLinks()) {
-            links.add(link.getName());
-        }
-
-        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent().getName(), links);
+    /**
+     * Build the CompositeFoundBuilder.
+     *
+     * @param pattern the pattern
+     * @return ChainOfResponsibilityBuilder
+     */
+    private AbstractFoundPatternBuilder buildCompositeBuilder(final CompositePattern pattern) {
+        return new CompositeFoundBuilder(pattern.getComponent(), pattern.getComposites(), pattern.getLeafs());
     }
 
     /**
      * Build the Command builder.
+     *
      * @param pattern Command pattern
      * @return Command builder
      */
     private AbstractFoundPatternBuilder buildCommandBuilder(final Command pattern) {
-        String interfaceName = pattern.getCommandParent().getName();
-
-        List<String> files = new ArrayList<>();
-
-        List<String> commands = new ArrayList<>();
-        for (ClassOrInterface command : pattern.getCommands()) {
-            commands.add(command.getName());
-        }
-
-        List<String> receivers = new ArrayList<>();
-        for (ClassOrInterface command : pattern.getReceivers()) {
-            receivers.add(command.getName());
-        }
-
-        return new CommandFoundPatternBuilder(files, interfaceName, commands, receivers);
+        return new CommandFoundPatternBuilder(pattern.getCommandParent(), pattern.getCommands(),
+                pattern.getReceivers());
     }
 
 }

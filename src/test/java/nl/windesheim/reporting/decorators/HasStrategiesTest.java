@@ -1,5 +1,7 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
@@ -13,20 +15,20 @@ import static org.junit.Assert.*;
 
 public class HasStrategiesTest {
 
-    private String strategy1;
-    private String strategy2;
-    private String strategy3;
+    private ClassOrInterface strategy1;
+    private ClassOrInterface strategy2;
+    private ClassOrInterface strategy3;
 
     private HasStrategies hasStrategies;
 
     @Before
     public void setUp() throws Exception {
         this.hasStrategies = new HasStrategies(new FoundPatternReport());
-        this.strategy1 = "Test1";
-        this.strategy2 = "Test2";
-        this.strategy3 = "Test3";
+        this.strategy1 = new ClassOrInterface().setName("Test1");
+        this.strategy2 = new ClassOrInterface().setName("Test2");
+        this.strategy3 = new ClassOrInterface().setName("Test3");
 
-        List<String> strategies = new ArrayList<>();
+        List<ClassOrInterface> strategies = new ArrayList<>();
 
         strategies.add(this.strategy1);
         strategies.add(this.strategy2);
@@ -38,7 +40,7 @@ public class HasStrategiesTest {
     @Test
     public void getReport() {
         String report = this.hasStrategies.getReport();
-        assertEquals("Pattern: NONE found with certainty: NOTStrategy: Test1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOTStrategy: Test1\n\r" +
                 "Strategy: Test2\n\r" +
                 "Strategy: Test3\n\r", report);
     }
@@ -47,7 +49,7 @@ public class HasStrategiesTest {
     public void buildTreeReport() {
         TreeBuilder builder = this.hasStrategies.buildTreeReport(new TreeBuilder());
         TreeNode node = builder.build();
-        assertEquals("Pattern: NONE", node.toString());
+        assertEquals("Pattern: " + DesignPatternType.NONE, node.toString());
         assertEquals("Strategies", node.getFirstChild().toString());
         assertEquals("Test1", node.getFirstChild().getFirstChild().toString());
         assertEquals("Test2", node.getFirstChild().getFirstChild().getNextSibling().toString());

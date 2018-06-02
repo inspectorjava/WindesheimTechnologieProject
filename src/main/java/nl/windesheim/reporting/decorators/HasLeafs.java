@@ -9,40 +9,40 @@ import nl.windesheim.reporting.components.TreeNode;
 import java.util.List;
 
 /**
- * Has command report decorator.
+ * Has leafs report decorator.
  */
-public class HasCommands extends FoundPatternReportDecorator {
+public class HasLeafs extends FoundPatternReportDecorator {
 
     /**
-     * List of commands.
+     * List of leafs.
      */
-    private List<ClassOrInterface> commands;
+    private List<ClassOrInterface> leafs;
 
 
     /**
      * Default constructor.
      * @param patternFound the decorator
      */
-    public HasCommands(final IFoundPatternReport patternFound) {
+    public HasLeafs(final IFoundPatternReport patternFound) {
         super(patternFound);
     }
 
     /**
-     * Set commands.
-     * @param commands list of commands
+     * Set leafs.
+     * @param leafs list of leafs
      */
-    public void setCommands(final List<ClassOrInterface> commands) {
-        this.commands = commands;
+    public void setLeafs(final List<ClassOrInterface> leafs) {
+        this.leafs = leafs;
     }
 
     /**
-     * Append the string with all commands.
+     * Append the string with all leafs.
      * @return appended string
      */
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (ClassOrInterface command : this.commands) {
-            baseString.append("Command: ").append(command.getName()).append("\n\r");
+        for (ClassOrInterface link : this.leafs) {
+            baseString.append("Leaf: ").append(link.getName()).append("\n\r");
         }
 
         return baseString.toString();
@@ -50,13 +50,12 @@ public class HasCommands extends FoundPatternReportDecorator {
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Commands");
+        TreeNode node = new TreeNode("Leafs");
         node.setNodeType(NodeType.CLASS_LIST);
-        for (ClassOrInterface command : this.commands) {
-            node.addChild(
-                    new TreeNode(command.getName())
-                        .setNodeType(NodeType.CLASS)
-                        .setClassOrInterface(command)
+        for (ClassOrInterface link : this.leafs) {
+            node.addChild(new TreeNode(link.getName())
+                .setClassOrInterface(link)
+                .setNodeType(NodeType.CLASS)
             );
         }
         builder.addNode(node);
