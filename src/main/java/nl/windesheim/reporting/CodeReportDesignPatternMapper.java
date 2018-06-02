@@ -2,11 +2,13 @@ package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
+import nl.windesheim.codeparser.patterns.Command;
 import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
 import nl.windesheim.codeparser.patterns.Strategy;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
 import nl.windesheim.reporting.builders.CompositeFoundBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
@@ -18,6 +20,7 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 public class CodeReportDesignPatternMapper {
     /**
      * Get the correct builder.
+     *
      * @param pattern IDesignPattern result
      * @return AbstractFoundPatternBuilder builder of matched result
      */
@@ -37,6 +40,11 @@ public class CodeReportDesignPatternMapper {
             return buildStrategyBuilder((Strategy) pattern);
         }
 
+        // Command
+        if (pattern instanceof Command) {
+            return buildCommandBuilder((Command) pattern);
+        }
+
         //Composite
         if (pattern instanceof CompositePattern) {
             return buildCompositeBuilder((CompositePattern) pattern);
@@ -47,6 +55,7 @@ public class CodeReportDesignPatternMapper {
 
     /**
      * Build the strategy builder.
+     *
      * @param pattern strategy pattern
      * @return Strategy builder
      */
@@ -59,6 +68,7 @@ public class CodeReportDesignPatternMapper {
 
     /**
      * Build the singleton builder.
+     *
      * @param pattern singleton pattern
      * @return Singleton builder
      */
@@ -68,6 +78,7 @@ public class CodeReportDesignPatternMapper {
 
     /**
      * Build the ChainOfResponsbilityBuilder.
+     *
      * @param pattern the pattern
      * @return ChainOfResponsibilityBuilder
      */
@@ -77,10 +88,23 @@ public class CodeReportDesignPatternMapper {
 
     /**
      * Build the CompositeFoundBuilder.
+     *
      * @param pattern the pattern
      * @return ChainOfResponsibilityBuilder
      */
     private AbstractFoundPatternBuilder buildCompositeBuilder(final CompositePattern pattern) {
         return new CompositeFoundBuilder(pattern.getComponent(), pattern.getComposites(), pattern.getLeafs());
     }
+
+    /**
+     * Build the Command builder.
+     *
+     * @param pattern Command pattern
+     * @return Command builder
+     */
+    private AbstractFoundPatternBuilder buildCommandBuilder(final Command pattern) {
+        return new CommandFoundPatternBuilder(pattern.getCommandParent(), pattern.getCommands(),
+                pattern.getReceivers());
+    }
+
 }
