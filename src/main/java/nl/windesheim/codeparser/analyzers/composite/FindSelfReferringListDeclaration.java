@@ -9,6 +9,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 
 import java.util.ArrayList;
@@ -62,13 +63,18 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
             Type type = interfaceType.getTypeArguments().get().get(0);
             ResolvedType resolvedListType = type.resolve();
 
-            // If type of list e.g. List<Foo> == compositeClass we found the right list
-            String listType = ((ReferenceTypeImpl) resolvedListType).getQualifiedName();
-            String conName = compositeClass.getName().toString();
+            if (!(resolvedListType instanceof ReferenceTypeImpl)) {
+                continue;
+            }
 
+            ResolvedReferenceTypeDeclaration refTypeDecl = ((ReferenceTypeImpl) type.resolve())
+                    .getTypeDeclaration();
 
-            // Check if it isnt and return if possible
-            if (!listType.equals(conName)) {
+            if (!(refTypeDecl instanceof JavaParserInterfaceDeclaration)) {
+                continue;
+            }
+
+            if (!((JavaParserInterfaceDeclaration) refTypeDecl).getWrappedNode().equals(compositeClass)) {
                 continue;
             }
 
