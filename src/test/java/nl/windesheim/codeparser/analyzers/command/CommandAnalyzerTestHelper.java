@@ -67,10 +67,8 @@ class CommandAnalyzerTestHelper {
         assertEquals(settings.receivers.size(), pattern.getReceivers().size());
 
         for (String commandReceivers : settings.receivers.keySet()) {
-            File expectedFile = settings.receivers.get(commandReceivers);
-
-            if (!checkIfClassExists(pattern.getReceivers(), commandReceivers, expectedFile)) {
-                fail("Missing receiver class '" + commandReceivers + "' which was expected to be found in '" + expectedFile + "'");
+            if (!checkIfClassExists(pattern.getReceivers(), commandReceivers)) {
+                fail("Missing receiver class '" + commandReceivers + "'");
             }
         }
     }
@@ -111,6 +109,23 @@ class CommandAnalyzerTestHelper {
         }
 
         return contains;
+    }
+
+    /**
+     * Check if the class exists.
+     * @param classes List of classes with the expected class.
+     * @param name Name for the current class.
+     * @return If the expected class exists.
+     */
+    protected boolean checkIfClassExists(List<ClassOrInterface> classes, String name) {
+
+        for (ClassOrInterface classOrInterface : classes) {
+            if (classOrInterface.getName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

@@ -143,7 +143,6 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
             // Resolve the file and part of the file where the receiver is defined.
             receiverParts.add(new ClassOrInterface()
-                    .setFilePart(FilePartResolver.getFilePartOfNode(receiver))
                     .setName(receiver.getNameAsString())
                     .setDeclaration(receiver));
         }
@@ -189,8 +188,8 @@ public class CommandAnalyzer extends PatternAnalyzer {
             implFinder.visit(compilationUnit, parent);
             links.addAll(implFinder.getClasses());
 
-            for (Exception e : implFinder.getErrors()) {
-                addError(e);
+            for (Exception exception: implFinder.getErrors()) {
+                addError(exception);
             }
         }
 

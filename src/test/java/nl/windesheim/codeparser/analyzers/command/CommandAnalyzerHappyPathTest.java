@@ -40,20 +40,26 @@ public class CommandAnalyzerHappyPathTest {
         helper.testCommandPattern(settings);
     }
 
-    @Test
-    public void testSwitchJava8Command() throws IOException {
-        TestSettings settings = new TestSettings();
-        settings.codeDir = new File(classLoader.getResource("command/switchJava8").getPath());
-
-        settings.interfaceName = "Command";
-        settings.interfaceFile = new File(classLoader.getResource("command/switchJava8/Command.java").getPath());
-
-        helper.testCommandPattern(settings);
-    }
+//    TODO: Enable this test when we support Lambda expressions in the command pattern.
+//    @Test
+//    public void testSwitchJava8Command() throws IOException {
+//        TestSettings settings = new TestSettings();
+//        settings.codeDir = new File(classLoader.getResource("command/switchJava8").getPath());
+//
+//        settings.interfaceName = "Command";
+//        settings.interfaceFile = new File(classLoader.getResource("command/switchJava8/Command.java").getPath());
+//
+//        helper.testCommandPattern(settings);
+//    }
 
     @Test
     public void testDemoCommand() throws IOException {
         helper.testInvalidCommandPattern(new File(classLoader.getResource("command/commandDemo").getPath()));
+    }
+
+    @Test
+    public void testStrategyPattern() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/compression").getPath()));
     }
 
 }

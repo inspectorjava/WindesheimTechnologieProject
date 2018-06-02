@@ -101,6 +101,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         }
 
         ClassOrInterfaceDeclaration receiverClass = ((JavaParserClassDeclaration) referenceType).getWrappedNode();
+
         classes.add(receiverClass);
     }
 
