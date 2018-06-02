@@ -187,10 +187,6 @@ public class CommandAnalyzer extends PatternAnalyzer {
             implFinder.reset();
             implFinder.visit(compilationUnit, parent);
             links.addAll(implFinder.getClasses());
-
-            for (Exception exception: implFinder.getErrors()) {
-                addError(exception);
-            }
         }
 
         return links;
