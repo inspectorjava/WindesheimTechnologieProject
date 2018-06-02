@@ -1,11 +1,9 @@
 package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
-import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.Singleton;
-import nl.windesheim.codeparser.patterns.Strategy;
+import nl.windesheim.codeparser.patterns.*;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
@@ -36,6 +34,11 @@ public class CodeReportDesignPatternMapper {
         // Strategy
         if (pattern instanceof Strategy) {
             return buildStrategyBuilder((Strategy) pattern);
+        }
+
+        // Command
+        if (pattern instanceof Command) {
+            return buildCommandBuilder((Command) pattern);
         }
 
         return null;
@@ -86,4 +89,28 @@ public class CodeReportDesignPatternMapper {
 
         return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent().getName(), links);
     }
+
+    /**
+     * Build the Command builder.
+     * @param pattern Command pattern
+     * @return Command builder
+     */
+    private AbstractFoundPatternBuilder buildCommandBuilder(final Command pattern) {
+        String interfaceName = pattern.getCommandParent().getName();
+
+        List<String> files = new ArrayList<>();
+
+        List<String> commands = new ArrayList<>();
+        for (ClassOrInterface command : pattern.getCommands()) {
+            commands.add(command.getName());
+        }
+
+        List<String> receivers = new ArrayList<>();
+        for (ClassOrInterface command : pattern.getReceivers()) {
+            receivers.add(command.getName());
+        }
+
+        return new CommandFoundPatternBuilder(files, interfaceName, commands, receivers);
+    }
+
 }

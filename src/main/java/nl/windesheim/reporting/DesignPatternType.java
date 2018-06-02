@@ -19,5 +19,9 @@ public enum DesignPatternType {
     /**
      * Chain of responsibility pattern.
      */
-    CHAIN_OF_RESPONSIBILITY
+    CHAIN_OF_RESPONSIBILITY,
+    /**
+     * Command.
+     */
+    COMMAND
 }
