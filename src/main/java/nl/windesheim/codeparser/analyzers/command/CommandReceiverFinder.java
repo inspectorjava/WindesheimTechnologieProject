@@ -5,6 +5,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -51,6 +52,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
 
     /**
      * Set the type solver.
+     *
      * @param typeSolver Current type solver.
      */
     public void setTypeSolver(final CombinedTypeSolver typeSolver) {
@@ -87,8 +89,16 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
             return;
         }
 
-        JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(typeSolver);
-        ResolvedType resolvedType = javaSymbolSolver.calculateType(methodCall.getScope().get());
+        ResolvedType resolvedType;
+
+        try {
+            JavaSymbolSolver javaSymbolSolver = new JavaSymbolSolver(typeSolver);
+            resolvedType = javaSymbolSolver.calculateType(methodCall.getScope().get());
+        } catch (UnsolvedSymbolException exception) {
+            errors.add(exception);
+            return;
+        }
+
         // Pass only when the type is an referenced type.
         if (!(resolvedType instanceof ResolvedReferenceType)) {
             return;
@@ -107,6 +117,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
 
     /**
      * Check if the called method exists in the command definition.
+     *
      * @param methodDeclaration Delectation of the current method.
      * @param commandDefinition Definition of the command pattern.
      * @return If the method is defined in the command pattern.
