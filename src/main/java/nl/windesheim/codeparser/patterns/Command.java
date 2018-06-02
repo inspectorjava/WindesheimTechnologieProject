@@ -2,6 +2,7 @@ package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +24,11 @@ public class Command implements IDesignPattern {
      * A list of file who receives the command execution.
      */
     private List<ClassOrInterface> receivers;
+
+    public Command() {
+        commands = new ArrayList<>();
+        receivers = new ArrayList<>();
+    }
 
     /**
      * @return the definition of the command method.
@@ -57,6 +63,15 @@ public class Command implements IDesignPattern {
     }
 
     /**
+     * @param command Single command.
+     * @return this
+     */
+    public Command addCommand(ClassOrInterface command) {
+        commands.add(command);
+        return this;
+    }
+
+    /**
      * @return a list of file who receives the command execution.
      */
     public List<ClassOrInterface> getReceivers() {
@@ -71,4 +86,14 @@ public class Command implements IDesignPattern {
         this.receivers = receivers;
         return this;
     }
+
+    /**
+     * @param receiver Single receiver.
+     * @return this
+     */
+    public Command addReceiver(ClassOrInterface receiver) {
+        receivers.add(receiver);
+        return this;
+    }
+
 }

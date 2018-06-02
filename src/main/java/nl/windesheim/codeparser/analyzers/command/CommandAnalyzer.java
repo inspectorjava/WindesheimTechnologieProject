@@ -64,11 +64,11 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
         typeSolver = getParent().getTypeSolver();
 
-        ArrayList<IDesignPattern> patterns = new ArrayList<IDesignPattern>();
+        ArrayList<IDesignPattern> commandPatterns = new ArrayList<IDesignPattern>();
 
         // Without a type solver the command analyzer can't function.
         if (typeSolver == null) {
-            return patterns;
+            return commandPatterns;
         }
 
         // Get a list of classes which could be 'common parent' classes or interfaces.
@@ -97,11 +97,10 @@ public class CommandAnalyzer extends PatternAnalyzer {
                 continue;
             }
 
-            Command command = createCommandPattern(commandDefinition, commands, receivers);
-            patterns.add(command);
+            commandPatterns.add(createCommandPattern(commandDefinition, commands, receivers));
         }
 
-        return patterns;
+        return commandPatterns;
     }
 
     /**
@@ -127,26 +126,20 @@ public class CommandAnalyzer extends PatternAnalyzer {
                         .setDeclaration(commandParent)
         );
 
-        ArrayList<ClassOrInterface> commandParts = new ArrayList<>();
         for (ClassOrInterfaceDeclaration command : commands) {
-
             // Resolve the file and part of the file where the command is defined.
-            commandParts.add(new ClassOrInterface()
+            commandPattern.addCommand(new ClassOrInterface()
                     .setFilePart(FilePartResolver.getFilePartOfNode(command))
                     .setName(command.getNameAsString())
                     .setDeclaration(command));
         }
-        commandPattern.setCommands(commandParts);
 
-        ArrayList<ClassOrInterface> receiverParts = new ArrayList<>();
         for (ClassOrInterfaceDeclaration receiver : receivers) {
-
             // Resolve the file and part of the file where the receiver is defined.
-            receiverParts.add(new ClassOrInterface()
+            commandPattern.addReceiver(new ClassOrInterface()
                     .setName(receiver.getNameAsString())
                     .setDeclaration(receiver));
         }
-        commandPattern.setReceivers(receiverParts);
 
         return commandPattern;
     }
@@ -195,7 +188,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
     /**
      * Finds the command receivers.
      *
-     * @param parent the 'common parent' for which we are searching 'links'
+     * @param parent  the 'common parent' for which we are searching 'links'
      * @param command the command definition.
      * @return a list of found 'command receivers'
      */
@@ -214,7 +207,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
             receivers.addAll(commandReceiver.getClasses());
 
             for (Exception e : commandReceiver.getErrors()) {
-              addError(e);
+                addError(e);
             }
         }
 
