@@ -9,40 +9,40 @@ import nl.windesheim.reporting.components.TreeNode;
 import java.util.List;
 
 /**
- * Has links report decorator.
+ * Has leafs report decorator.
  */
-public class HasLinks extends FoundPatternReportDecorator {
+public class HasLeafs extends FoundPatternReportDecorator {
 
     /**
-     * List of links.
+     * List of leafs.
      */
-    private List<ClassOrInterface> links;
+    private List<ClassOrInterface> leafs;
 
 
     /**
      * Default constructor.
      * @param patternFound the decorator
      */
-    public HasLinks(final IFoundPatternReport patternFound) {
+    public HasLeafs(final IFoundPatternReport patternFound) {
         super(patternFound);
     }
 
     /**
-     * Set links.
-     * @param links list of links
+     * Set leafs.
+     * @param leafs list of leafs
      */
-    public void setLinks(final List<ClassOrInterface> links) {
-        this.links = links;
+    public void setLeafs(final List<ClassOrInterface> leafs) {
+        this.leafs = leafs;
     }
 
     /**
-     * Append the string with all links.
+     * Append the string with all leafs.
      * @return appended string
      */
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (ClassOrInterface link : this.links) {
-            baseString.append("Link: ").append(link.getName()).append("\n\r");
+        for (ClassOrInterface link : this.leafs) {
+            baseString.append("Leaf: ").append(link.getName()).append("\n\r");
         }
 
         return baseString.toString();
@@ -50,9 +50,9 @@ public class HasLinks extends FoundPatternReportDecorator {
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Links");
+        TreeNode node = new TreeNode("Leafs");
         node.setNodeType(NodeType.CLASS_LIST);
-        for (ClassOrInterface link : this.links) {
+        for (ClassOrInterface link : this.leafs) {
             node.addChild(new TreeNode(link.getName())
                 .setClassOrInterface(link)
                 .setNodeType(NodeType.CLASS)
