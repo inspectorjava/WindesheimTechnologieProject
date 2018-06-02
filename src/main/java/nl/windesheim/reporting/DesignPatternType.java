@@ -17,6 +17,10 @@ public enum DesignPatternType {
      */
     STRATEGY("Strategy"),
     /**
+     * Command.
+     */
+    COMMAND("Command"),
+    /**
      * Chain of responsibility pattern.
      */
     CHAIN_OF_RESPONSIBILITY("Chain of responsibility"),

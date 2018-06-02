@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -20,6 +21,10 @@ import java.util.List;
  */
 public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOrInterfaceDeclaration> {
 
+    /**
+     * A list of errors which were encountered.
+     */
+    private final List<Exception> errors = new ArrayList<>();
 
     /**
      * field declarations.
@@ -31,44 +36,34 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
         super.visit(fieldDeclaration, compositeClass);
 
         // Now we resolve some stuff
-
-
         // Sub type of lists and generic type of sub class
-
         for (VariableDeclarator varDeclaration : fieldDeclaration.getVariables()) {
-            ResolvedType resolvedType = varDeclaration.getType().resolve();
-            if (!resolvedType.isReferenceType()) {
+
+            ClassOrInterfaceType interfaceType = getListType(varDeclaration);
+
+            if (interfaceType == null) {
                 continue;
             }
-
-            // Get type of property
-            ResolvedReferenceTypeDeclaration typeDeclaration
-                    = ((ResolvedReferenceType) resolvedType).getTypeDeclaration();
-
-            // If the type of property is of List type
-            if (!(typeDeclaration.getQualifiedName().equals(List.class.getName()))) {
-                continue;
-            }
-
-            if (!(varDeclaration.getType() instanceof ClassOrInterfaceType)) {
-                continue;
-            }
-
-            ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) varDeclaration.getType();
-            if (!interfaceType.getTypeArguments().isPresent()) {
-                continue;
-            }
-
 
             Type type = interfaceType.getTypeArguments().get().get(0);
-            ResolvedType resolvedListType = type.resolve();
+            ResolvedType resolvedListType;
+            try {
+                resolvedListType = type.resolve();
+            } catch (UnsolvedSymbolException exception) {
+                continue;
+            }
 
             if (!(resolvedListType instanceof ReferenceTypeImpl)) {
                 continue;
             }
 
-            ResolvedReferenceTypeDeclaration refTypeDecl = ((ReferenceTypeImpl) type.resolve())
-                    .getTypeDeclaration();
+            ResolvedReferenceTypeDeclaration refTypeDecl;
+            try {
+                refTypeDecl = ((ReferenceTypeImpl) type.resolve())
+                        .getTypeDeclaration();
+            } catch (UnsolvedSymbolException exception) {
+                continue;
+            }
 
             if (!(refTypeDecl instanceof JavaParserInterfaceDeclaration)) {
                 continue;
@@ -83,10 +78,56 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
     }
 
     /**
+     * @param varDeclaration variable declaraion
+     * @return list type
+     */
+    private ClassOrInterfaceType getListType(final VariableDeclarator varDeclaration) {
+        ResolvedType resolvedType;
+
+        try {
+            resolvedType = varDeclaration.getType().resolve();
+        } catch (UnsolvedSymbolException exception) {
+            return null;
+        }
+
+        if (!resolvedType.isReferenceType()) {
+            return null;
+        }
+
+        // Get type of property
+        ResolvedReferenceTypeDeclaration typeDeclaration
+                = ((ResolvedReferenceType) resolvedType).getTypeDeclaration();
+
+        // If the type of property is of List type
+        if (!(typeDeclaration.getQualifiedName().equals(List.class.getName()))) {
+            return null;
+        }
+
+        if (!(varDeclaration.getType() instanceof ClassOrInterfaceType)) {
+            return null;
+        }
+
+        ClassOrInterfaceType interfaceType = (ClassOrInterfaceType) varDeclaration.getType();
+        if (!interfaceType.getTypeArguments().isPresent()) {
+            return null;
+        }
+
+        return interfaceType;
+    }
+
+    /**
      * Resets the field declarations list.
      */
     public void reset() {
         fieldDeclarations.clear();
+        errors.clear();
+    }
+
+    /**
+     * @return a list of encountered errors
+     */
+    public List<Exception> getErrors() {
+        return errors;
     }
 
     /**
