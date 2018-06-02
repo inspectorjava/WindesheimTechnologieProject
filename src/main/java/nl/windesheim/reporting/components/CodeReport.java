@@ -56,7 +56,7 @@ public class CodeReport {
     public TreePresentation getTreePresentation() {
         TreePresentation presentation = new TreePresentation();
 
-        presentation.setRoot(new TreeNode("Result"));
+        presentation.setRoot(new TreeNode("Found design patterns"));
         for (IFoundPatternReport foundReport : this.foundReports) {
             TreeNode node = foundReport.buildTreeReport(new TreeBuilder()).build();
             presentation.addNode(node);
