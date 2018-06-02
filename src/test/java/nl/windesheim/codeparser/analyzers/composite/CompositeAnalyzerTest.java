@@ -43,9 +43,9 @@ public class CompositeAnalyzerTest {
 
             assertEquals(CompositePattern.class.getName(), compositePattern.getClass().getName());
 
-            assertEquals("Employee", compositePattern.getComponent().getNameAsString());
-            assertEquals("Manager", compositePattern.getComposites().get(0).getNameAsString());
-            assertEquals("Developer", compositePattern.getLeafs().get(0).getNameAsString());
+            assertEquals("Employee", compositePattern.getComponent().getName());
+            assertEquals("Manager", compositePattern.getComposites().get(0).getName());
+            assertEquals("Developer", compositePattern.getLeafs().get(0).getName());
 
         } catch (IOException e) {
             fail("IO Exception" + e.getMessage());
@@ -72,11 +72,11 @@ public class CompositeAnalyzerTest {
 
             assertEquals(CompositePattern.class.getName(), compositePattern.getClass().getName());
 
-            assertEquals("Shape", compositePattern.getComponent().getNameAsString());
-            assertEquals("Drawing", compositePattern.getComposites().get(0).getNameAsString());
-            assertEquals("StrangeDrawing", compositePattern.getComposites().get(1).getNameAsString());
-            assertEquals("Triangle", compositePattern.getLeafs().get(0).getNameAsString());
-            assertEquals("Circle", compositePattern.getLeafs().get(1).getNameAsString());
+            assertEquals("Shape", compositePattern.getComponent().getName());
+            assertEquals("Drawing", compositePattern.getComposites().get(0).getName());
+            assertEquals("StrangeDrawing", compositePattern.getComposites().get(1).getName());
+            assertEquals("Triangle", compositePattern.getLeafs().get(0).getName());
+            assertEquals("Circle", compositePattern.getLeafs().get(1).getName());
 
         } catch (IOException e) {
             fail("IO Exception" + e.getMessage());

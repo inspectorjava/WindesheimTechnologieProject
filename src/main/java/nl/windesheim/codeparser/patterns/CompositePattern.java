@@ -1,6 +1,6 @@
 package nl.windesheim.codeparser.patterns;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import nl.windesheim.codeparser.ClassOrInterface;
 
 import java.util.List;
 
@@ -11,17 +11,17 @@ public class CompositePattern implements IDesignPattern {
     /**
      * The component of the composite pattern.
      */
-    private ClassOrInterfaceDeclaration component;
+    private ClassOrInterface component;
 
     /**
      * The composites in the composite pattern.
      */
-    private List<ClassOrInterfaceDeclaration> composites;
+    private List<ClassOrInterface> composites;
 
     /**
      * The leafs in the composite pattern.
      */
-    private List<ClassOrInterfaceDeclaration> leafs;
+    private List<ClassOrInterface> leafs;
 
     /**
      * Default constructor.
@@ -30,9 +30,9 @@ public class CompositePattern implements IDesignPattern {
      * @param leafs Leafs in composite pattern.
      */
     public CompositePattern(
-            final ClassOrInterfaceDeclaration component,
-            final List<ClassOrInterfaceDeclaration> composites,
-            final List<ClassOrInterfaceDeclaration> leafs) {
+            final ClassOrInterface component,
+            final List<ClassOrInterface> composites,
+            final List<ClassOrInterface> leafs) {
         this.setComponent(component);
         this.setComposites(composites);
         this.setLeafs(leafs);
@@ -42,7 +42,7 @@ public class CompositePattern implements IDesignPattern {
      * Get component.
      * @return component
      */
-    public ClassOrInterfaceDeclaration getComponent() {
+    public ClassOrInterface getComponent() {
         return component;
     }
 
@@ -51,7 +51,7 @@ public class CompositePattern implements IDesignPattern {
      * @param component Component in composite pattern.
      * @return CompositePattern the pattern
      */
-    public CompositePattern setComponent(final ClassOrInterfaceDeclaration component) {
+    public CompositePattern setComponent(final ClassOrInterface component) {
         this.component = component;
         return this;
     }
@@ -60,7 +60,7 @@ public class CompositePattern implements IDesignPattern {
      * Get composites.
      * @return composites
      */
-    public List<ClassOrInterfaceDeclaration> getComposites() {
+    public List<ClassOrInterface> getComposites() {
         return composites;
     }
 
@@ -69,7 +69,7 @@ public class CompositePattern implements IDesignPattern {
      * @param composites Composites in composite pattern.
      * @return CompositePattern the pattern
      */
-    public CompositePattern setComposites(final List<ClassOrInterfaceDeclaration> composites) {
+    public CompositePattern setComposites(final List<ClassOrInterface> composites) {
         this.composites = composites;
         return this;
     }
@@ -78,7 +78,7 @@ public class CompositePattern implements IDesignPattern {
      * Get leafs.
      * @return Leafs
      */
-    public List<ClassOrInterfaceDeclaration> getLeafs() {
+    public List<ClassOrInterface> getLeafs() {
         return leafs;
     }
 
@@ -87,7 +87,7 @@ public class CompositePattern implements IDesignPattern {
      * @param leafs Leafs in composite pattern.
      * @return CompositePattern
      */
-    public CompositePattern setLeafs(final List<ClassOrInterfaceDeclaration> leafs) {
+    public CompositePattern setLeafs(final List<ClassOrInterface> leafs) {
         this.leafs = leafs;
         return this;
     }

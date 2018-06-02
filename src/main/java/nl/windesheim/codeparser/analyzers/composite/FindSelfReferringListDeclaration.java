@@ -23,16 +23,7 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
     /**
      * field declarations.
      */
-    private final List<FieldDeclaration> fieldDeclarations;
-
-    /**
-     * Default constructor.
-     */
-    public FindSelfReferringListDeclaration() {
-        super();
-        // Set a new array
-        this.fieldDeclarations = new ArrayList<>();
-    }
+    private final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
     @Override
     public void visit(final FieldDeclaration fieldDeclaration, final ClassOrInterfaceDeclaration compositeClass) {
@@ -86,7 +77,15 @@ public class FindSelfReferringListDeclaration extends VoidVisitorAdapter<ClassOr
     }
 
     /**
+     * Resets the field declarations list.
+     */
+    public void reset() {
+        fieldDeclarations.clear();
+    }
+
+    /**
      * Get field declarations.
+     *
      * @return list of fielddeclarations
      */
     public List<FieldDeclaration> getFieldDeclerations() {
