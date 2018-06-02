@@ -1,7 +1,7 @@
 package nl.windesheim.reporting.components;
 
 /**
- * Interface for building found pattern classes.
+ * INTERFACE for building found pattern classes.
  */
 public interface IFoundPatternBuilder {
     /**

@@ -1,6 +1,10 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.NodeType;
+import nl.windesheim.reporting.components.TreeBuilder;
+import nl.windesheim.reporting.components.TreeNode;
 
 /**
  * Decorator for a report that has a single file.
@@ -10,7 +14,7 @@ public class HasSingleFile extends FoundPatternReportDecorator {
     /**
      * Filename of found pattern.
      */
-    private String fileName;
+    private ClassOrInterface file;
 
     /**
      * Default constructor.
@@ -22,10 +26,10 @@ public class HasSingleFile extends FoundPatternReportDecorator {
 
     /**
      * Set the filename.
-     * @param fileName pattern was found in this file.
+     * @param file pattern was found in this file.
      */
-    public void setFileName(final String fileName) {
-        this.fileName = fileName;
+    public void setFile(final ClassOrInterface file) {
+        this.file = file;
     }
 
     /**
@@ -34,8 +38,23 @@ public class HasSingleFile extends FoundPatternReportDecorator {
      */
     @Override
     public String getReport() {
-        return super.getReport() + "\n\r" + "Found in file: " + this.fileName;
+        return super.getReport() + "\n\r" + "Found in file: " + this.file.getFilePart().getFile();
     }
 
+    @Override
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
+        NodeType type;
 
+        if (file.getDeclaration().isInterface()) {
+            type = NodeType.INTERFACE;
+        } else {
+            type = NodeType.CLASS;
+        }
+
+        TreeNode node = new TreeNode(this.file.getName())
+                .setClassOrInterface(file)
+                .setNodeType(type);
+        builder.addNode(node);
+        return super.buildTreeReport(builder);
+    }
 }

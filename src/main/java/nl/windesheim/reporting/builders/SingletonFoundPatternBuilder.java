@@ -1,5 +1,6 @@
 package nl.windesheim.reporting.builders;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
@@ -12,17 +13,17 @@ import nl.windesheim.reporting.decorators.HasSingleFile;
 public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     /**
-     * Filename of file where pattern is found.
+     * file of file where pattern is found.
      */
-    private final String fileName;
+    private final ClassOrInterface file;
 
     /**
      * Create the builder.
-     * @param fileName filename of the file where singleton is found
+     * @param file filename of the file where singleton is found
      */
-    public SingletonFoundPatternBuilder(final String fileName) {
+    public SingletonFoundPatternBuilder(final ClassOrInterface file) {
         super();
-        this.fileName = fileName;
+        this.file = file;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.SINGLETON);
         HasSingleFile hasSingleFile = new HasSingleFile(patternReport);
-        hasSingleFile.setFileName(this.fileName);
+        hasSingleFile.setFile(this.file);
         return hasSingleFile;
     }
 }
