@@ -196,7 +196,14 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             }
 
             //if the field is not a reference to an other class it is not a reference to the 'common parent'
-            ResolvedType type = resolve.getType();
+            ResolvedType type;
+            try {
+                type = resolve.getType();
+            } catch (UnsolvedSymbolException exception) {
+                addError(exception);
+                continue;
+            }
+
             if (!(type instanceof ReferenceTypeImpl)) {
                 continue;
             }
