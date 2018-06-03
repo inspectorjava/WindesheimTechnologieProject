@@ -11,6 +11,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
@@ -48,26 +49,29 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         Map<ObserverCollection, List<EligibleSubscriptionParameter>> eligibleParameters = new HashMap<>();
 
         for (Parameter parameter : parameters) {
-            ResolvedType parameterType = parameter.getType().resolve();
-            if (parameterType.isReferenceType()) {
-                ResolvedReferenceType parameterReferenceType = (ResolvedReferenceType) parameterType;
-                String qualifiedName = ((ResolvedReferenceType)parameterType).getQualifiedName();
+            try {
+                ResolvedType parameterType = parameter.getType().resolve();
+                if (parameterType.isReferenceType()) {
+                    ResolvedReferenceType parameterReferenceType = (ResolvedReferenceType) parameterType;
 
-                EligibleSubscriptionParameter eligibleParameter = new EligibleSubscriptionParameter();
-                eligibleParameter.parameter = parameter;
-                eligibleParameter.resolvedReferenceType = parameterReferenceType;
+                    EligibleSubscriptionParameter eligibleParameter = new EligibleSubscriptionParameter();
+                    eligibleParameter.parameter = parameter;
+                    eligibleParameter.resolvedReferenceType = parameterReferenceType;
 
-                for (ObserverCollection observerCollection : observerCollections) {
-                    if (parameterReferenceType.getQualifiedName().equals(observerCollection.getParameterType().getQualifiedName())) {
-                        if (eligibleParameters.keySet().contains(observerCollection)) {
-                            eligibleParameters.get(observerCollection).add(eligibleParameter);
-                        } else {
-                            List<EligibleSubscriptionParameter> parameterList = new ArrayList<>();
-                            parameterList.add(eligibleParameter);
-                            eligibleParameters.put(observerCollection, parameterList);
+                    for (ObserverCollection observerCollection : observerCollections) {
+                        if (parameterReferenceType.getQualifiedName().equals(observerCollection.getParameterType().getQualifiedName())) {
+                            if (eligibleParameters.keySet().contains(observerCollection)) {
+                                eligibleParameters.get(observerCollection).add(eligibleParameter);
+                            } else {
+                                List<EligibleSubscriptionParameter> parameterList = new ArrayList<>();
+                                parameterList.add(eligibleParameter);
+                                eligibleParameters.put(observerCollection, parameterList);
+                            }
                         }
                     }
                 }
+            } catch (UnsolvedSymbolException ex) {
+                // FIXME Fix exception log
             }
         }
 
@@ -82,79 +86,82 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                 continue;
             }
 
-            Expression scopeExpression = optionalScope.get();
-            ResolvedValueDeclaration scope;
-            if (scopeExpression.isNameExpr()) {
-                scope = JavaParserFacade.get(typeSolver).solve(scopeExpression).getCorrespondingDeclaration();
-            } else if (scopeExpression.isFieldAccessExpr()) {
-                scope = scopeExpression.asFieldAccessExpr().resolve();
-            } else {
-                continue;
-            }
+            try {
+                Expression scopeExpression = optionalScope.get();
+                ResolvedValueDeclaration scope = null;
 
-            if (!(scope instanceof JavaParserFieldDeclaration)) {
-                continue;
-            }
-
-            JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
-            if (scopeSymbol.getWrappedNode() == null) {
-                continue;
-            }
-
-            FieldDeclaration scopeFieldDeclaration = scopeSymbol.getWrappedNode().asFieldDeclaration();
-            ResolvedValueDeclaration resolvedScopeFieldDeclaration = null;
-            for (VariableDeclarator fieldVariable : scopeFieldDeclaration.getVariables()) {
-                if (fieldVariable.getNameAsString().equals(scope.getName())) {
-                    resolvedScopeFieldDeclaration = fieldVariable.resolve();
+                if (scopeExpression.isNameExpr()) {
+                    scope = JavaParserFacade.get(typeSolver).solve(scopeExpression).getCorrespondingDeclaration();
+                } else if (scopeExpression.isFieldAccessExpr()) {
+                    scope = scopeExpression.asFieldAccessExpr().resolve();
                 }
-            }
 
-            // Does that method declaration operate on the add or remove method of the collection type?
-            ObserverCollection operatesOn = null;
-            for (ObserverCollection observerCollection : observerCollections) {
-                ResolvedFieldDeclaration resolvedFieldDeclaration = observerCollection.getVariableDeclarator().resolve();
-
-                if (resolvedScopeFieldDeclaration.getName().equals(observerCollection.getVariableDeclarator().resolve().getName())) {
-                    operatesOn = observerCollection;
+                if (!(scope instanceof JavaParserFieldDeclaration)) {
+                    continue;
                 }
-            }
 
-            if (operatesOn == null) {
-                continue;
-            }
-
-            // Check of het de add- of remove-methode is
-            ResolvedMethodDeclaration resolvedMethodDeclaration = JavaParserFacade.get(typeSolver).solve(methodCall).getCorrespondingDeclaration();
-            String methodDeclarationSignature = resolvedMethodDeclaration.getQualifiedSignature();
-            String collectionTypeSignature = operatesOn.getFieldType().getQualifiedName();
-
-            boolean possibleAttach = methodDeclarationSignature.equals(collectionTypeSignature + ".add(E)");
-            boolean possibleDetach = !possibleAttach && methodDeclarationSignature.equals(collectionTypeSignature + ".remove(java.lang.Object)");
-
-            if (!possibleAttach && !possibleDetach) {
-                continue;
-            }
-
-            // Check whether it receives an eligible parameter
-            // TODO The parameter may have been reassigned to another variable in the mean time
-            NameExpr argumentExpression = methodCall.getArgument(0).asNameExpr();
-            String argumentName = argumentExpression.getNameAsString();
-
-            boolean passesParameter = false;
-            List<EligibleSubscriptionParameter> possibleParameters = eligibleParameters.get(operatesOn);
-            for (EligibleSubscriptionParameter parameter : possibleParameters) {
-                if (parameter.parameter.getNameAsString().equals(argumentName)) {
-                    passesParameter = true;
-                    break;
+                JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
+                if (scopeSymbol.getWrappedNode() == null) {
+                    continue;
                 }
-            }
 
-            if (passesParameter) {
-                if (possibleAttach) {
-                    operatesOn.addAttachMethod(methodDeclaration);
-                } else {
-                    operatesOn.addDetachMethod(methodDeclaration);
+                FieldDeclaration scopeFieldDeclaration = scopeSymbol.getWrappedNode().asFieldDeclaration();
+                ResolvedValueDeclaration resolvedScopeFieldDeclaration = null;
+                for (VariableDeclarator fieldVariable : scopeFieldDeclaration.getVariables()) {
+                    if (fieldVariable.getNameAsString().equals(scope.getName())) {
+                        resolvedScopeFieldDeclaration = fieldVariable.resolve();
+                    }
                 }
+
+                // Does that method declaration operate on the add or remove method of the collection type?
+                ObserverCollection operatesOn = null;
+                for (ObserverCollection observerCollection : observerCollections) {
+                    ResolvedFieldDeclaration resolvedFieldDeclaration = observerCollection.getVariableDeclarator().resolve();
+
+                    if (resolvedScopeFieldDeclaration.getName().equals(observerCollection.getVariableDeclarator().resolve().getName())) {
+                        operatesOn = observerCollection;
+                    }
+                }
+
+                if (operatesOn == null) {
+                    continue;
+                }
+
+                // Check of het de add- of remove-methode is
+                ResolvedMethodDeclaration resolvedMethodDeclaration = JavaParserFacade.get(typeSolver).solve(methodCall).getCorrespondingDeclaration();
+                String methodDeclarationSignature = resolvedMethodDeclaration.getQualifiedSignature();
+                String collectionTypeSignature = operatesOn.getFieldType().getQualifiedName();
+
+                boolean possibleAttach = methodDeclarationSignature.equals(collectionTypeSignature + ".add(E)");
+                boolean possibleDetach = !possibleAttach && methodDeclarationSignature.equals(collectionTypeSignature + ".remove(java.lang.Object)");
+
+                if (!possibleAttach && !possibleDetach) {
+                    continue;
+                }
+
+                // Check whether it receives an eligible parameter
+                // TODO The parameter may have been reassigned to another variable in the mean time
+                NameExpr argumentExpression = methodCall.getArgument(0).asNameExpr();
+                String argumentName = argumentExpression.getNameAsString();
+
+                boolean passesParameter = false;
+                List<EligibleSubscriptionParameter> possibleParameters = eligibleParameters.get(operatesOn);
+                for (EligibleSubscriptionParameter parameter : possibleParameters) {
+                    if (parameter.parameter.getNameAsString().equals(argumentName)) {
+                        passesParameter = true;
+                        break;
+                    }
+                }
+
+                if (passesParameter) {
+                    if (possibleAttach) {
+                        operatesOn.addAttachMethod(methodDeclaration);
+                    } else {
+                        operatesOn.addDetachMethod(methodDeclaration);
+                    }
+                }
+            } catch (UnsolvedSymbolException ex) {
+                // FIXME Fix exception log
             }
         }
     }

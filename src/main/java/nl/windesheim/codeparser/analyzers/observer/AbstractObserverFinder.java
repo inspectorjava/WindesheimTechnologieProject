@@ -2,6 +2,7 @@ package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
@@ -23,38 +24,44 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
     }
 
     public void visit (ClassOrInterfaceDeclaration classDeclaration, Void arg) {
-        // TODO Lookup van observercollection optimaliseren
-        ResolvedReferenceTypeDeclaration classTypeDeclaration = classDeclaration.resolve();
+        try {
+            ResolvedReferenceTypeDeclaration classTypeDeclaration = classDeclaration.resolve();
 
-        // Check whether the class is being called somewhere in an observercollection
-        for (EligibleObserverPattern observerPattern : observerPatterns) {
-            AbstractObservable abstractObservable = observerPattern.getAbstractObservable();
-            List<ObserverCollection> observerCollections = abstractObservable.getObserverCollections();
+            // Check whether the class is being called somewhere in an observercollection
+            for (EligibleObserverPattern observerPattern : observerPatterns) {
+                AbstractObservable abstractObservable = observerPattern.getAbstractObservable();
+                List<ObserverCollection> observerCollections = abstractObservable.getObserverCollections();
 
-            for (ObserverCollection observerCollection : observerCollections) {
-                ResolvedReferenceTypeDeclaration parameterType = observerCollection.getParameterType().getTypeDeclaration();
+                for (ObserverCollection observerCollection : observerCollections) {
+                    ResolvedReferenceTypeDeclaration parameterType = observerCollection.getParameterType().getTypeDeclaration();
 
-                if (parameterType.equals(classTypeDeclaration)) {
-                    AbstractObserver abstractObserver = new AbstractObserver(classDeclaration, classTypeDeclaration);
-                    findUpdateMethod(abstractObserver, observerPattern, observerCollection);
+                    if (parameterType.equals(classTypeDeclaration)) {
+                        AbstractObserver abstractObserver = new AbstractObserver(classDeclaration, classTypeDeclaration);
+                        findUpdateMethod(abstractObserver, observerPattern, observerCollection);
+                    }
                 }
             }
+        } catch (UnsolvedSymbolException ex) {
+            // FIXME Fix exception log
         }
     }
 
     private void findUpdateMethod (final AbstractObserver abstractObserver, final EligibleObserverPattern observerPattern, final ObserverCollection observerCollection) {
-        // TODO Efficienter maken?
         // Class or interface contains the update-method as called in the notification method
         List<NotificationMethod> notificationMethods = observerCollection.getNotificationMethods();
 
         Set<ResolvedMethodDeclaration> methods = abstractObserver.getResolvedTypeDeclaration().getDeclaredMethods();
         for (ResolvedMethodDeclaration method : methods) {
             for (NotificationMethod notificationMethod : notificationMethods) {
-                ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
+                try {
+                    ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
 
-                if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
-                    abstractObserver.setUpdateMethod(resolvedNotificationMethod);
-                    observerPattern.setAbstractObserver(abstractObserver);
+                    if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
+                        abstractObserver.setUpdateMethod(resolvedNotificationMethod);
+                        observerPattern.setAbstractObserver(abstractObserver);
+                    }
+                } catch (UnsolvedSymbolException ex) {
+                    // FIXME Fix exception log
                 }
             }
         }

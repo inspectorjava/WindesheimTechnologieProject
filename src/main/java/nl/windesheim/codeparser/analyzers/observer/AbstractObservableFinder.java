@@ -4,6 +4,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
@@ -65,10 +66,14 @@ public class AbstractObservableFinder
 
             // If an abstract observable has been found, store info
             if (!observerCollections.isEmpty()) {
-                AbstractObservable abstractObservable = new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections);
-                EligibleObserverPattern observerPattern = new EligibleObserverPattern();
-                observerPattern.setAbstractObservable(abstractObservable);
-                observerPatterns.add(observerPattern);
+                try {
+                    AbstractObservable abstractObservable = new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections);
+                    EligibleObserverPattern observerPattern = new EligibleObserverPattern();
+                    observerPattern.setAbstractObservable(abstractObservable);
+                    observerPatterns.add(observerPattern);
+                } catch (UnsolvedSymbolException ex) {
+                    // TODO Fix exception log
+                }
             }
         }
     }
@@ -81,33 +86,37 @@ public class AbstractObservableFinder
         List<ObserverCollection> collections = new ArrayList<>();
 
         for (FieldDeclaration field : classDeclaration.getFields()) {
-            Type variableType = field.getVariable(0).getType();
-            ResolvedType resolvedType = variableType.resolve();
+            try {
+                Type variableType = field.getVariable(0).getType();
+                ResolvedType resolvedType = variableType.resolve();
 
-            // A collection is always a reference type
-            if (!resolvedType.isReferenceType()) {
-                continue;
-            }
-
-            ResolvedReferenceType fieldType = resolvedType.asReferenceType();
-
-            // Try to determine if this is a collection
-            String targetName = "java.util.Collection";
-            ResolvedReferenceType parameterType = null;
-            for (ResolvedReferenceType ancestor : fieldType.getAllAncestors()) {
-                if (ancestor.getQualifiedName().equals(targetName)) {
-                    // Determine the type that's stored in the collection
-                    parameterType = this.determineParameterType(fieldType);
-                    break;
+                // A collection is always a reference type
+                if (!resolvedType.isReferenceType()) {
+                    continue;
                 }
-            }
 
-            // If a parameter type has been found, this is an eligible collection
-            if (parameterType != null) {
-                for (VariableDeclarator variableDeclarator : field.getVariables()) {
-                    ObserverCollection collection = new ObserverCollection(variableDeclarator, fieldType, parameterType);
-                    collections.add(collection);
+                ResolvedReferenceType fieldType = resolvedType.asReferenceType();
+
+                // Try to determine if this is a collection
+                String targetName = "java.util.Collection";
+                ResolvedReferenceType parameterType = null;
+                for (ResolvedReferenceType ancestor : fieldType.getAllAncestors()) {
+                    if (ancestor.getQualifiedName().equals(targetName)) {
+                        // Determine the type that's stored in the collection
+                        parameterType = this.determineParameterType(fieldType);
+                        break;
+                    }
                 }
+
+                // If a parameter type has been found, this is an eligible collection
+                if (parameterType != null) {
+                    for (VariableDeclarator variableDeclarator : field.getVariables()) {
+                        ObserverCollection collection = new ObserverCollection(variableDeclarator, fieldType, parameterType);
+                        collections.add(collection);
+                    }
+                }
+            } catch (UnsolvedSymbolException ex) {
+                // Right now, ignore this. At a later stage, add error reporting
             }
         }
 

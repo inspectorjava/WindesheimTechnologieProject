@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
@@ -69,22 +70,28 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
             for (MethodCallExpr methodCall : methodCalls) {
                 Optional<Expression> optionalMethodScope = methodCall.getScope();
 
-                if (optionalMethodScope.isPresent() && optionalMethodScope.get().isNameExpr()) {
-                    NameExpr scopeExpression = optionalMethodScope.get().asNameExpr();
-                    ResolvedValueDeclaration scope = JavaParserFacade.get(typeSolver).solve(scopeExpression).getCorrespondingDeclaration();
+                try {
+                    if (optionalMethodScope.isPresent() && optionalMethodScope.get().isNameExpr()) {
+                        NameExpr scopeExpression = optionalMethodScope.get().asNameExpr();
+                        ResolvedValueDeclaration scope = JavaParserFacade.get(typeSolver).solve(scopeExpression).getCorrespondingDeclaration();
 
-                    if (scope instanceof JavaParserSymbolDeclaration) {
+                        if (!(scope instanceof JavaParserSymbolDeclaration)) {
+                            continue;
+                        }
+
                         JavaParserSymbolDeclaration scopeSymbol = (JavaParserSymbolDeclaration) scope;
+                        if (!(scopeSymbol.getWrappedNode() instanceof VariableDeclarator)) {
+                            continue;
+                        }
 
-                        if (scopeSymbol.getWrappedNode() instanceof VariableDeclarator) {
-                            VariableDeclarator scopeVariable = (VariableDeclarator) scopeSymbol.getWrappedNode();
-
-                            if (foreachVariable.equals(scopeVariable)) {
-                                updateMethodCall = methodCall;
-                                break;
-                            }
+                        VariableDeclarator scopeVariable = (VariableDeclarator) scopeSymbol.getWrappedNode();
+                        if (foreachVariable.equals(scopeVariable)) {
+                            updateMethodCall = methodCall;
+                            break;
                         }
                     }
+                } catch (UnsolvedSymbolException ex) {
+                    // FIXME Fix exception log
                 }
             }
 
@@ -95,19 +102,21 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
         }
     }
 
-    @Nullable
     private ObserverCollection findEligibleForeachStatement (final ForeachStmt foreachStatement) {
         Expression iterableExpression = foreachStatement.getIterable();
-        ResolvedValueDeclaration iterableValue;
-        if (iterableExpression.isNameExpr()) {
-            iterableValue = JavaParserFacade.get(typeSolver).solve(iterableExpression).getCorrespondingDeclaration();
-        } else if (iterableExpression.isFieldAccessExpr()) {
-            iterableValue = iterableExpression.asFieldAccessExpr().resolve();
-        } else {
-            return null;
+        ResolvedValueDeclaration iterableValue = null;
+
+        try {
+            if (iterableExpression.isNameExpr()) {
+                iterableValue = JavaParserFacade.get(typeSolver).solve(iterableExpression).getCorrespondingDeclaration();
+            } else if (iterableExpression.isFieldAccessExpr()) {
+                iterableValue = iterableExpression.asFieldAccessExpr().resolve();
+            }
+        } catch (UnsolvedSymbolException ex) {
+            // FIXME Fix exception log
         }
 
-        // Check of iterableValue verwijst naar een property (JavaParserFieldDeclaration)
+        // Check if iterableValue refers to a class property
         if (iterableValue instanceof JavaParserFieldDeclaration) {
             JavaParserFieldDeclaration iterableField = (JavaParserFieldDeclaration) iterableValue;
             for (ObserverCollection collection : observerCollections) {
