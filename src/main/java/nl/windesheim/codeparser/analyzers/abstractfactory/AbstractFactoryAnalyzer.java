@@ -38,6 +38,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             AbstractFactory abstractFactory = new AbstractFactory();
             abstractFactory.setFactoryInterface(factory);
+            abstractFactory.setImplementations(interfaceFinder.findImplementations(factory, declarations));
             patterns.add(abstractFactory);
         }
 

@@ -44,7 +44,7 @@ public abstract class AbstractFinder {
      * @param declarations List of all the declarations
      * @return the implementations of the given declaration.
      */
-    protected Collection<? extends ClassOrInterfaceDeclaration>
+    public Collection<? extends ClassOrInterfaceDeclaration>
     findImplementations(final ClassOrInterfaceDeclaration factory,
                         final List<ClassOrInterfaceDeclaration> declarations) {
         this.implFinder.reset();
