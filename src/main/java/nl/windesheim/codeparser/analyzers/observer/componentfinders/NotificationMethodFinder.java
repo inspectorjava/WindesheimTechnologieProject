@@ -43,7 +43,6 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
     @Override
     public void determine(final MethodDeclaration methodDeclaration) {
         // Check if the method loops over an eligible collection
-        // TODO Implement check on for- and while-loops
         List<ForeachStmt> foreachStatements = methodDeclaration.findAll(ForeachStmt.class);
 
         for (ForeachStmt foreachStatement : foreachStatements) {
@@ -55,63 +54,90 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
 
             // Check whether a method is being called somewhere in the body of the foreach statement
             VariableDeclarator foreachVariable = foreachStatement.getVariable().getVariable(0);
-
-            Statement foreachBody = foreachStatement.getBody();
-            List<MethodCallExpr> methodCalls = new ArrayList<>();
-            if (foreachBody.isBlockStmt()) {
-                BlockStmt foreachBodyBlock = foreachBody.asBlockStmt();
-                methodCalls = foreachBodyBlock.findAll(MethodCallExpr.class);
-            } else if (foreachBody.isExpressionStmt()) {
-                ExpressionStmt foreachBodyExpr = foreachBody.asExpressionStmt();
-
-                if (foreachBodyExpr.getExpression().isMethodCallExpr()) {
-                    methodCalls.add(foreachBodyExpr.getExpression().asMethodCallExpr());
-                }
-            }
+            List<MethodCallExpr> methodCalls = findMethodCalls(foreachStatement);
 
             if (methodCalls.isEmpty()) {
                 continue;
             }
 
             // Check whether the method call operates on the 'current' element of the collection being looped over
-            MethodCallExpr updateMethodCall = null;
-            for (MethodCallExpr methodCall : methodCalls) {
-                Optional<Expression> optionalScope = methodCall.getScope();
-
-                try {
-                    if (optionalScope.isPresent() && optionalScope.get().isNameExpr()) {
-                        NameExpr scopeExpression = optionalScope.get().asNameExpr();
-                        ResolvedValueDeclaration scope =
-                                JavaParserFacade
-                                        .get(getTypeSolver())
-                                        .solve(scopeExpression)
-                                        .getCorrespondingDeclaration();
-
-                        if (!(scope instanceof JavaParserSymbolDeclaration)) {
-                            continue;
-                        }
-
-                        JavaParserSymbolDeclaration scopeSymbol = (JavaParserSymbolDeclaration) scope;
-                        if (!(scopeSymbol.getWrappedNode() instanceof VariableDeclarator)) {
-                            continue;
-                        }
-
-                        VariableDeclarator scopeVariable = (VariableDeclarator) scopeSymbol.getWrappedNode();
-                        if (foreachVariable.equals(scopeVariable)) {
-                            updateMethodCall = methodCall;
-                            break;
-                        }
-                    }
-                } catch (UnsolvedSymbolException ex) {
-                    // FIXME Fix exception log
-                }
-            }
+            MethodCallExpr updateMethodCall = filterMethodCallOnTarget(methodCalls, foreachVariable);
 
             if (updateMethodCall != null) {
                 NotificationMethod notifyMethod = new NotificationMethod(methodDeclaration, updateMethodCall);
                 operatesOn.addNotificationMethod(notifyMethod);
             }
         }
+    }
+
+    /**
+     * Check whether the method call operates on a variable
+     *
+     * @param methodCalls A list of method calls
+     * @param variable    The variable the method call should operate on
+     * @return A methodcall that operates on the given variable
+     */
+    private MethodCallExpr filterMethodCallOnTarget(final List<MethodCallExpr> methodCalls,
+                                                    final VariableDeclarator variable
+    ) {
+        MethodCallExpr updateMethodCall = null;
+        for (MethodCallExpr methodCall : methodCalls) {
+            Optional<Expression> optionalScope = methodCall.getScope();
+
+            try {
+                if (optionalScope.isPresent() && optionalScope.get().isNameExpr()) {
+                    NameExpr scopeExpression = optionalScope.get().asNameExpr();
+                    ResolvedValueDeclaration scope =
+                            JavaParserFacade
+                                    .get(getTypeSolver())
+                                    .solve(scopeExpression)
+                                    .getCorrespondingDeclaration();
+
+                    if (!(scope instanceof JavaParserSymbolDeclaration)) {
+                        continue;
+                    }
+
+                    JavaParserSymbolDeclaration scopeSymbol = (JavaParserSymbolDeclaration) scope;
+                    if (!(scopeSymbol.getWrappedNode() instanceof VariableDeclarator)) {
+                        continue;
+                    }
+
+                    VariableDeclarator scopeVariable = (VariableDeclarator) scopeSymbol.getWrappedNode();
+                    if (variable.equals(scopeVariable)) {
+                        updateMethodCall = methodCall;
+                        break;
+                    }
+                }
+            } catch (UnsolvedSymbolException ex) {
+                // FIXME Fix exception log
+            }
+        }
+
+        return updateMethodCall;
+    }
+
+    /**
+     * Finds method calls in the body of a foreach statement
+     *
+     * @param foreachStatement The foreach statement to analyze
+     * @return A list of method calls found in the body of the foreach statement
+     */
+    private List<MethodCallExpr> findMethodCalls(final ForeachStmt foreachStatement) {
+        List<MethodCallExpr> methodCalls = new ArrayList<>();
+        Statement foreachBody = foreachStatement.getBody();
+
+        if (foreachBody.isBlockStmt()) {
+            BlockStmt foreachBodyBlock = foreachBody.asBlockStmt();
+            methodCalls = foreachBodyBlock.findAll(MethodCallExpr.class);
+        } else if (foreachBody.isExpressionStmt()) {
+            ExpressionStmt foreachBodyExpr = foreachBody.asExpressionStmt();
+
+            if (foreachBodyExpr.getExpression().isMethodCallExpr()) {
+                methodCalls.add(foreachBodyExpr.getExpression().asMethodCallExpr());
+            }
+        }
+
+        return methodCalls;
     }
 
     /**

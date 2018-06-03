@@ -16,6 +16,7 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.sun.tools.javac.comp.Resolve;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
 import java.util.ArrayList;
@@ -112,36 +113,10 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
     private void findSubscriptionMethodCalls(final MethodDeclaration methodDeclaration) {
         List<MethodCallExpr> methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
         for (MethodCallExpr methodCall : methodCalls) {
-            Optional<Expression> optionalScope = methodCall.getScope();
-            if (!optionalScope.isPresent()) {
-                continue;
-            }
-
             try {
-                Expression scopeExpression = optionalScope.get();
-                ResolvedValueDeclaration scope = null;
-
-                if (scopeExpression.isNameExpr()) {
-                    scope = JavaParserFacade.get(getTypeSolver()).solve(scopeExpression).getCorrespondingDeclaration();
-                } else if (scopeExpression.isFieldAccessExpr()) {
-                    scope = scopeExpression.asFieldAccessExpr().resolve();
-                }
-
-                if (!(scope instanceof JavaParserFieldDeclaration)) {
+                ResolvedValueDeclaration resScopeField = getResolvedScopeField (methodCall);
+                if (resScopeField == null) {
                     continue;
-                }
-
-                JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
-                if (scopeSymbol.getWrappedNode() == null) {
-                    continue;
-                }
-
-                FieldDeclaration scopeField = scopeSymbol.getWrappedNode().asFieldDeclaration();
-                ResolvedValueDeclaration resScopeField = null;
-                for (VariableDeclarator fieldVariable : scopeField.getVariables()) {
-                    if (fieldVariable.getNameAsString().equals(scope.getName())) {
-                        resScopeField = fieldVariable.resolve();
-                    }
                 }
 
                 // Does that method declaration operate on the add or remove method of the collection type?
@@ -199,6 +174,40 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
     }
 
+    private ResolvedValueDeclaration getResolvedScopeField (final MethodCallExpr methodCall) {
+        Optional<Expression> optionalScope = methodCall.getScope();
+        if (!optionalScope.isPresent()) {
+            return null;
+        }
+
+        Expression scopeExpression = optionalScope.get();
+        ResolvedValueDeclaration scope = null;
+
+        if (scopeExpression.isNameExpr()) {
+            scope = JavaParserFacade.get(getTypeSolver()).solve(scopeExpression).getCorrespondingDeclaration();
+        } else if (scopeExpression.isFieldAccessExpr()) {
+            scope = scopeExpression.asFieldAccessExpr().resolve();
+        }
+
+        if (scope instanceof JavaParserFieldDeclaration) {
+            JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
+            if (scopeSymbol.getWrappedNode() != null) {
+                FieldDeclaration scopeField = scopeSymbol.getWrappedNode().asFieldDeclaration();
+                ResolvedValueDeclaration resScopeField = null;
+
+                for (VariableDeclarator fieldVariable : scopeField.getVariables()) {
+                    if (fieldVariable.getNameAsString().equals(scope.getName())) {
+                        resScopeField = fieldVariable.resolve();
+                    }
+                }
+
+                return resScopeField;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Holds information on a potential subscription parameter.
      */
@@ -240,10 +249,10 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
 
         /**
-         * @param resolvedType The resolved type of the parameter
+         * @param resolvedReferenceType The resolved type of the parameter
          */
-        public void setResolvedReferenceType(final ResolvedReferenceType resolvedType) {
-            this.resolvedType = resolvedType;
+        public void setResolvedReferenceType(ResolvedReferenceType resolvedReferenceType) {
+            this.resolvedType = resolvedReferenceType;
         }
 
         /**
@@ -256,7 +265,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         /**
          * @param parameterName The name of the parameter
          */
-        public void setParameterName(final String parameterName) {
+        public void setParameterName(String parameterName) {
             this.parameterName = parameterName;
         }
     }

@@ -56,7 +56,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         }
 
         // Search for classes that extend the abstract observers
-        concreteObserverFinder(files, eligiblePatterns);
+        findConcreteObservers(files, eligiblePatterns);
 
         List<IDesignPattern> patterns = new ArrayList<>();
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
@@ -96,10 +96,27 @@ public class ObserverAnalyzer extends PatternAnalyzer {
      * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
      *                         when concrete observers have been found for a pattern instance
      */
-    private void concreteObserverFinder(final List<CompilationUnit> files,
-                                        final List<EligibleObserverPattern> eligiblePatterns) {
-        ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
+    private void findConcreteObservers(final List<CompilationUnit> files,
+                                       final List<EligibleObserverPattern> eligiblePatterns
+    ) {
+        Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap =
+                generateConcreteObserverMap(files, eligiblePatterns);
 
+        filterConcreteObserverForUpdateMethod(observerMap);
+    }
+
+    /**
+     * Generates map linking potential observer patterns to the found subclasses of it's abstract observer
+     *
+     * @param files            A list of files containing Java code
+     * @param eligiblePatterns The detected potential observer patterns
+     * @return
+     */
+    private Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> generateConcreteObserverMap(
+            final List<CompilationUnit> files,
+            final List<EligibleObserverPattern> eligiblePatterns
+    ) {
+        ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
         Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap = new HashMap<>();
 
         for (CompilationUnit compilationUnit : files) {
@@ -123,11 +140,23 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             }
         }
 
+        return observerMap;
+    }
+
+    /**
+     * Checks whether the found subclasses of AbstractObserver contain a method with the same signature
+     * as the update method in the abstract observer.
+     *
+     * @param observerMap A map linking potential observer patterns to the found subclasses
+     *                    of it's abstract observer
+     */
+    private void filterConcreteObserverForUpdateMethod(
+            final Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap
+    ) {
         for (EligibleObserverPattern observerPattern : observerMap.keySet()) {
             List<ClassOrInterfaceDeclaration> subclasses = observerMap.get(observerPattern);
 
-            // Check whether the subclasses contain a method with the same signature
-            // as the update method in the abstract observer
+            //
             for (ClassOrInterfaceDeclaration subclass : subclasses) {
                 List<MethodDeclaration> subclassMethods =  subclass.getMethods();
                 boolean extendsUpdate = false;
