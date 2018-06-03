@@ -30,7 +30,7 @@ public class AbstractFactoryAnalyzerHappyPathTest {
         settings.codeDir = dir;
 
         settings.commonParentName = "DEMO";
-        settings.commonParentFile = new File(classLoader.getResource("abstractfactory/promienam/DEMO.java").getPath());
+        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/promienam/DEMO.java").getPath());
 
         settings.links.put(
                 "Cake",
@@ -66,7 +66,7 @@ public class AbstractFactoryAnalyzerHappyPathTest {
         settings.codeDir = dir;
 
         settings.commonParentName = "App";
-        settings.commonParentFile = new File(classLoader.getResource("abstractfactory/iluwatar/App.java").getPath());
+        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/iluwatar/App.java").getPath());
 
         settings.links.put(
                 "Army",
