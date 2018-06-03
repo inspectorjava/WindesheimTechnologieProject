@@ -54,6 +54,7 @@ public class FoundPatternReport implements IFoundPatternReport {
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Pattern: " + this.designPatternType);
+        node.setNodeType(NodeType.DESIGN_PATTERN);
         builder.setRoot(node);
         return builder;
     }

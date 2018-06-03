@@ -18,6 +18,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
+import nl.windesheim.codeparser.analyzers.util.visitor.EligibleCommonParentFinder;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -196,7 +197,14 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             }
 
             //if the field is not a reference to an other class it is not a reference to the 'common parent'
-            ResolvedType type = resolve.getType();
+            ResolvedType type;
+            try {
+                type = resolve.getType();
+            } catch (UnsolvedSymbolException exception) {
+                addError(exception);
+                continue;
+            }
+
             if (!(type instanceof ReferenceTypeImpl)) {
                 continue;
             }

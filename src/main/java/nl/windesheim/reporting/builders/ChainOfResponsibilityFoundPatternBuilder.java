@@ -1,5 +1,6 @@
 package nl.windesheim.reporting.builders;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
@@ -17,19 +18,22 @@ public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatte
     /**
      * Filename of file where pattern is found.
      */
-    private final String commonParent;
+    private final ClassOrInterface commonParent;
 
     /**
      * List of links.
      */
-    private final List<String> links;
+    private final List<ClassOrInterface> links;
 
     /**
      * Create the builder.
      * @param commonParent filename of the file where singleton is found
      * @param links Links of the chain of responsiblity pattern
      */
-    public ChainOfResponsibilityFoundPatternBuilder(final String commonParent, final List<String> links) {
+    public ChainOfResponsibilityFoundPatternBuilder(
+            final ClassOrInterface commonParent,
+            final List<ClassOrInterface> links
+    ) {
         super();
         this.commonParent = commonParent;
         this.links = links;

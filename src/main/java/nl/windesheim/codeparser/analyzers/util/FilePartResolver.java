@@ -42,8 +42,7 @@ public final class FilePartResolver {
             return null;
         }
 
-        String filename = ((CompilationUnit) currentNode).getStorage().get().getFileName();
-        File file = new File(filename);
+        File file = ((CompilationUnit) currentNode).getStorage().get().getPath().toFile();
 
         if (node.getRange().isPresent()) {
             return new FilePart()

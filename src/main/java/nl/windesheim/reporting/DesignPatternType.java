@@ -7,21 +7,46 @@ public enum DesignPatternType {
     /**
      * None pattern.
      */
-    NONE,
+    NONE("none"),
     /**
      * Singleton pattern.
      */
-    SINGLETON,
+    SINGLETON("Singleton"),
     /**
      * Strategy pattern.
      */
-    STRATEGY,
+    STRATEGY("Strategy"),
     /**
-     * Chain of responsibility pattern.
+     * Command.
      */
-    CHAIN_OF_RESPONSIBILITY,
+    COMMAND("Command"),
     /**
      * Abstract factory pattern.
      */
-    ABSTRACT_FACTORY,
+    ABSTRACT_FACTORY("Abstract Factory"),
+    /**
+     * Chain of responsibility pattern.
+     */
+    CHAIN_OF_RESPONSIBILITY("Chain of responsibility"),
+    /**
+     * Composite pattern.
+     */
+    COMPOSITE("Composite");
+
+    /**
+     * the name to display.
+     */
+    private String displayName;
+
+    /**
+     * @param displayName the name that is displayed
+     */
+    DesignPatternType(final String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }
