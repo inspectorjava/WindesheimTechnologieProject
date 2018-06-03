@@ -6,13 +6,12 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.NotificationMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
-import nl.windesheim.codeparser.patterns.ObserverPattern;
 
 import java.util.*;
 
@@ -24,7 +23,7 @@ public class AbstractObservableFinder
 
     private TypeSolver typeSolver;
 
-    private List<ObserverPattern> observerPatterns;
+    private List<EligibleObserverPattern> observerPatterns;
 
     /**
      * Make a new AbstractObservableFinder.
@@ -68,14 +67,14 @@ public class AbstractObservableFinder
             // If an abstract observable has been found, store info
             if (!observerCollections.isEmpty()) {
                 AbstractObservable abstractObservable = new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCollections);
-                ObserverPattern observerPattern = new ObserverPattern();
+                EligibleObserverPattern observerPattern = new EligibleObserverPattern();
                 observerPattern.setAbstractObservable(abstractObservable);
                 observerPatterns.add(observerPattern);
             }
         }
     }
 
-    public List<ObserverPattern> getObserverPatterns () {
+    public List<EligibleObserverPattern> getObserverPatterns () {
         return observerPatterns;
     }
 
@@ -84,7 +83,7 @@ public class AbstractObservableFinder
 
         for (FieldDeclaration field : classDeclaration.getFields()) {
             Type variableType = field.getVariable(0).getType();
-            ResolvedType resolvedType = JavaParserFacade.get(typeSolver).convertToUsage(variableType, field);
+            ResolvedType resolvedType = variableType.resolve();
 
             // A collection is always a reference type
             if (!resolvedType.isReferenceType()) {

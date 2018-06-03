@@ -1,99 +1,71 @@
 package nl.windesheim.codeparser.patterns;
 
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents information about an identified ObserverPattern pattern.
+ * Created by caveman on 4/19/18.
  */
 public class ObserverPattern implements IDesignPattern {
-    /**
-     * The probability that this is a correctly identified ObserverPattern pattern.
-     */
-    private boolean probability;
+    private ClassOrInterface abstractObservable;
 
-    /**
-     * The class or interface that has been identified as Subject.
-     */
-    private AbstractObservable abstractObservable;
+    private ClassOrInterface abstractObserver;
 
-    /**
-     * The classes that have been identified as ConcreteSubjects.
-     */
-    private List<ConcreteObservable> concreteObservables;
+    private List<ClassOrInterface> concreteObservables;
 
-    /**
-     * The class or interface that has been identified as ObserverPattern.
-     */
-    private AbstractObserver abstractObserver;
+    private List<ClassOrInterface> concreteObservers;
 
-    /**
-     * The classes that have been identified as ConcreteObservers.
-     */
-    private List<ConcreteObserver> concreteObservers;
-
-    /**
-     * ObserverPattern constructor.
-     */
-    public ObserverPattern() {
-        this.abstractObservable = null;
-        this.concreteObservables = new ArrayList<>();
-
-        this.abstractObserver = null;
-        this.concreteObservers = new ArrayList<>();
+    public ObserverPattern () {
+        concreteObservables = new ArrayList<>();
+        concreteObservers = new ArrayList<>();
     }
 
-    /**
-     * @return The probability that this is a correctly identified ObserverPattern pattern
-     */
-    public boolean getProbability() {
-        return this.probability;
-    }
-
-    /**
-     *
-     * @param probability Set the probability that this is a correctly identified ObserverPattern pattern
-     * @return this
-     */
-    public ObserverPattern setProbability(final boolean probability) {
-        this.probability = probability;
-        return this;
-    }
-
-    public AbstractObservable getAbstractObservable() {
+    public ClassOrInterface getAbstractObservable () {
         return abstractObservable;
     }
 
-    public ObserverPattern setAbstractObservable (final AbstractObservable abstractObservable) {
+    public ObserverPattern setAbstractObservable (final ClassOrInterface abstractObservable) {
         this.abstractObservable = abstractObservable;
         return this;
     }
 
-    public List<ConcreteObservable> getConcreteObservables () {
+    public ClassOrInterface getAbstractObserver () {
+        return abstractObserver;
+    }
+
+    public ObserverPattern setAbstractObserver (final ClassOrInterface abstractObserver) {
+        this.abstractObserver = abstractObserver;
+        return this;
+    }
+
+    public List<ClassOrInterface> getConcreteObservables () {
         return concreteObservables;
     }
 
-    public ObserverPattern setConcreteObservables (final List<ConcreteObservable> concreteObservables) {
+    public ObserverPattern setConcreteObservables (final List<ClassOrInterface> concreteObservables) {
         this.concreteObservables = concreteObservables;
         return this;
     }
 
-    public ObserverPattern addConcreteObservable (final ConcreteObservable concreteObservable) {
+    public ObserverPattern addConcreteObservable (final ClassOrInterface concreteObservable) {
         this.concreteObservables.add(concreteObservable);
         return this;
     }
 
-    public AbstractObserver getAbstractObserver () {
-        return abstractObserver;
+    public List<ClassOrInterface> getConcreteObservers () {
+        return concreteObservers;
     }
 
-    public ObserverPattern setAbstractObserver (final AbstractObserver abstractObserver) {
-        this.abstractObserver = abstractObserver;
+    public ObserverPattern setConcreteObservers (final List<ClassOrInterface> concreteObservers) {
+        this.concreteObservers = concreteObservers;
+        return this;
+    }
+
+    public ObserverPattern addConcreteObserver (final ClassOrInterface concreteObserver) {
+        this.concreteObservers.add(concreteObserver);
         return this;
     }
 }

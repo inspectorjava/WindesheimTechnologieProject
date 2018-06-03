@@ -1,5 +1,3 @@
-import java.util.Observable;
-
 public class ConcreteSubject extends AbstractSubject {
     private String data;
 

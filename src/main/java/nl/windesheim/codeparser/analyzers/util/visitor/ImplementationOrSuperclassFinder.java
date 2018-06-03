@@ -97,7 +97,11 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
             final ClassOrInterfaceDeclaration classToCheck,
             final ClassOrInterfaceDeclaration classDeclaration
     ) {
+        System.out.println("Check: " + classToCheck.getNameAsString());
+        System.out.println("For extending: " + classDeclaration.getNameAsString());
+
         for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
+            System.out.println("Type: " + type.getNameAsString());
 
             ResolvedReferenceTypeDeclaration solved;
             try {
@@ -115,5 +119,7 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
                 classes.add(classToCheck);
             }
         }
+
+        System.out.println();
     }
 }

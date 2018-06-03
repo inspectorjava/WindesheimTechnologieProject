@@ -3,16 +3,10 @@ package nl.windesheim.codeparser.analyzers.observer;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.MethodUsage;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedTypeDeclaration;
-import com.github.javaparser.resolution.types.ResolvedReferenceType;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
-import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 
 import java.util.List;
 
@@ -21,9 +15,9 @@ public class ConcreteObservableFinder
 
     private TypeSolver typeSolver;
 
-    private List<ObserverPattern> observerPatterns;
+    private List<EligibleObserverPattern> observerPatterns;
 
-    public ConcreteObservableFinder (final TypeSolver typeSolver, final List<ObserverPattern> observerPatterns) {
+    public ConcreteObservableFinder (final TypeSolver typeSolver, final List<EligibleObserverPattern> observerPatterns) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = observerPatterns;
@@ -39,7 +33,7 @@ public class ConcreteObservableFinder
                 ResolvedReferenceTypeDeclaration resolvedSuperTypeDeclaration = superType.resolve().getTypeDeclaration();
 
                 // Check of een van de supertypes overeenkomt met een van de gevonden AbstractObservables
-                for (ObserverPattern observerPattern : observerPatterns) {
+                for (EligibleObserverPattern observerPattern : observerPatterns) {
                     if (observerPattern.getAbstractObservable().getResolvedTypeDeclaration().equals(resolvedSuperTypeDeclaration)) {
                         ConcreteObservable concreteObservable = new ConcreteObservable(classDeclaration, classDeclaration.resolve());
                         observerPattern.addConcreteObservable(concreteObservable);

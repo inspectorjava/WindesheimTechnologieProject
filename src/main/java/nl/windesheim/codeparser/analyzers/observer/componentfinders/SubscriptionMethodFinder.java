@@ -1,16 +1,24 @@
 package nl.windesheim.codeparser.analyzers.observer.componentfinders;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserSymbolDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
@@ -75,16 +83,34 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
             }
 
             Expression scopeExpression = optionalScope.get();
-
-            if (!scopeExpression.isFieldAccessExpr()) {
+            ResolvedValueDeclaration scope;
+            if (scopeExpression.isNameExpr()) {
+                scope = JavaParserFacade.get(typeSolver).solve(scopeExpression).getCorrespondingDeclaration();
+            } else if (scopeExpression.isFieldAccessExpr()) {
+                scope = scopeExpression.asFieldAccessExpr().resolve();
+            } else {
                 continue;
+            }
+
+            JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
+            if (scopeSymbol.getWrappedNode() == null) {
+                continue;
+            }
+
+            FieldDeclaration scopeFieldDeclaration = scopeSymbol.getWrappedNode().asFieldDeclaration();
+            ResolvedValueDeclaration resolvedScopeFieldDeclaration = null;
+            for (VariableDeclarator fieldVariable : scopeFieldDeclaration.getVariables()) {
+                if (fieldVariable.getNameAsString().equals(scope.getName())) {
+                    resolvedScopeFieldDeclaration = fieldVariable.resolve();
+                }
             }
 
             // Does that method declaration operate on the add or remove method of the collection type?
             ObserverCollection operatesOn = null;
-            FieldAccessExpr fieldAccessExpression = scopeExpression.asFieldAccessExpr();
             for (ObserverCollection observerCollection : observerCollections) {
-                if (fieldAccessExpression.getNameAsString().equals(observerCollection.getVariableDeclarator().getNameAsString())) {
+                ResolvedFieldDeclaration resolvedFieldDeclaration = observerCollection.getVariableDeclarator().resolve();
+
+                if (resolvedScopeFieldDeclaration.getName().equals(observerCollection.getVariableDeclarator().resolve().getName())) {
                     operatesOn = observerCollection;
                 }
             }

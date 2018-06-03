@@ -7,6 +7,7 @@ public abstract class AbstractSubject {
     private ArrayList<MyObserver> observers, tools;
     private ArrayList<String> test;
     private Set<MyObserver> observerSet;
+    private MyObserver observer;
 
     public Subject() {
         observers = new ArrayList<>();
@@ -14,7 +15,7 @@ public abstract class AbstractSubject {
     }
 
     public void attach(MyObserver observer) {
-        this.observers.add(observer);
+        observers.add(observer);
     }
 
     public void detach(MyObserver observer) {

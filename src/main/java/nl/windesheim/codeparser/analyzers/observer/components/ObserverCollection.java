@@ -78,7 +78,6 @@ public class ObserverCollection {
 
     public boolean isObserverCollection () {
         return hasAttachMethods()
-               && hasDetachMethods()
                && hasNotificationMethods();
     }
 }

@@ -1,7 +1,7 @@
 package nl.windesheim.codeparser;
 
+import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.ObserverPattern;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +20,15 @@ public final class CodeParserApp {
         try {
             FileAnalysisProvider analysis = FileAnalysisProvider.getConfiguredFileAnalysisProvider();
             ClassLoader classLoader = this.getClass().getClassLoader();
-            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer";
+            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/own";
+//            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/numbersystem";
+//            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/domotica";
             File codeDir = new File(pathString);
 
             List<IDesignPattern> patterns = analysis.analyzeDirectory(codeDir.toPath());
 
             for (IDesignPattern p : patterns) {
-                ObserverPattern o = (ObserverPattern) p;
+                EligibleObserverPattern o = (EligibleObserverPattern) p;
                 System.out.println("Found " + o.toString());
             }
         } catch (IOException ex) {
