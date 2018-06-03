@@ -1,17 +1,14 @@
 package nl.windesheim.reporting.builders;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasContext;
-import nl.windesheim.reporting.decorators.HasFiles;
+import nl.windesheim.reporting.decorators.HasImplementations;
+import nl.windesheim.reporting.decorators.HasInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,36 +33,20 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     public AbstractFactoryFoundPatternBuilder(final AbstractFactory factory) {
         super();
 
-        this.factory = new ClassOrInterface()
-                .setFilePart(FilePartResolver.getFilePartOfNode(factory.getFactoryInterface()))
-                .setName(factory.getFactoryInterface().getNameAsString())
-                .setDeclaration(factory.getFactoryInterface());
-
-        this.implementations = new ArrayList<>();
-        for (ClassOrInterfaceDeclaration declaration : factory.getImplementations()) {
-            this.implementations.add(
-                    new ClassOrInterface()
-                    .setFilePart(FilePartResolver.getFilePartOfNode(declaration))
-                    .setName(declaration.getNameAsString())
-                    .setDeclaration(declaration)
-            );
-        }
+        this.factory = factory.getFactoryInterface();
+        this.implementations = factory.getImplementations();
     }
 
     @Override
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.ABSTRACT_FACTORY);
-        HasContext hasContext = new HasContext(patternReport);
-        hasContext.setContext(this.factory);
+        HasInterface hasInterface = new HasInterface(patternReport);
+        hasInterface.setInterfaceName(this.factory);
 
-        HasFiles hasFiles = new HasFiles(hasContext);
-        List<String> implementations = new ArrayList<>();
-        for (ClassOrInterface classOrInterface : this.implementations) {
-            implementations.add(classOrInterface.getName());
-        }
-        hasFiles.setFiles(implementations);
+        HasImplementations hasImpl = new HasImplementations(hasInterface);
+        hasImpl.setImplementations(this.implementations);
 
-        return hasContext;
+        return hasImpl;
     }
 }

@@ -10,7 +10,6 @@ import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParse
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public abstract class AbstractFinder {
      * @param declarations List of all the declarations
      * @return the implementations of the given declaration.
      */
-    public Collection<? extends ClassOrInterfaceDeclaration>
+    public List<ClassOrInterfaceDeclaration>
     findImplementations(final ClassOrInterfaceDeclaration factory,
                         final List<ClassOrInterfaceDeclaration> declarations) {
         this.implFinder.reset();
