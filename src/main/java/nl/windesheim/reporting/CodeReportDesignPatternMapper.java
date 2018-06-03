@@ -2,7 +2,11 @@ package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FilePart;
-import nl.windesheim.codeparser.patterns.*;
+import nl.windesheim.codeparser.patterns.Singleton;
+import nl.windesheim.codeparser.patterns.Strategy;
+import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
+import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
@@ -45,7 +49,12 @@ public class CodeReportDesignPatternMapper {
         return null;
     }
 
-    private AbstractFoundPatternBuilder buildAbstractFactory(AbstractFactory pattern) {
+    /**
+     * Build the abstract factory pattern builder class.
+     * @param pattern the pattern.
+     * @return the abstract factory pattern builder.
+     */
+    private AbstractFoundPatternBuilder buildAbstractFactory(final AbstractFactory pattern) {
         return new AbstractFactoryFoundPatternBuilder(pattern.getFactoryInterface().getNameAsString());
     }
 

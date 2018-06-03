@@ -6,10 +6,21 @@ import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasContext;
 
+/**
+ * The abstract factory found pattern builder.
+ */
 public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuilder {
+
+    /**
+     * The factory name to use.
+     */
     private final String factoryName;
 
-    public AbstractFactoryFoundPatternBuilder(String factoryName) {
+    /**
+     * The constructor.
+     * @param factoryName The name for this factory.
+     */
+    public AbstractFactoryFoundPatternBuilder(final String factoryName) {
         super();
         this.factoryName = factoryName;
     }

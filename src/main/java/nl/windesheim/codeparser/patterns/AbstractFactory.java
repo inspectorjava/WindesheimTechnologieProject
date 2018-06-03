@@ -1,14 +1,14 @@
 package nl.windesheim.codeparser.patterns;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import nl.windesheim.codeparser.ClassOrInterface;
 
-import java.util.List;
-
+/**
+ * The Abstract Factory pattern class.
+ */
 public class AbstractFactory implements IDesignPattern {
 
     /**
-     * The interface that indicates the factory
+     * The interface that indicates the factory.
      */
     private ClassOrInterfaceDeclaration factoryInterface;
 
@@ -24,7 +24,7 @@ public class AbstractFactory implements IDesignPattern {
      * Set the factory interface.
      * @param factoryInterface the factory interface.
      */
-    public void setFactoryInterface(ClassOrInterfaceDeclaration factoryInterface) {
+    public void setFactoryInterface(final ClassOrInterfaceDeclaration factoryInterface) {
         this.factoryInterface = factoryInterface;
     }
 }
