@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Helper method to find different sorts of Abstract Factories.
  */
-abstract public class AbstractFinder {
+public abstract class AbstractFinder {
 
     /**
      * The implementation finder.
@@ -35,7 +35,7 @@ abstract public class AbstractFinder {
      * @param declarations List of all the declarations.
      * @return List of all the found patterns.
      */
-    abstract List<ClassOrInterfaceDeclaration> find(List<ClassOrInterfaceDeclaration> declarations);
+    public abstract List<ClassOrInterfaceDeclaration> find(List<ClassOrInterfaceDeclaration> declarations);
 
     /**
      * Find implementations of a ClassOrInterfaceDeclaration file.
@@ -82,7 +82,7 @@ abstract public class AbstractFinder {
      * @param implementations List of all the abstract factory pattern implementations
      * @return A list with all the factory classes.
      */
-    List<ClassOrInterfaceDeclaration>
+    protected List<ClassOrInterfaceDeclaration>
     findFactoryClasses(final List<ClassOrInterfaceDeclaration> declarations,
                        final List<ClassOrInterfaceDeclaration> implementations) {
         ArrayList<ClassOrInterfaceDeclaration> factoryClasses = new ArrayList<>();
@@ -144,7 +144,7 @@ abstract public class AbstractFinder {
      *
      * @param message the message to print.
      */
-    void log(final String message) {
+    protected void log(final String message) {
         System.out.println(message);
     }
 }
