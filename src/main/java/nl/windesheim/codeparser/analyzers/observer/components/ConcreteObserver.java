@@ -12,7 +12,6 @@ public class ConcreteObserver {
     private ClassOrInterfaceDeclaration classDeclaration;
     private ResolvedReferenceTypeDeclaration resolvedTypeDeclaration;
     private MethodDeclaration updateMethod;
-    private FieldDeclaration observableField;
 
     public ConcreteObserver (final ClassOrInterfaceDeclaration classDeclaration) {
         this(classDeclaration, null, null);

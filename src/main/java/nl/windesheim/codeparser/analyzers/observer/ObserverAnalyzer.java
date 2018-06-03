@@ -1,9 +1,14 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import javassist.compiler.ast.MethodDecl;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.components.*;
@@ -12,8 +17,7 @@ import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclas
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ObserverAnalyzer extends PatternAnalyzer {
 
@@ -33,11 +37,10 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(List<CompilationUnit> files) {
-        // TODO Modify ImplementationOrSuperclassFinder to check for more ClassOrInterfaceDeclarations at once
         typeSolver = getParent().getTypeSolver();
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
-        // Find 'abstract observable' classes
+        // Find abstract observable classes
         AbstractObservableFinder abstractObservableFinder = new AbstractObservableFinder(typeSolver);
         for (CompilationUnit compilationUnit : files) {
             abstractObservableFinder.visit(compilationUnit, null);
@@ -45,21 +48,20 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         List<EligibleObserverPattern> eligiblePatterns = abstractObservableFinder.getObserverPatterns();
 
-        // Search for classes that extend the AbstractObservable
+        // Search for classes that extend the abstract observables
         concreteObservableFinder(files, eligiblePatterns);
 
-        // Find 'abstract observer' classes
+        // Find abstract observer classes
         AbstractObserverFinder abstractObserverFinder = new AbstractObserverFinder(typeSolver, eligiblePatterns);
         for (CompilationUnit compilationUnit : files) {
             abstractObserverFinder.visit(compilationUnit, null);
         }
 
-        // Search for classes that extend the AbstractObservers
+        // Search for classes that extend the abstract observers
         concreteObserverFinder(files, eligiblePatterns);
 
         List<IDesignPattern> patterns = new ArrayList<>();
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
-            // Check of het patroon aan bepaalde voorwaarden voldoet?
             patterns.add(makeObserverPattern(eligiblePattern));
         }
 
@@ -85,7 +87,6 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         return patterns;
     }
 
-    // TODO Dit schijnt mooi met een command pattern te kunnen
     private void concreteObservableFinder (List<CompilationUnit> files, List<EligibleObserverPattern> eligiblePatterns) {
         ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
 
@@ -101,23 +102,57 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         }
     }
 
-    // TODO Dit schijnt mooi met een command pattern te kunnen
     private void concreteObserverFinder (List<CompilationUnit> files, List<EligibleObserverPattern> eligiblePatterns) {
-        //  Bevat een referentie naar de Subject of een van zijn subclasses. Deze referentie mag in de superclass staan.
-        //          Implementeert of overerft een update-methode: een methode die ofwel bij het subject de data ophaalt, ofwel deze informatie meegeleverd krijgt
-        //  Het is mogelijk dat een klasse de in Java ingebouwde interface EligibleObserverPattern implementeert, dit is een goede aanwijzing dat we te maken hebben met een EligibleObserverPattern.
-
-        // Bevat een referentie naar de Subject, of een van zn subclasses (nodig?)
-
         ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
+
+        Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> eligibleConcreteObserverMap = new HashMap<>();
 
         for (CompilationUnit compilationUnit : files) {
             for (EligibleObserverPattern observerPattern : eligiblePatterns) {
                 implFinder.reset();
                 implFinder.visit(compilationUnit, observerPattern.getAbstractObserver().getClassDeclaration());
 
-                List<ConcreteObserver> concreteObservers = ConcreteObserver.fromClasses(implFinder.getClasses());
-                observerPattern.addConcreteObserver(concreteObservers);
+                // Check if the class actually implements the update method
+                List<ClassOrInterfaceDeclaration> subclassDeclarations = implFinder.getClasses();
+
+                if (!subclassDeclarations.isEmpty()) {
+                    if (eligibleConcreteObserverMap.containsKey(observerPattern)) {
+                        eligibleConcreteObserverMap.get(observerPattern).addAll(subclassDeclarations);
+                    } else {
+                        eligibleConcreteObserverMap.put(
+                                observerPattern,
+                                new ArrayList<>(subclassDeclarations)
+                        );
+                    }
+                }
+            }
+        }
+
+        for (EligibleObserverPattern observerPattern : eligibleConcreteObserverMap.keySet()) {
+            List<ClassOrInterfaceDeclaration> subclassDeclarations = eligibleConcreteObserverMap.get(observerPattern);
+
+            // Check whether the subclasses contain a method with the same signature as the update method in the abstract observer
+            for (ClassOrInterfaceDeclaration subclassDeclaration : subclassDeclarations) {
+                List<MethodDeclaration> subclassMethods =  subclassDeclaration.getMethods();
+                boolean extendsUpdateMethod = false;
+
+                for (MethodDeclaration method : subclassMethods) {
+                    ResolvedMethodDeclaration abstractUpdateMethod = observerPattern.getAbstractObserver().getUpdateMethod();
+                    if (!(abstractUpdateMethod instanceof JavaParserMethodDeclaration)) {
+                        continue;
+                    }
+
+                    MethodDeclaration targetMethod = ((JavaParserMethodDeclaration) abstractUpdateMethod).getWrappedNode();
+                    CallableDeclaration.Signature targetSignature = targetMethod.getSignature();
+                    if (method.getSignature().equals(targetSignature)) {
+                        extendsUpdateMethod = true;
+                        break;
+                    }
+                }
+
+                if (extendsUpdateMethod) {
+                    observerPattern.addConcreteObserver(new ConcreteObserver(subclassDeclaration));
+                }
             }
         }
     }
