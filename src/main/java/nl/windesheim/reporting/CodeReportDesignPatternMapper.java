@@ -69,7 +69,7 @@ public class CodeReportDesignPatternMapper {
      * @return the abstract factory pattern builder.
      */
     private AbstractFoundPatternBuilder buildAbstractFactory(final AbstractFactory pattern) {
-        return new AbstractFactoryFoundPatternBuilder(pattern.getFactoryInterface().getNameAsString());
+        return new AbstractFactoryFoundPatternBuilder(pattern.getFactoryInterface());
     }
 
     /**
