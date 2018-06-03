@@ -6,10 +6,7 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObserver;
-import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
+import nl.windesheim.codeparser.analyzers.observer.components.*;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -42,7 +39,6 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         // Find 'abstract observable' classes
         AbstractObservableFinder abstractObservableFinder = new AbstractObservableFinder(typeSolver);
-
         for (CompilationUnit compilationUnit : files) {
             abstractObservableFinder.visit(compilationUnit, null);
         }
@@ -52,40 +48,38 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         // Search for classes that extend the AbstractObservable
         concreteObservableFinder(files, eligiblePatterns);
 
-//        ConcreteObservableFinder concreteObservableFinder = new ConcreteObservableFinder(typeSolver, eligiblePatterns);
-//        for (CompilationUnit compilationUnit : files) {
-//            concreteObservableFinder.visit(compilationUnit, null);
-//        }
-
+        // Find 'abstract observer' classes
         AbstractObserverFinder abstractObserverFinder = new AbstractObserverFinder(typeSolver, eligiblePatterns);
         for (CompilationUnit compilationUnit : files) {
             abstractObserverFinder.visit(compilationUnit, null);
         }
 
-        //  ConcreteObserver
+        // Search for classes that extend the AbstractObservers
         concreteObserverFinder(files, eligiblePatterns);
-
-        for (EligibleObserverPattern observerPattern : eligiblePatterns) {
-            System.out.println("--- Observer pattern ---");
-            System.out.println("\tAbstract Observable: " + observerPattern.getAbstractObservable().getResolvedTypeDeclaration().getQualifiedName());
-
-            System.out.println("\tConcrete observables: " + observerPattern.getConcreteObservables().size());
-            for (ConcreteObservable concreteObservable : observerPattern.getConcreteObservables()) {
-                System.out.println("\t\t- " + concreteObservable.getResolvedTypeDeclaration().getQualifiedName());
-            }
-
-            System.out.println("\tAbstract Observer: " + observerPattern.getAbstractObserver().getResolvedTypeDeclaration().getQualifiedName());
-
-            System.out.println("\tConcrete observers: " + observerPattern.getConcreteObservers().size());
-            for (ConcreteObserver concreteObserver : observerPattern.getConcreteObservers()) {
-                System.out.println("\t\t- " + concreteObserver.getResolvedTypeDeclaration().getQualifiedName());
-            }
-        }
 
         List<IDesignPattern> patterns = new ArrayList<>();
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
             // Check of het patroon aan bepaalde voorwaarden voldoet?
             patterns.add(makeObserverPattern(eligiblePattern));
+        }
+
+        for (IDesignPattern pattern : patterns) {
+            ObserverPattern observerPattern = (ObserverPattern) pattern;
+
+            System.out.println("Observer pattern");
+            System.out.println("\tAbstract observable: " + observerPattern.getAbstractObservable().getName());
+            System.out.println("\tConcrete observables (" + observerPattern.getConcreteObservables().size() + ")");
+            for (ClassOrInterface c : observerPattern.getConcreteObservables()) {
+                System.out.println("\t\t- " + c.getName());
+            }
+
+            System.out.println("\tAbstract observer: " + observerPattern.getAbstractObserver().getName());
+            System.out.println("\tConcrete observers (" + observerPattern.getConcreteObservers().size() + ")");
+            for (ClassOrInterface c : observerPattern.getConcreteObservers()) {
+                System.out.println("\t\t- " + c.getName());
+            }
+
+            System.out.println();
         }
 
         return patterns;
@@ -122,7 +116,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                 implFinder.reset();
                 implFinder.visit(compilationUnit, observerPattern.getAbstractObserver().getClassDeclaration());
 
-                List<ClassOrInterfaceDeclaration> classDeclarations = implFinder.getClasses();
+                List<ConcreteObserver> concreteObservers = ConcreteObserver.fromClasses(implFinder.getClasses());
+                observerPattern.addConcreteObserver(concreteObservers);
             }
         }
     }
@@ -140,7 +135,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         );
 
         // Fill abstract observer
-        AbstractObservable abstractObserver = eligibleObserverPattern.getAbstractObservable();
+        AbstractObserver abstractObserver = eligibleObserverPattern.getAbstractObserver();
         observerPattern.setAbstractObserver(
                 new ClassOrInterface()
                         .setFilePart(FilePartResolver.getFilePartOfNode(abstractObserver.getClassDeclaration()))

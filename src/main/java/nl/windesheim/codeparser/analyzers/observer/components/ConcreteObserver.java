@@ -5,6 +5,9 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConcreteObserver {
     private ClassOrInterfaceDeclaration classDeclaration;
     private ResolvedReferenceTypeDeclaration resolvedTypeDeclaration;
@@ -45,5 +48,15 @@ public class ConcreteObserver {
     public ConcreteObserver setUpdateMethod(MethodDeclaration updateMethod) {
         this.updateMethod = updateMethod;
         return this;
+    }
+
+    public static List<ConcreteObserver> fromClasses (List<ClassOrInterfaceDeclaration> classDeclarations) {
+        List<ConcreteObserver> concreteObservers = new ArrayList<>();
+
+        for (ClassOrInterfaceDeclaration classDeclaration : classDeclarations) {
+            concreteObservers.add(new ConcreteObserver(classDeclaration));
+        }
+
+        return concreteObservers;
     }
 }

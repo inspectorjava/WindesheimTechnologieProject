@@ -47,7 +47,6 @@ public class AbstractObservableFinder
             SubscriptionMethodFinder subscriptionMethodFinder = new SubscriptionMethodFinder(typeSolver, eligibleCollections);
             NotificationMethodFinder notificationMethodFinder = new NotificationMethodFinder(typeSolver, eligibleCollections);
 
-
             List<MethodDeclaration> methodDeclarations = classDeclaration.findAll(MethodDeclaration.class);
             for (MethodDeclaration methodDeclaration : methodDeclarations) {
                 EnumSet<Modifier> modifiers = methodDeclaration.getModifiers();

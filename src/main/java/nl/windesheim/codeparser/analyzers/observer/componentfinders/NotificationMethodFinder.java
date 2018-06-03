@@ -97,18 +97,22 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
 
     @Nullable
     private ObserverCollection findEligibleForeachStatement (final ForeachStmt foreachStatement) {
-        Expression rawIterable = foreachStatement.getIterable();
-        if (rawIterable.isNameExpr()) {
-            NameExpr iterable = rawIterable.asNameExpr();
-            ResolvedValueDeclaration iterableValue = JavaParserFacade.get(typeSolver).solve(iterable).getCorrespondingDeclaration();
+        Expression iterableExpression = foreachStatement.getIterable();
+        ResolvedValueDeclaration iterableValue;
+        if (iterableExpression.isNameExpr()) {
+            iterableValue = JavaParserFacade.get(typeSolver).solve(iterableExpression).getCorrespondingDeclaration();
+        } else if (iterableExpression.isFieldAccessExpr()) {
+            iterableValue = iterableExpression.asFieldAccessExpr().resolve();
+        } else {
+            return null;
+        }
 
-            // Check of iterableValue verwijst naar een property (JavaParserFieldDeclaration)
-            if (iterableValue instanceof JavaParserFieldDeclaration) {
-                JavaParserFieldDeclaration iterableField = (JavaParserFieldDeclaration) iterableValue;
-                for (ObserverCollection collection : observerCollections) {
-                    if (collection.getVariableDeclarator().getNameAsString().equals(iterableField.getName())) {
-                        return collection;
-                    }
+        // Check of iterableValue verwijst naar een property (JavaParserFieldDeclaration)
+        if (iterableValue instanceof JavaParserFieldDeclaration) {
+            JavaParserFieldDeclaration iterableField = (JavaParserFieldDeclaration) iterableValue;
+            for (ObserverCollection collection : observerCollections) {
+                if (collection.getVariableDeclarator().getNameAsString().equals(iterableField.getName())) {
+                    return collection;
                 }
             }
         }

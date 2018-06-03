@@ -92,6 +92,10 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                 continue;
             }
 
+            if (!(scope instanceof JavaParserFieldDeclaration)) {
+                continue;
+            }
+
             JavaParserFieldDeclaration scopeSymbol = (JavaParserFieldDeclaration) scope;
             if (scopeSymbol.getWrappedNode() == null) {
                 continue;
