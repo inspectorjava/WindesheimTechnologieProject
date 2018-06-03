@@ -120,6 +120,11 @@ public abstract class AbstractFinder {
                 ClassOrInterfaceDeclaration resolvedInterface =
                         ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
                 String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+
+                if (implementation.getImplementedTypes().isEmpty()) {
+                    continue;
+                }
+
                 String interfaceName = implementation.getImplementedTypes().get(0).getNameAsString();
                 if (declarationName.equals(interfaceName)
                         && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
@@ -129,6 +134,11 @@ public abstract class AbstractFinder {
                 ClassOrInterfaceDeclaration resolvedInterface =
                         ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
                 String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+
+                if (implementation.getExtendedTypes().isEmpty()) {
+                    continue;
+                }
+
                 String interfaceName = implementation.getExtendedTypes().get(0).getNameAsString();
                 if (declarationName.equals(interfaceName)
                         && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
