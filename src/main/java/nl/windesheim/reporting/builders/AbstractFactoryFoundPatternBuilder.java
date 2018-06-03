@@ -21,7 +21,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
 
     /**
      * The constructor.
-     * @param factoryName The name for this factory.
+     * @param factory The name for this factory.
      */
     public AbstractFactoryFoundPatternBuilder(final ClassOrInterfaceDeclaration factory) {
         super();
