@@ -39,7 +39,7 @@ public class ObserverCollection {
     /**
      * A list of notification methods operating on this collection.
      */
-    private List<NotificationMethod> notifyMethods;
+    private final List<NotificationMethod> notifyMethods;
 
     /**
      * ObserverCollection constructor.

@@ -15,30 +15,6 @@ public final class CodeParserApp {
      */
     private CodeParserApp() {
         System.out.println("[marslanden] running");
-
-        try {
-            FileAnalysisProvider analysis = FileAnalysisProvider.getConfiguredFileAnalysisProvider();
-//            String pathString =
-//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/own";
-//            String pathString =
-//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/numbersystem";
-//            String pathString =
-//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/domotica";
-//            String pathString =
-//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/observerChat";
-            String pathString =
-                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/";
-            File codeDir = new File(pathString);
-
-            List<IDesignPattern> patterns = analysis.analyzeDirectory(codeDir.toPath());
-
-            for (IDesignPattern p : patterns) {
-                System.out.println("Found pattern");
-            }
-        } catch (IOException ex) {
-            System.out.println("Krak IOException: " + ex.getMessage());
-        }
-
         System.out.println("[marslanden] done");
     }
 

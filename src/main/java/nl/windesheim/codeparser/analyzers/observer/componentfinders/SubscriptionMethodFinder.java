@@ -240,10 +240,10 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
 
         /**
-         * @param resolvedReferenceType The resolved type of the parameter
+         * @param resolvedType The resolved type of the parameter
          */
-        public void setResolvedReferenceType(final ResolvedReferenceType resolvedReferenceType) {
-            this.resolvedType = resolvedReferenceType;
+        public void setResolvedReferenceType(final ResolvedReferenceType resolvedType) {
+            this.resolvedType = resolvedType;
         }
 
         /**

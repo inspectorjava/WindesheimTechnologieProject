@@ -45,11 +45,11 @@ public class ObserverPattern implements IDesignPattern {
     }
 
     /**
-     * @param abstractObservable The abstract observable in the observer pattern
+     * @param aObservable The abstract observable in the observer pattern
      * @return this
      */
-    public ObserverPattern setAbstractObservable(final ClassOrInterface abstractObservable) {
-        this.aObservable = abstractObservable;
+    public ObserverPattern setAbstractObservable(final ClassOrInterface aObservable) {
+        this.aObservable = aObservable;
         return this;
     }
 
@@ -61,11 +61,11 @@ public class ObserverPattern implements IDesignPattern {
     }
 
     /**
-     * @param abstractObserver The abstract observer in the observer pattern
+     * @param aObserver The abstract observer in the observer pattern
      * @return this
      */
-    public ObserverPattern setAbstractObserver(final ClassOrInterface abstractObserver) {
-        this.aObserver = abstractObserver;
+    public ObserverPattern setAbstractObserver(final ClassOrInterface aObserver) {
+        this.aObserver = aObserver;
         return this;
     }
 
@@ -77,20 +77,20 @@ public class ObserverPattern implements IDesignPattern {
     }
 
     /**
-     * @param concreteObservables A list of the concrete observables in the observer pattern
+     * @param cObservers A list of the concrete observables in the observer pattern
      * @return this
      */
-    public ObserverPattern setConcreteObservables(final List<ClassOrInterface> concreteObservables) {
-        this.cObservables = concreteObservables;
+    public ObserverPattern setConcreteObservables(final List<ClassOrInterface> cObservers) {
+        this.cObservables = cObservers;
         return this;
     }
 
     /**
-     * @param concreteObservable A concrete observable in the observer pattern
+     * @param cObservable A concrete observable in the observer pattern
      * @return this
      */
-    public ObserverPattern addConcreteObservable(final ClassOrInterface concreteObservable) {
-        this.cObservables.add(concreteObservable);
+    public ObserverPattern addConcreteObservable(final ClassOrInterface cObservable) {
+        this.cObservables.add(cObservable);
         return this;
     }
 
@@ -102,20 +102,20 @@ public class ObserverPattern implements IDesignPattern {
     }
 
     /**
-     * @param concreteObservers A list of the concrete observers in the observer pattern
+     * @param cObservers A list of the concrete observers in the observer pattern
      * @return this
      */
-    public ObserverPattern setConcreteObservers(final List<ClassOrInterface> concreteObservers) {
-        this.cObservers = concreteObservers;
+    public ObserverPattern setConcreteObservers(final List<ClassOrInterface> cObservers) {
+        this.cObservers = cObservers;
         return this;
     }
 
     /**
-     * @param concreteObserver A concrete observer in the observer pattern
+     * @param cObserver A concrete observer in the observer pattern
      * @return this
      */
-    public ObserverPattern addConcreteObserver(final ClassOrInterface concreteObserver) {
-        this.cObservers.add(concreteObserver);
+    public ObserverPattern addConcreteObserver(final ClassOrInterface cObserver) {
+        this.cObservers.add(cObserver);
         return this;
     }
 }
