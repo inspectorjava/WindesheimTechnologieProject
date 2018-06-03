@@ -56,7 +56,8 @@ public class FileAnalysisProvider {
         analyzer.setTypeSolver(typeSolver);
 
         //The type solver can now solve types from the standard library and the code we are analyzing
-        ParserConfiguration configuration = JavaParser.getStaticConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        ParserConfiguration configuration =
+                JavaParser.getStaticConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
         JavaParser.setStaticConfiguration(configuration);
 
         CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
@@ -126,9 +127,9 @@ public class FileAnalysisProvider {
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
-//        composite.addChild(new SingletonAnalyzer());
-//        composite.addChild(new StrategyAnalyzer());
-//        composite.addChild(new ChainOfResponsibilityAnalyzer());
+        composite.addChild(new SingletonAnalyzer());
+        composite.addChild(new StrategyAnalyzer());
+        composite.addChild(new ChainOfResponsibilityAnalyzer());
         composite.addChild(new ObserverAnalyzer());
 
         return new FileAnalysisProvider(composite);

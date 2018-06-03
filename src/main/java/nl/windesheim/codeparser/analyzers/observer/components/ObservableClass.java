@@ -3,31 +3,56 @@ package nl.windesheim.codeparser.analyzers.observer.components;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 
-import java.util.List;
-
-public abstract class ObservableClass {
+/**
+ * Encapsulates information on an observable class.
+ */
+public class ObservableClass {
+    /**
+     * The class or interface defining the observable.
+     */
     private ClassOrInterfaceDeclaration classDeclaration;
-    private ResolvedReferenceTypeDeclaration resolvedTypeDeclaration;
 
+    /**
+     * The type of the observable class.
+     */
+    private ResolvedReferenceTypeDeclaration resolvedType;
+
+    /**
+     * ObservableClass constructor.
+     *
+     * @param classDeclaration The class or interface defining the observable
+     */
     public ObservableClass(final ClassOrInterfaceDeclaration classDeclaration) {
         this(classDeclaration, null);
     }
 
-    public ObservableClass(final ClassOrInterfaceDeclaration classDeclaration, final ResolvedReferenceTypeDeclaration resolvedTypeDeclaration) {
+    /**
+     * ObservableClass constructor.
+     *
+     * @param classDeclaration        The class or interface defining the observable
+     * @param resolvedType The type of the observable class
+     */
+    public ObservableClass(final ClassOrInterfaceDeclaration classDeclaration,
+                           final ResolvedReferenceTypeDeclaration resolvedType) {
         this.classDeclaration = classDeclaration;
-        this.resolvedTypeDeclaration = resolvedTypeDeclaration;
+        this.resolvedType = resolvedType;
     }
 
+    /**
+     * @return The class or interface defining the observable
+     */
     public ClassOrInterfaceDeclaration getClassDeclaration() {
         return classDeclaration;
     }
 
-    public ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration () {
-        // TODO Gooi een exception op als dit niet lukt
-        if (resolvedTypeDeclaration == null) {
-            resolvedTypeDeclaration = classDeclaration.resolve();
+    /**
+     * @return The type of the observable class
+     */
+    public ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration() {
+        if (resolvedType == null) {
+            resolvedType = classDeclaration.resolve();
         }
 
-        return resolvedTypeDeclaration;
+        return resolvedType;
     }
 }

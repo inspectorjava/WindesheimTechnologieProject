@@ -1,6 +1,5 @@
 package nl.windesheim.codeparser;
 
-import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.File;
@@ -19,19 +18,23 @@ public final class CodeParserApp {
 
         try {
             FileAnalysisProvider analysis = FileAnalysisProvider.getConfiguredFileAnalysisProvider();
-            ClassLoader classLoader = this.getClass().getClassLoader();
-//            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/own";
-//            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/numbersystem";
-//            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/domotica";
-            String pathString = "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/observerChat";
+//            String pathString =
+//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/own";
+//            String pathString =
+//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/numbersystem";
+//            String pathString =
+//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/domotica";
+//            String pathString =
+//                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/observerChat";
+            String pathString =
+                    "/Users/rickbos/WindesheimTechnologieProject/src/test/resources/observer/";
             File codeDir = new File(pathString);
 
             List<IDesignPattern> patterns = analysis.analyzeDirectory(codeDir.toPath());
 
-//            for (IDesignPattern p : patterns) {
-//                EligibleObserverPattern o = (EligibleObserverPattern) p;
-//                System.out.println("Found " + o.toString());
-//            }
+            for (IDesignPattern p : patterns) {
+                System.out.println("Found pattern");
+            }
         } catch (IOException ex) {
             System.out.println("Krak IOException: " + ex.getMessage());
         }

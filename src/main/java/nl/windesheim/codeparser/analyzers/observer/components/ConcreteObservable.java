@@ -6,22 +6,52 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Encapsulates information on a concrete observable class.
+ */
 public class ConcreteObservable extends ObservableClass {
+    /**
+     * ConcreteObservable constructor.
+     *
+     * Never called, just here to silence PMD warnings
+     */
+    private ConcreteObservable() {
+        super(null, null);
+    }
+
+    /**
+     * ConcreteObservable constructor.
+     *
+     * @param classDeclaration The class or interface defining the concrete observable
+     */
     public ConcreteObservable(final ClassOrInterfaceDeclaration classDeclaration) {
         this(classDeclaration, null);
     }
 
-    public ConcreteObservable(final ClassOrInterfaceDeclaration classDeclaration, final ResolvedReferenceTypeDeclaration resolvedTypeDeclaration) {
-        super(classDeclaration, resolvedTypeDeclaration);
+    /**
+     * ConcreteObservable constructor.
+     *
+     * @param classDeclaration The class or interface defining the concrete observable
+     * @param resolvedType     The type of the concrete observable class
+     */
+    public ConcreteObservable(final ClassOrInterfaceDeclaration classDeclaration,
+                              final ResolvedReferenceTypeDeclaration resolvedType) {
+        super(classDeclaration, resolvedType);
     }
 
-    public static List<ConcreteObservable> fromClasses (List<ClassOrInterfaceDeclaration> classDeclarations) {
-        List<ConcreteObservable> concreteObservables = new ArrayList<>();
+    /**
+     * Converts a list of classes or interfaces into ConcreteObservable objects.
+     *
+     * @param classDeclarations A list of classes or interfaces defining a concrete observable
+     * @return A list of ConcreteObservables
+     */
+    public static List<ConcreteObservable> fromClasses(final List<ClassOrInterfaceDeclaration> classDeclarations) {
+        List<ConcreteObservable> cObservables = new ArrayList<>();
 
         for (ClassOrInterfaceDeclaration classDeclaration : classDeclarations) {
-            concreteObservables.add(new ConcreteObservable(classDeclaration));
+            cObservables.add(new ConcreteObservable(classDeclaration));
         }
 
-        return concreteObservables;
+        return cObservables;
     }
 }

@@ -5,7 +5,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
 

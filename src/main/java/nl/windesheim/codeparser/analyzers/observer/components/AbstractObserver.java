@@ -1,69 +1,95 @@
 package nl.windesheim.codeparser.analyzers.observer.components;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 
+/**
+ * Encapsulates information on an abstract observer class.
+ */
 public class AbstractObserver {
+    /**
+     * The class or interface which represents the abstract observer.
+     */
     private ClassOrInterfaceDeclaration classDeclaration;
-    private ResolvedReferenceTypeDeclaration resolvedTypeDeclaration;
-    private ResolvedMethodDeclaration updateMethod;
-    private VariableDeclarator observableVariable;
 
-    public AbstractObserver (final ClassOrInterfaceDeclaration classDeclaration) {
+    /**
+     * The resolved reference type of the abstract observer class or interface.
+     */
+    private ResolvedReferenceTypeDeclaration resolvedType;
+
+    /**
+     * The declaration of the update method.
+     */
+    private ResolvedMethodDeclaration updateMethod;
+
+    /**
+     * AbstractObserver constructor.
+     *
+     * @param classDeclaration The class or interface which represents the abstract observer
+     */
+    public AbstractObserver(final ClassOrInterfaceDeclaration classDeclaration) {
         this(classDeclaration, null, null);
     }
 
-    public AbstractObserver (final ClassOrInterfaceDeclaration classDeclaration, final ResolvedReferenceTypeDeclaration resolvedTypeDeclaration) {
-        this(classDeclaration, resolvedTypeDeclaration, null);
+    /**
+     * AbstractObserver constructor.
+     *
+     * @param classDeclaration        The class or interface which represents the abstract observer
+     * @param resolvedType The resolved reference type of the abstract observer class or interface
+     */
+    public AbstractObserver(final ClassOrInterfaceDeclaration classDeclaration,
+                            final ResolvedReferenceTypeDeclaration resolvedType) {
+        this(classDeclaration, resolvedType, null);
     }
 
-    public AbstractObserver (final ClassOrInterfaceDeclaration classDeclaration, final ResolvedReferenceTypeDeclaration resolvedTypeDeclaration, final ResolvedMethodDeclaration updateMethod) {
+    /**
+     * AbstractObserver constructor.
+     *
+     * @param classDeclaration        The class or interface which represents the abstract observer
+     * @param resolvedType The resolved reference type of the abstract observer class or interface
+     * @param updateMethod            The declaration of the update method
+     */
+    public AbstractObserver(final ClassOrInterfaceDeclaration classDeclaration,
+                            final ResolvedReferenceTypeDeclaration resolvedType,
+                            final ResolvedMethodDeclaration updateMethod) {
         this.classDeclaration = classDeclaration;
-        this.resolvedTypeDeclaration = resolvedTypeDeclaration;
+        this.resolvedType = resolvedType;
         this.updateMethod = updateMethod;
-        this.observableVariable = null;
     }
 
+    /**
+     * @return The class or interface which represents the abstract observer
+     */
     public ClassOrInterfaceDeclaration getClassDeclaration() {
         return classDeclaration;
     }
 
-    public boolean isInterface () {
-        return classDeclaration.isInterface();
-    }
-
-    public boolean isClass () {
-        return !classDeclaration.isInterface();
-    }
-
+    /**
+     * @return The resolved reference type of the abstract observer class or interface
+     */
     public ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration() {
-        if (resolvedTypeDeclaration == null) {
+        if (resolvedType == null) {
             // TODO Exception gooien als dit niet lukt
-            resolvedTypeDeclaration = classDeclaration.resolve();
+            resolvedType = classDeclaration.resolve();
         }
 
-        return resolvedTypeDeclaration;
+        return resolvedType;
     }
 
+    /**
+     * @return The declaration of the update method associated with the abstract observer
+     */
     public ResolvedMethodDeclaration getUpdateMethod() {
         return updateMethod;
     }
 
+    /**
+     * @param updateMethod The declaration of the update method associated with the abstract observer
+     * @return this
+     */
     public AbstractObserver setUpdateMethod(final ResolvedMethodDeclaration updateMethod) {
         this.updateMethod = updateMethod;
-        return this;
-    }
-
-    public VariableDeclarator getObservableVariable () {
-        return observableVariable;
-    }
-
-    public AbstractObserver setObservableVariable (final VariableDeclarator observableVariable) {
-        this.observableVariable = observableVariable;
         return this;
     }
 }

@@ -8,101 +8,115 @@ import java.util.List;
  */
 public class EligibleObserverPattern {
     /**
-     * The probability that this is a correctly identified EligibleObserverPattern pattern.
+     * The class or interface that has been identified as abstract observable.
      */
-    private boolean probability;
+    private AbstractObservable aObservable;
 
     /**
-     * The class or interface that has been identified as Subject.
+     * The classes that have been identified as concrete observables.
      */
-    private AbstractObservable abstractObservable;
+    private final List<ConcreteObservable> cObservables;
 
     /**
-     * The classes that have been identified as ConcreteSubjects.
+     * The class or interface that has been identified as abstract observers.
      */
-    private List<ConcreteObservable> concreteObservables;
+    private AbstractObserver aObserver;
 
     /**
-     * The class or interface that has been identified as EligibleObserverPattern.
+     * The classes that have been identified as concrete observers.
      */
-    private AbstractObserver abstractObserver;
-
-    /**
-     * The classes that have been identified as ConcreteObservers.
-     */
-    private List<ConcreteObserver> concreteObservers;
+    private final List<ConcreteObserver> cObservers;
 
     /**
      * EligibleObserverPattern constructor.
      */
     public EligibleObserverPattern() {
-        this.abstractObservable = null;
-        this.concreteObservables = new ArrayList<>();
+        this.aObservable = null;
+        this.cObservables = new ArrayList<>();
 
-        this.abstractObserver = null;
-        this.concreteObservers = new ArrayList<>();
+        this.aObserver = null;
+        this.cObservers = new ArrayList<>();
     }
 
     /**
-     * @return The probability that this is a correctly identified EligibleObserverPattern pattern
+     * @return The class or interface that has been identified as abstract observable
      */
-    public boolean getProbability() {
-        return this.probability;
+    public AbstractObservable getAbstractObservable() {
+        return aObservable;
     }
 
     /**
-     *
-     * @param probability Set the probability that this is a correctly identified EligibleObserverPattern pattern
+     * @param aObservable The class or interface that has been identified as abstract observable
      * @return this
      */
-    public EligibleObserverPattern setProbability(final boolean probability) {
-        this.probability = probability;
+    public EligibleObserverPattern setAbstractObservable(final AbstractObservable aObservable) {
+        this.aObservable = aObservable;
         return this;
     }
 
-    public AbstractObservable getAbstractObservable() {
-        return abstractObservable;
+    /**
+     * @return The classes that have been identified as concrete observables
+     */
+    public List<ConcreteObservable> getConcreteObservables() {
+        return cObservables;
     }
 
-    public EligibleObserverPattern setAbstractObservable (final AbstractObservable abstractObservable) {
-        this.abstractObservable = abstractObservable;
+    /**
+     * @param cObservable A class that has been identified as concrete observable
+     * @return this
+     */
+    public EligibleObserverPattern addConcreteObservable(final ConcreteObservable cObservable) {
+        this.cObservables.add(cObservable);
         return this;
     }
 
-    public List<ConcreteObservable> getConcreteObservables () {
-        return concreteObservables;
-    }
-
-    public EligibleObserverPattern addConcreteObservable (final ConcreteObservable concreteObservable) {
-        this.concreteObservables.add(concreteObservable);
+    /**
+     * @param cObservables A list of classes that have been identified as concrete observable
+     * @return this
+     */
+    public EligibleObserverPattern addConcreteObservable(final List<ConcreteObservable> cObservables) {
+        this.cObservables.addAll(cObservables);
         return this;
     }
 
-    public EligibleObserverPattern addConcreteObservable (final List<ConcreteObservable> concreteObservables) {
-        this.concreteObservables.addAll(concreteObservables);
+    /**
+     * @return The class or interface that has been identified as abstract observers
+     */
+    public AbstractObserver getAbstractObserver() {
+        return aObserver;
+    }
+
+    /**
+     * @param aObserver The class or interface that has been identified as abstract observers
+     * @return this
+     */
+    public EligibleObserverPattern setAbstractObserver(final AbstractObserver aObserver) {
+        this.aObserver = aObserver;
         return this;
     }
 
-    public AbstractObserver getAbstractObserver () {
-        return abstractObserver;
+    /**
+     * @return The classes that have been identified as concrete observers
+     */
+    public List<ConcreteObserver> getConcreteObservers() {
+        return cObservers;
     }
 
-    public EligibleObserverPattern setAbstractObserver (final AbstractObserver abstractObserver) {
-        this.abstractObserver = abstractObserver;
+    /**
+     * @param cObserver A class that has been identified as concrete observers
+     * @return this
+     */
+    public EligibleObserverPattern addConcreteObserver(final ConcreteObserver cObserver) {
+        this.cObservers.add(cObserver);
         return this;
     }
 
-    public List<ConcreteObserver> getConcreteObservers () {
-        return concreteObservers;
-    }
-
-    public EligibleObserverPattern addConcreteObserver (final ConcreteObserver concreteObserver) {
-        this.concreteObservers.add(concreteObserver);
-        return this;
-    }
-
-    public EligibleObserverPattern addConcreteObserver (final List<ConcreteObserver> concreteObservers) {
-        this.concreteObservers.addAll(concreteObservers);
+    /**
+     * @param cObservers A list of classes that have been identified as concrete observers
+     * @return this
+     */
+    public EligibleObserverPattern addConcreteObserver(final List<ConcreteObserver> cObservers) {
+        this.cObservers.addAll(cObservers);
         return this;
     }
 }

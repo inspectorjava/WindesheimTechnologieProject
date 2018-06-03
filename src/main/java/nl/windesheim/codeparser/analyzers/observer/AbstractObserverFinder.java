@@ -7,37 +7,59 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
+import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
+import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
+/**
+ * Visitor which finds all classes which can be an 'abstract observer'.
+ */
 public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
-    private TypeSolver typeSolver;
+    /**
+     * A tool which resolved relations between AST nodes.
+     */
+    private final TypeSolver typeSolver;
 
-    private List<EligibleObserverPattern> observerPatterns;
+    /**
+     * A list of potentially detected observer patterns.
+     */
+    private final List<EligibleObserverPattern> observerPatterns;
 
-    public AbstractObserverFinder (final TypeSolver typeSolver, final List<EligibleObserverPattern> observerPatterns) {
+    /**
+     * AbstractObserverFinder constructor.
+     *
+     * @param typeSolver       A TypeSolver which can be used by this class
+     * @param observerPatterns A list of potential observer patterns which have already been detected
+     */
+    public AbstractObserverFinder(final TypeSolver typeSolver, final List<EligibleObserverPattern> observerPatterns) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = observerPatterns;
     }
 
-    public void visit (ClassOrInterfaceDeclaration classDeclaration, Void arg) {
+    @Override
+    public void visit(final ClassOrInterfaceDeclaration classDeclaration, final Void arg) {
         try {
-            ResolvedReferenceTypeDeclaration classTypeDeclaration = classDeclaration.resolve();
+            ResolvedReferenceTypeDeclaration classType = classDeclaration.resolve();
 
             // Check whether the class is being called somewhere in an observercollection
             for (EligibleObserverPattern observerPattern : observerPatterns) {
-                AbstractObservable abstractObservable = observerPattern.getAbstractObservable();
-                List<ObserverCollection> observerCollections = abstractObservable.getObserverCollections();
+                AbstractObservable abstObservable = observerPattern.getAbstractObservable();
+                List<ObserverCollection> observerCols = abstObservable.getObserverCollections();
 
-                for (ObserverCollection observerCollection : observerCollections) {
-                    ResolvedReferenceTypeDeclaration parameterType = observerCollection.getParameterType().getTypeDeclaration();
+                for (ObserverCollection observerCol : observerCols) {
+                    ResolvedReferenceTypeDeclaration parameterType =
+                            observerCol.getParameterType().getTypeDeclaration();
 
-                    if (parameterType.equals(classTypeDeclaration)) {
-                        AbstractObserver abstractObserver = new AbstractObserver(classDeclaration, classTypeDeclaration);
-                        findUpdateMethod(abstractObserver, observerPattern, observerCollection);
+                    if (parameterType.equals(classType)) {
+                        AbstractObserver abstractObserver =
+                                new AbstractObserver(classDeclaration, classType);
+                        findUpdateMethod(abstractObserver, observerPattern, observerCol);
                     }
                 }
             }
@@ -46,19 +68,32 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
         }
     }
 
-    private void findUpdateMethod (final AbstractObserver abstractObserver, final EligibleObserverPattern observerPattern, final ObserverCollection observerCollection) {
+    /**
+     * Finds the update method in the AbstractObserver which is being referred to from the observable classes.
+     *
+     * @param abstObserver    The AbstractObservable referring to this AbstractObserver
+     * @param observerPattern A potential observer pattern which has been detected
+     * @param observerCol     A potential observer collection
+     */
+    private void findUpdateMethod(final AbstractObserver abstObserver,
+                                  final EligibleObserverPattern observerPattern,
+                                  final ObserverCollection observerCol) {
         // Class or interface contains the update-method as called in the notification method
-        List<NotificationMethod> notificationMethods = observerCollection.getNotificationMethods();
+        List<NotificationMethod> notifyMethods = observerCol.getNotificationMethods();
 
-        Set<ResolvedMethodDeclaration> methods = abstractObserver.getResolvedTypeDeclaration().getDeclaredMethods();
+        Set<ResolvedMethodDeclaration> methods = abstObserver.getResolvedTypeDeclaration().getDeclaredMethods();
         for (ResolvedMethodDeclaration method : methods) {
-            for (NotificationMethod notificationMethod : notificationMethods) {
+            for (NotificationMethod notify : notifyMethods) {
                 try {
-                    ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
+                    ResolvedMethodDeclaration resNotify =
+                            JavaParserFacade
+                                    .get(typeSolver)
+                                    .solve(notify.getUpdateMethodCall())
+                                    .getCorrespondingDeclaration();
 
-                    if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
-                        abstractObserver.setUpdateMethod(resolvedNotificationMethod);
-                        observerPattern.setAbstractObserver(abstractObserver);
+                    if (resNotify.getQualifiedSignature().equals(method.getQualifiedSignature())) {
+                        abstObserver.setUpdateMethod(resNotify);
+                        observerPattern.setAbstractObserver(abstObserver);
                     }
                 } catch (UnsolvedSymbolException ex) {
                     // FIXME Fix exception log

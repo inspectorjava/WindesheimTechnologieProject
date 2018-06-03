@@ -1,71 +1,121 @@
 package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by caveman on 4/19/18.
+ * Encapsulates information on a detected Observer pattern.
  */
 public class ObserverPattern implements IDesignPattern {
-    private ClassOrInterface abstractObservable;
+    /**
+     * The file part which contains the abstract observable class or interface.
+     */
+    private ClassOrInterface aObservable;
 
-    private ClassOrInterface abstractObserver;
+    /**
+     * The file part which contains the abstract observer class or interface.
+     */
+    private ClassOrInterface aObserver;
 
-    private List<ClassOrInterface> concreteObservables;
+    /**
+     * A list of file parts which contain concrete observable classes.
+     */
+    private List<ClassOrInterface> cObservables;
 
-    private List<ClassOrInterface> concreteObservers;
+    /**
+     * A list of file parts which contain concrete observer classes.
+     */
+    private List<ClassOrInterface> cObservers;
 
-    public ObserverPattern () {
-        concreteObservables = new ArrayList<>();
-        concreteObservers = new ArrayList<>();
+    /**
+     * ObserverPattern constructor.
+     */
+    public ObserverPattern() {
+        cObservables = new ArrayList<>();
+        cObservers = new ArrayList<>();
     }
 
-    public ClassOrInterface getAbstractObservable () {
-        return abstractObservable;
+    /**
+     * @return The abstract observable in the observer pattern
+     */
+    public ClassOrInterface getAbstractObservable() {
+        return aObservable;
     }
 
-    public ObserverPattern setAbstractObservable (final ClassOrInterface abstractObservable) {
-        this.abstractObservable = abstractObservable;
+    /**
+     * @param abstractObservable The abstract observable in the observer pattern
+     * @return this
+     */
+    public ObserverPattern setAbstractObservable(final ClassOrInterface abstractObservable) {
+        this.aObservable = abstractObservable;
         return this;
     }
 
-    public ClassOrInterface getAbstractObserver () {
-        return abstractObserver;
+    /**
+     * @return The abstract observer in the observer pattern
+     */
+    public ClassOrInterface getAbstractObserver() {
+        return aObserver;
     }
 
-    public ObserverPattern setAbstractObserver (final ClassOrInterface abstractObserver) {
-        this.abstractObserver = abstractObserver;
+    /**
+     * @param abstractObserver The abstract observer in the observer pattern
+     * @return this
+     */
+    public ObserverPattern setAbstractObserver(final ClassOrInterface abstractObserver) {
+        this.aObserver = abstractObserver;
         return this;
     }
 
-    public List<ClassOrInterface> getConcreteObservables () {
-        return concreteObservables;
+    /**
+     * @return A list of the concrete observables in the observer pattern
+     */
+    public List<ClassOrInterface> getConcreteObservables() {
+        return cObservables;
     }
 
-    public ObserverPattern setConcreteObservables (final List<ClassOrInterface> concreteObservables) {
-        this.concreteObservables = concreteObservables;
+    /**
+     * @param concreteObservables A list of the concrete observables in the observer pattern
+     * @return this
+     */
+    public ObserverPattern setConcreteObservables(final List<ClassOrInterface> concreteObservables) {
+        this.cObservables = concreteObservables;
         return this;
     }
 
-    public ObserverPattern addConcreteObservable (final ClassOrInterface concreteObservable) {
-        this.concreteObservables.add(concreteObservable);
+    /**
+     * @param concreteObservable A concrete observable in the observer pattern
+     * @return this
+     */
+    public ObserverPattern addConcreteObservable(final ClassOrInterface concreteObservable) {
+        this.cObservables.add(concreteObservable);
         return this;
     }
 
-    public List<ClassOrInterface> getConcreteObservers () {
-        return concreteObservers;
+    /**
+     * @return A list of the concrete observers in the observer pattern
+     */
+    public List<ClassOrInterface> getConcreteObservers() {
+        return cObservers;
     }
 
-    public ObserverPattern setConcreteObservers (final List<ClassOrInterface> concreteObservers) {
-        this.concreteObservers = concreteObservers;
+    /**
+     * @param concreteObservers A list of the concrete observers in the observer pattern
+     * @return this
+     */
+    public ObserverPattern setConcreteObservers(final List<ClassOrInterface> concreteObservers) {
+        this.cObservers = concreteObservers;
         return this;
     }
 
-    public ObserverPattern addConcreteObserver (final ClassOrInterface concreteObserver) {
-        this.concreteObservers.add(concreteObserver);
+    /**
+     * @param concreteObserver A concrete observer in the observer pattern
+     * @return this
+     */
+    public ObserverPattern addConcreteObserver(final ClassOrInterface concreteObserver) {
+        this.cObservers.add(concreteObserver);
         return this;
     }
 }

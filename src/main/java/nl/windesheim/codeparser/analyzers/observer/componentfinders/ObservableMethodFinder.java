@@ -4,16 +4,51 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
-import java.util.*;
+import java.util.List;
 
+/**
+ * Finds methods specific to an AbstractObservable.
+ */
 public abstract class ObservableMethodFinder {
-    protected TypeSolver typeSolver;
-    protected List<ObserverCollection> observerCollections;
+    /**
+     * A tool which resolved relations between AST nodes.
+     */
+    private final TypeSolver typeSolver;
 
-    public ObservableMethodFinder(TypeSolver typeSolver, List<ObserverCollection> observerCollections) {
+    /**
+     * A list of potential observer collections.
+     */
+    private final List<ObserverCollection> observerCols;
+
+    /**
+     * ObservableMethodFinder constructor.
+     *
+     * @param typeSolver          A TypeSolver which can be used by this class
+     * @param observerCols A list of detected potential observer collections
+     */
+    public ObservableMethodFinder(final TypeSolver typeSolver, final List<ObserverCollection> observerCols) {
         this.typeSolver = typeSolver;
-        this.observerCollections = observerCollections;
+        this.observerCols = observerCols;
     }
 
-    public abstract void determine (final MethodDeclaration methodDeclaration);
+    /**
+     * Determine whether the given method adheres to the criteria for an AbstractObservable method.
+     *
+     * @param methodDeclaration The method to analyze
+     */
+    public abstract void determine(final MethodDeclaration methodDeclaration);
+
+    /**
+     * @return A tool which resolved relations between AST nodes
+     */
+    protected TypeSolver getTypeSolver() {
+        return typeSolver;
+    }
+
+    /**
+     * @return A list of potential observer collections
+     */
+    protected List<ObserverCollection> getObserverCollections() {
+        return observerCols;
+    }
 }

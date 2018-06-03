@@ -3,32 +3,60 @@ package nl.windesheim.codeparser.analyzers.observer.components;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 
+/**
+ * Encapsulates information on a notification method, as implemented in an abstract observable class.
+ */
 public class NotificationMethod {
+    /**
+     * The declaration of the notification method.
+     */
     private MethodDeclaration methodDeclaration;
-    private MethodCallExpr methodCall;
 
-    public NotificationMethod (final MethodDeclaration methodDeclaration, final MethodCallExpr methodCall) {
+    /**
+     * The call to the update method, as performed in the notification method.
+     */
+    private MethodCallExpr updateMethodCall;
+
+    /**
+     * NotificationMethod constructor.
+     *
+     * @param methodDeclaration The declaration of the notification method
+     * @param updateMethodCall  The call to the update method, as performed in the notification method
+     */
+    public NotificationMethod(final MethodDeclaration methodDeclaration, final MethodCallExpr updateMethodCall) {
         this.methodDeclaration = methodDeclaration;
-        this.methodCall = methodCall;
+        this.updateMethodCall = updateMethodCall;
     }
 
+    /**
+     * @return The declaration of the notification method
+     */
     public MethodDeclaration getMethodDeclaration() {
         return methodDeclaration;
     }
 
-    public void setMethodDeclaration (final MethodDeclaration methodDeclaration) {
+    /**
+     * @param methodDeclaration The declaration of the notification method
+     * @return this
+     */
+    public NotificationMethod setMethodDeclaration(final MethodDeclaration methodDeclaration) {
         this.methodDeclaration = methodDeclaration;
+        return this;
     }
 
-    public MethodCallExpr getMethodCall() {
-        return methodCall;
+    /**
+     * @return The call to the update method, as performed in the notification method
+     */
+    public MethodCallExpr getUpdateMethodCall() {
+        return updateMethodCall;
     }
 
-    public void setMethodCall (final MethodCallExpr methodCall) {
-        this.methodCall = methodCall;
-    }
-
-    public boolean isValid () {
-        return methodDeclaration != null && methodCall != null;
+    /**
+     * @param updateMethodCall The call to the update method, as performed in the notification method
+     * @return this
+     */
+    public NotificationMethod setUpdateMethodCall(final MethodCallExpr updateMethodCall) {
+        this.updateMethodCall = updateMethodCall;
+        return this;
     }
 }
