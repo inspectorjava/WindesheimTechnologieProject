@@ -53,9 +53,6 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                 ResolvedMethodDeclaration resolvedNotificationMethod = JavaParserFacade.get(typeSolver).solve(notificationMethod.getMethodCall()).getCorrespondingDeclaration();
 
                 if (resolvedNotificationMethod.getQualifiedSignature().equals(method.getQualifiedSignature())) {
-                    System.out.println("Found update method: " + method.getQualifiedSignature());
-                    System.out.println("ResolvedMethodDeclaration is of type " + resolvedNotificationMethod.getClass());
-                    System.out.println();
                     abstractObserver.setUpdateMethod(resolvedNotificationMethod);
                     observerPattern.setAbstractObserver(abstractObserver);
                 }
