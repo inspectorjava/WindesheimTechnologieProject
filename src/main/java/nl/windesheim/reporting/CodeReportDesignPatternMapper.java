@@ -1,19 +1,8 @@
 package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
-import nl.windesheim.codeparser.patterns.Command;
-import nl.windesheim.codeparser.patterns.CompositePattern;
-import nl.windesheim.codeparser.patterns.IDesignPattern;
-import nl.windesheim.codeparser.patterns.Singleton;
-import nl.windesheim.codeparser.patterns.Strategy;
-import nl.windesheim.codeparser.patterns.AbstractFactory;
-import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
-import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
-import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
-import nl.windesheim.reporting.builders.CompositeFoundBuilder;
-import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
-import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
+import nl.windesheim.codeparser.patterns.*;
+import nl.windesheim.reporting.builders.*;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 
 /**
@@ -55,6 +44,11 @@ public class CodeReportDesignPatternMapper {
         //Composite
         if (pattern instanceof CompositePattern) {
             return buildCompositeBuilder((CompositePattern) pattern);
+        }
+
+        //Observer
+        if (pattern instanceof ObserverPattern) {
+            return buildObserverBuilder((ObserverPattern) pattern);
         }
 
         return null;
@@ -123,4 +117,18 @@ public class CodeReportDesignPatternMapper {
                 pattern.getReceivers());
     }
 
+    /**
+     * Build the ObserverFoundBuilder.
+     *
+     * @param pattern the pattern
+     * @return ChainOfResponsibilityBuilder
+     */
+    private AbstractFoundPatternBuilder buildObserverBuilder(final ObserverPattern pattern) {
+        return new ObserverFoundPatternBuilder(
+                pattern.getAbstractObservable(),
+                pattern.getConcreteObservables(),
+                pattern.getAbstractObserver(),
+                pattern.getConcreteObservers()
+        );
+    }
 }
