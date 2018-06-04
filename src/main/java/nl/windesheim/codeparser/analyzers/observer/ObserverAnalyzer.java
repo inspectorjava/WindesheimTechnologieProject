@@ -49,7 +49,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         List<EligibleObserverPattern> eligiblePatterns = aObsableFinder.getObserverPatterns();
 
         // Search for classes that extend the abstract observables
-        concreteObservableFinder(files, eligiblePatterns);
+        findConcreteObservables(files, eligiblePatterns);
 
         // Find abstract observer classes
         AbstractObserverFinder aObserverFinder =
@@ -78,8 +78,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
      * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
      *                         when concrete observables have been found a pattern instance
      */
-    private void concreteObservableFinder(final List<CompilationUnit> files,
-                                          final List<EligibleObserverPattern> eligiblePatterns) {
+    private void findConcreteObservables(final List<CompilationUnit> files,
+                                         final List<EligibleObserverPattern> eligiblePatterns) {
         ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
 
         for (CompilationUnit compilationUnit : files) {
