@@ -106,11 +106,11 @@ public class ObserverAnalyzer extends PatternAnalyzer {
     }
 
     /**
-     * Generates map linking potential observer patterns to the found subclasses of it's abstract observer
+     * Generates map linking potential observer patterns to the found subclasses of it's abstract observer.
      *
      * @param files            A list of files containing Java code
      * @param eligiblePatterns The detected potential observer patterns
-     * @return
+     * @return A map linking potential observer patterns to potential concrete observers
      */
     private Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> generateConcreteObserverMap(
             final List<CompilationUnit> files,

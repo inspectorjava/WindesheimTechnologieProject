@@ -71,7 +71,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
     }
 
     /**
-     * Check whether the method call operates on a variable
+     * Check whether the method call operates on a variable.
      *
      * @param methodCalls A list of method calls
      * @param variable    The variable the method call should operate on
@@ -117,7 +117,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
     }
 
     /**
-     * Finds method calls in the body of a foreach statement
+     * Finds method calls in the body of a foreach statement.
      *
      * @param foreachStatement The foreach statement to analyze
      * @return A list of method calls found in the body of the foreach statement

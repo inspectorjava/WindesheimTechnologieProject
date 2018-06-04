@@ -16,7 +16,6 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import com.sun.tools.javac.comp.Resolve;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 
 import java.util.ArrayList;
@@ -70,7 +69,8 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
      */
     private Map<ObserverCollection, List<EligibleSubscriptionParameter>> findCollectionParameters(
             final MethodDeclaration methodDeclaration,
-            final List<ObserverCollection> observerCols) {
+            final List<ObserverCollection> observerCols
+    ) {
         NodeList<Parameter> parameters = methodDeclaration.getParameters();
         Map<ObserverCollection, List<EligibleSubscriptionParameter>> eligibleParams = new HashMap<>();
 
@@ -114,7 +114,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         List<MethodCallExpr> methodCalls = methodDeclaration.findAll(MethodCallExpr.class);
         for (MethodCallExpr methodCall : methodCalls) {
             try {
-                ResolvedValueDeclaration resScopeField = getResolvedScopeField (methodCall);
+                ResolvedValueDeclaration resScopeField = getResolvedScopeField(methodCall);
                 if (resScopeField == null) {
                     continue;
                 }
@@ -122,8 +122,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                 // Does that method declaration operate on the add or remove method of the collection type?
                 ObserverCollection operatesOn = null;
                 for (ObserverCollection observerCol : getObserverCollections()) {
-                    if (resScopeField.getName().equals(
-                            observerCol.getVariableDeclarator().resolve().getName())) {
+                    if (resScopeField.getName().equals(observerCol.getVariableDeclarator().resolve().getName())) {
                         operatesOn = observerCol;
                     }
                 }
@@ -133,40 +132,14 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                 }
 
                 // Check of het de add- of remove-methode is
-                ResolvedMethodDeclaration resMethod =
-                        JavaParserFacade.get(getTypeSolver()).solve(methodCall).getCorrespondingDeclaration();
-                String methodSignature = resMethod.getQualifiedSignature();
-                String colTypeSignature = operatesOn.getFieldType().getQualifiedName();
-
-                boolean possibleAttach = methodSignature.equals(colTypeSignature + ".add(E)");
-                boolean possibleDetach =
-                        !possibleAttach && methodSignature.equals(
-                                colTypeSignature + ".remove(java.lang.Object)");
-
-                if (!possibleAttach && !possibleDetach) {
+                SubscriptionMethodType subscriptionType = determineSubscriptionMethodType(methodCall, operatesOn);
+                if (subscriptionType == SubscriptionMethodType.NONE) {
                     continue;
                 }
 
                 // Check whether it receives an eligible parameter
-                // TODO The parameter may have been reassigned to another variable in the mean time
-                NameExpr argumentExpr = methodCall.getArgument(0).asNameExpr();
-                String argumentName = argumentExpr.getNameAsString();
-
-                boolean passesParameter = false;
-                List<EligibleSubscriptionParameter> possibleParams = eligibleParams.get(operatesOn);
-                for (EligibleSubscriptionParameter parameter : possibleParams) {
-                    if (parameter.getParameter().getNameAsString().equals(argumentName)) {
-                        passesParameter = true;
-                        break;
-                    }
-                }
-
-                if (passesParameter) {
-                    if (possibleAttach) {
-                        operatesOn.addAttachMethod(methodDeclaration);
-                    } else {
-                        operatesOn.addDetachMethod(methodDeclaration);
-                    }
+                if (isPassedEligibleParameter(methodCall, operatesOn)) {
+                    handleSubscriptionMethod(operatesOn, methodDeclaration, subscriptionType);
                 }
             } catch (UnsolvedSymbolException ex) {
                 // FIXME Fix exception log
@@ -174,7 +147,13 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
     }
 
-    private ResolvedValueDeclaration getResolvedScopeField (final MethodCallExpr methodCall) {
+    /**
+     * Determines upon which variable the given method is called.
+     *
+     * @param methodCall The method call to analyze
+     * @return The resolved variable the scope is referring to
+     */
+    private ResolvedValueDeclaration getResolvedScopeField(final MethodCallExpr methodCall) {
         Optional<Expression> optionalScope = methodCall.getScope();
         if (!optionalScope.isPresent()) {
             return null;
@@ -206,6 +185,81 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
 
         return null;
+    }
+
+    /**
+     * Determines whether the given method call is an attach or detach method, or no subscription method at all.
+     *
+     * @param methodCall The method call to analyze
+     * @param operatesOn The observer collection the method call may operate on
+     * @return The type of the subscription method
+     */
+    private SubscriptionMethodType determineSubscriptionMethodType(
+            final MethodCallExpr methodCall,
+            final ObserverCollection operatesOn
+    ) {
+        ResolvedMethodDeclaration resMethod =
+                JavaParserFacade.get(getTypeSolver()).solve(methodCall).getCorrespondingDeclaration();
+        String methodSignature = resMethod.getQualifiedSignature();
+        String colTypeSignature = operatesOn.getFieldType().getQualifiedName();
+
+        if (methodSignature.equals(colTypeSignature + ".add(E)")) {
+            return SubscriptionMethodType.ATTACH;
+        } else if (methodSignature.equals(colTypeSignature + ".remove(java.lang.Object)")) {
+            return SubscriptionMethodType.DETACH;
+        } else {
+            return SubscriptionMethodType.NONE;
+        }
+    }
+
+    /**
+     * Determines whether the method call takes an eligible subscription parameter as argument.
+     *
+     * @param methodCall The method call to analyze
+     * @param operatesOn The observer collection possible associated with the method call
+     * @return Whether the method takes an eligible subscription parameter as argument
+     */
+    private boolean isPassedEligibleParameter(final MethodCallExpr methodCall, final ObserverCollection operatesOn) {
+        NameExpr argumentExpr = methodCall.getArgument(0).asNameExpr();
+        String argumentName = argumentExpr.getNameAsString();
+
+        List<EligibleSubscriptionParameter> possibleParams = eligibleParams.get(operatesOn);
+        for (EligibleSubscriptionParameter parameter : possibleParams) {
+            if (parameter.getParameter().getNameAsString().equals(argumentName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Adds subscription method to observer collection.
+     *
+     * @param observerCol       The observer collection the method is associated with
+     * @param methodDeclaration The declaration of the subscription method
+     * @param subscriptionType  The type of subscription method
+     */
+    private void handleSubscriptionMethod(
+            final ObserverCollection observerCol,
+            final MethodDeclaration methodDeclaration,
+            final SubscriptionMethodType subscriptionType
+    ) {
+        if (subscriptionType == SubscriptionMethodType.ATTACH) {
+            observerCol.addAttachMethod(methodDeclaration);
+        } else {
+            observerCol.addDetachMethod(methodDeclaration);
+        }
+    }
+
+    /**
+     * Possible subscription method types.
+     */
+    private enum SubscriptionMethodType {
+        /**
+         * Subscription methods can be of the type attach or detach, or none at all.
+         */
+        NONE, ATTACH, DETACH;
     }
 
     /**
@@ -249,10 +303,10 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         }
 
         /**
-         * @param resolvedReferenceType The resolved type of the parameter
+         * @param resolvedType The resolved type of the parameter
          */
-        public void setResolvedReferenceType(ResolvedReferenceType resolvedReferenceType) {
-            this.resolvedType = resolvedReferenceType;
+        public void setResolvedReferenceType(final ResolvedReferenceType resolvedType) {
+            this.resolvedType = resolvedType;
         }
 
         /**
@@ -265,7 +319,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
         /**
          * @param parameterName The name of the parameter
          */
-        public void setParameterName(String parameterName) {
+        public void setParameterName(final String parameterName) {
             this.parameterName = parameterName;
         }
     }
