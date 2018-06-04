@@ -1,20 +1,22 @@
 package nl.windesheim.reporting.decorators;
 
+import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.NodeType;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
 import java.util.List;
 
 /**
- * Has strategies report decorator.
+ * Has links report decorator.
  */
 public class HasLinks extends FoundPatternReportDecorator {
 
     /**
-     * List of strategies.
+     * List of links.
      */
-    private List<String> links;
+    private List<ClassOrInterface> links;
 
 
     /**
@@ -29,7 +31,7 @@ public class HasLinks extends FoundPatternReportDecorator {
      * Set links.
      * @param links list of links
      */
-    public void setLinks(final List<String> links) {
+    public void setLinks(final List<ClassOrInterface> links) {
         this.links = links;
     }
 
@@ -39,8 +41,8 @@ public class HasLinks extends FoundPatternReportDecorator {
      */
     public String getReport() {
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (String strategy : this.links) {
-            baseString.append("Link: ").append(strategy).append("\n\r");
+        for (ClassOrInterface link : this.links) {
+            baseString.append("Link: ").append(link.getName()).append("\n\r");
         }
 
         return baseString.toString();
@@ -49,8 +51,12 @@ public class HasLinks extends FoundPatternReportDecorator {
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Links");
-        for (String link : this.links) {
-            node.addChild(new TreeNode(link));
+        node.setNodeType(NodeType.CLASS_LIST);
+        for (ClassOrInterface link : this.links) {
+            node.addChild(new TreeNode(link.getName())
+                .setClassOrInterface(link)
+                .setNodeType(NodeType.CLASS)
+            );
         }
         builder.addNode(node);
         return super.buildTreeReport(builder);

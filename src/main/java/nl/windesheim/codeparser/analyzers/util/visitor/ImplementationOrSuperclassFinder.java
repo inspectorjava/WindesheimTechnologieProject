@@ -82,7 +82,8 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
                 continue;
             }
 
-            if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
+            if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().findCompilationUnit()
+                    .equals(classDeclaration.findCompilationUnit())) {
                 classes.add(classToCheck);
             }
         }

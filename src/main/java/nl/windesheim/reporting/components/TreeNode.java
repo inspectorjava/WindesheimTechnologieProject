@@ -1,5 +1,7 @@
 package nl.windesheim.reporting.components;
 
+import nl.windesheim.codeparser.ClassOrInterface;
+
 /**
  * TreeNode.
  */
@@ -21,6 +23,16 @@ public class TreeNode {
     private String name;
 
     /**
+     * The class or the interface corresponding to this node.
+     */
+    private ClassOrInterface classOrInterface;
+
+    /**
+     * The type of the node.
+     */
+    private NodeType nodeType = NodeType.ROOT;
+
+    /**
      * Default construct.
      */
     public TreeNode() {
@@ -33,6 +45,16 @@ public class TreeNode {
      */
     public TreeNode(final String name) {
         this.name = name;
+    }
+
+    /**
+     * Construct with name and classOrInterface.
+     * @param name name of the node
+     * @param classOrInterface the class or interface of a node
+     */
+    public TreeNode(final String name, final ClassOrInterface classOrInterface) {
+        this.name = name;
+        this.classOrInterface = classOrInterface;
     }
 
     /**
@@ -113,6 +135,38 @@ public class TreeNode {
      */
     public TreeNode getNextSibling() {
         return this.nextSibling;
+    }
+
+    /**
+     * @return the class or interface of this node
+     */
+    public ClassOrInterface getClassOrInterface() {
+        return classOrInterface;
+    }
+
+    /**
+     * @param classOrInterface the class or interface to be set
+     * @return this
+     */
+    public TreeNode setClassOrInterface(final ClassOrInterface classOrInterface) {
+        this.classOrInterface = classOrInterface;
+        return this;
+    }
+
+    /**
+     * @return the type of the node
+     */
+    public NodeType getNodeType() {
+        return nodeType;
+    }
+
+    /**
+     * @param nodeType the type of the node
+     * @return this
+     */
+    public TreeNode setNodeType(final NodeType nodeType) {
+        this.nodeType = nodeType;
+        return this;
     }
 
     @Override

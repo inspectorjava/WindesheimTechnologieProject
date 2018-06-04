@@ -67,5 +67,4 @@ public abstract class PatternAnalyzer {
     public List<Exception> getErrors() {
         return errors;
     }
-
 }
