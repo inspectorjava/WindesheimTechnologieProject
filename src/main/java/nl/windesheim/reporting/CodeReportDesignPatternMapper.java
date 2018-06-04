@@ -1,8 +1,21 @@
 package nl.windesheim.reporting;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.patterns.*;
-import nl.windesheim.reporting.builders.*;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
+import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
+import nl.windesheim.codeparser.patterns.Command;
+import nl.windesheim.codeparser.patterns.CompositePattern;
+import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.patterns.Singleton;
+import nl.windesheim.codeparser.patterns.Strategy;
+import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
+import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CompositeFoundBuilder;
+import nl.windesheim.reporting.builders.ObserverFoundPatternBuilder;
+import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
+import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 
 /**

@@ -42,9 +42,12 @@ public class HasAbstractObservable extends FoundPatternReportDecorator {
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        NodeType nodeType = aObservable.getDeclaration().isInterface()
-                ? NodeType.INTERFACE
-                : NodeType.CLASS;
+        NodeType nodeType;
+        if (aObservable.getDeclaration().isInterface()) {
+            nodeType = NodeType.INTERFACE;
+        } else {
+            nodeType = NodeType.CLASS;
+        }
 
         TreeNode node = new TreeNode("Abstract Observable: " + this.aObservable.getName())
                 .setNodeType(nodeType)
