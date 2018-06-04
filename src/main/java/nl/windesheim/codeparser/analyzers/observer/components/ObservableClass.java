@@ -6,17 +6,7 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 /**
  * Encapsulates information on an observable class.
  */
-public class ObservableClass {
-    /**
-     * The class or interface defining the observable.
-     */
-    private ClassOrInterfaceDeclaration classDeclaration;
-
-    /**
-     * The type of the observable class.
-     */
-    private ResolvedReferenceTypeDeclaration resolvedType;
-
+public abstract class ObservableClass extends EligibleObserverComponent {
     /**
      * ObservableClass constructor.
      *
@@ -32,27 +22,10 @@ public class ObservableClass {
      * @param classDeclaration        The class or interface defining the observable
      * @param resolvedType The type of the observable class
      */
-    public ObservableClass(final ClassOrInterfaceDeclaration classDeclaration,
-                           final ResolvedReferenceTypeDeclaration resolvedType) {
-        this.classDeclaration = classDeclaration;
-        this.resolvedType = resolvedType;
-    }
-
-    /**
-     * @return The class or interface defining the observable
-     */
-    public ClassOrInterfaceDeclaration getClassDeclaration() {
-        return classDeclaration;
-    }
-
-    /**
-     * @return The type of the observable class
-     */
-    public ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration() {
-        if (resolvedType == null) {
-            resolvedType = classDeclaration.resolve();
-        }
-
-        return resolvedType;
+    public ObservableClass(
+            final ClassOrInterfaceDeclaration classDeclaration,
+            final ResolvedReferenceTypeDeclaration resolvedType
+    ) {
+        super(classDeclaration, resolvedType);
     }
 }

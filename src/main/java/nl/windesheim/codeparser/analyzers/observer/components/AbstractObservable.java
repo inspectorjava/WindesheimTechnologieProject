@@ -57,10 +57,8 @@ public class AbstractObservable extends ObservableClass {
 
     /**
      * @param observerCol An object property containing references to abstract observers.
-     * @return this
      */
-    public AbstractObservable addObserverCollection(final ObserverCollection observerCol) {
+    public void addObserverCollection(final ObserverCollection observerCol) {
         observerCols.add(observerCol);
-        return this;
     }
 }

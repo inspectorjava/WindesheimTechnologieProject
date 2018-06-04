@@ -1,7 +1,7 @@
 package nl.windesheim.codeparser.analyzers.observer.components;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 
 import java.util.ArrayList;
@@ -10,21 +10,15 @@ import java.util.List;
 /**
  * Encapsulates information on a concrete observer.
  */
-public class ConcreteObserver {
+public class ConcreteObserver extends ObserverClass {
     /**
-     * The class or interface which represents the concrete observer.
+     * ConcreteObserver constructor.
+     *
+     * Never called, just here to silence PMD warnings
      */
-    private ClassOrInterfaceDeclaration classDeclaration;
-
-    /**
-     * The resolved reference type of the concrete observer class or interface.
-     */
-    private ResolvedReferenceTypeDeclaration resolvedType;
-
-    /**
-     * The declaration of the update method.
-     */
-    private MethodDeclaration updateMethod;
+    private ConcreteObserver() {
+        super(null, null);
+    }
 
     /**
      * ConcreteObserver constructor.
@@ -32,18 +26,7 @@ public class ConcreteObserver {
      * @param classDeclaration The class or interface which represents the concrete observer
      */
     public ConcreteObserver(final ClassOrInterfaceDeclaration classDeclaration) {
-        this(classDeclaration, null, null);
-    }
-
-    /**
-     * ConcreteObserver constructor.
-     *
-     * @param classDeclaration        The class or interface which represents the concrete observer
-     * @param resolvedType The resolved reference type of the concrete observer class or interface
-     */
-    public ConcreteObserver(final ClassOrInterfaceDeclaration classDeclaration,
-                            final ResolvedReferenceTypeDeclaration resolvedType) {
-        this(classDeclaration, resolvedType, null);
+        super(classDeclaration);
     }
 
     /**
@@ -55,45 +38,8 @@ public class ConcreteObserver {
      */
     public ConcreteObserver(final ClassOrInterfaceDeclaration classDeclaration,
                             final ResolvedReferenceTypeDeclaration resolvedType,
-                            final MethodDeclaration updateMethod) {
-        this.classDeclaration = classDeclaration;
-        this.resolvedType = resolvedType;
-        this.updateMethod = updateMethod;
-    }
-
-    /**
-     * @return The class or interface which represents the concrete observer
-     */
-    public ClassOrInterfaceDeclaration getClassDeclaration() {
-        return classDeclaration;
-    }
-
-    /**
-     * @return The resolved reference type of the concrete observer class or interface
-     */
-    public ResolvedReferenceTypeDeclaration getResolvedTypeDeclaration() {
-        if (resolvedType == null) {
-            // TODO Exception gooien als dit niet lukt
-            resolvedType = classDeclaration.resolve();
-        }
-
-        return resolvedType;
-    }
-
-    /**
-     * @return The declaration of the update method
-     */
-    public MethodDeclaration getUpdateMethod() {
-        return updateMethod;
-    }
-
-    /**
-     * @param updateMethod The declaration of the update method
-     * @return this
-     */
-    public ConcreteObserver setUpdateMethod(final MethodDeclaration updateMethod) {
-        this.updateMethod = updateMethod;
-        return this;
+                            final ResolvedMethodDeclaration updateMethod) {
+        super(classDeclaration, resolvedType, updateMethod);
     }
 
     /**

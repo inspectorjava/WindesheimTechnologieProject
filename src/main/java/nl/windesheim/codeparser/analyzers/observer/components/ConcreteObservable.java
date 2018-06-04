@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Encapsulates information on a concrete observable class.
  */
-public class ConcreteObservable extends ObservableClass {
+public class ConcreteObservable extends ObserverClass {
     /**
      * ConcreteObservable constructor.
      *
