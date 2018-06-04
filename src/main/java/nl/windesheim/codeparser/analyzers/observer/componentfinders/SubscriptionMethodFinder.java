@@ -17,6 +17,7 @@ import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,11 +42,16 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
     /**
      * SubscriptionMethodFinder constructor.
      *
-     * @param typeSolver          A TypeSolver which can be used by this class
+     * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
+     * @param errorLog     A reference to the error log
      */
-    public SubscriptionMethodFinder(final TypeSolver typeSolver, final List<ObserverCollection> observerCols) {
-        super(typeSolver, observerCols);
+    public SubscriptionMethodFinder(
+            final TypeSolver typeSolver,
+            final List<ObserverCollection> observerCols,
+            final ErrorLog errorLog
+    ) {
+        super(typeSolver, observerCols, errorLog);
         eligibleParams = new HashMap<>();
     }
 
@@ -98,7 +104,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                     }
                 }
             } catch (UnsolvedSymbolException ex) {
-                // FIXME Fix exception log
+                getErrorLog().addError(ex);
             }
         }
 
@@ -142,7 +148,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                     handleSubscriptionMethod(operatesOn, methodDeclaration, subscriptionType);
                 }
             } catch (UnsolvedSymbolException ex) {
-                // FIXME Fix exception log
+                getErrorLog().addError(ex);
             }
         }
     }

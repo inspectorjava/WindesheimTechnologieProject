@@ -16,6 +16,7 @@ import nl.windesheim.codeparser.analyzers.observer.componentfinders.Subscription
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -38,14 +39,21 @@ public class AbstractObservableFinder
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
+     * A reference to the error log.
+     */
+    private final ErrorLog errorLog;
+
+    /**
      * AbstractObservableFinder constructor.
      *
      * @param typeSolver A TypeSolver which can be used by this class
+     * @param errorLog   A reference to the error log
      */
-    public AbstractObservableFinder(final TypeSolver typeSolver) {
+    public AbstractObservableFinder(final TypeSolver typeSolver, ErrorLog errorLog) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = new ArrayList<>();
+        this.errorLog = errorLog;
     }
 
     @Override
@@ -59,9 +67,9 @@ public class AbstractObservableFinder
 
             // Check if the class contains attach-, detach- and notify methods
             SubscriptionMethodFinder subscriptFinder =
-                    new SubscriptionMethodFinder(typeSolver, eligibleCols);
+                    new SubscriptionMethodFinder(typeSolver, eligibleCols, errorLog);
             NotificationMethodFinder notifyFinder =
-                    new NotificationMethodFinder(typeSolver, eligibleCols);
+                    new NotificationMethodFinder(typeSolver, eligibleCols, errorLog);
 
             List<MethodDeclaration> methods = classDeclaration.findAll(MethodDeclaration.class);
             for (MethodDeclaration method : methods) {
@@ -88,7 +96,7 @@ public class AbstractObservableFinder
                     observerPattern.setAbstractObservable(abstObservable);
                     observerPatterns.add(observerPattern);
                 } catch (UnsolvedSymbolException ex) {
-                    // TODO Fix exception log
+                    errorLog.addError(ex);
                 }
             }
         }

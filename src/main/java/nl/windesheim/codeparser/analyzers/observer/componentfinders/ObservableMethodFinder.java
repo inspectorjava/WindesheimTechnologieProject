@@ -3,6 +3,7 @@ package nl.windesheim.codeparser.analyzers.observer.componentfinders;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.List;
 
@@ -21,14 +22,25 @@ public abstract class ObservableMethodFinder {
     private final List<ObserverCollection> observerCols;
 
     /**
+     * A reference to the error log.
+     */
+    private final ErrorLog errorLog;
+
+    /**
      * ObservableMethodFinder constructor.
      *
-     * @param typeSolver          A TypeSolver which can be used by this class
+     * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
+     * @param errorLog     A reference to the error log
      */
-    public ObservableMethodFinder(final TypeSolver typeSolver, final List<ObserverCollection> observerCols) {
+    public ObservableMethodFinder(
+            final TypeSolver typeSolver,
+            final List<ObserverCollection> observerCols,
+            final ErrorLog errorLog
+    ) {
         this.typeSolver = typeSolver;
         this.observerCols = observerCols;
+        this.errorLog = errorLog;
     }
 
     /**
@@ -50,5 +62,12 @@ public abstract class ObservableMethodFinder {
      */
     protected List<ObserverCollection> getObserverCollections() {
         return observerCols;
+    }
+
+    /**
+     * @return A reference to the error log
+     */
+    protected ErrorLog getErrorLog() {
+        return errorLog;
     }
 }

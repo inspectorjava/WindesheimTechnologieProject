@@ -17,6 +17,7 @@ import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParse
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +34,16 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
     /**
      * NotificationMethodFinder constructor.
      *
-     * @param typeSolver          A TypeSolver which can be used by this class
+     * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
+     * @param errorLog     A reference to the error log
      */
-    public NotificationMethodFinder(final TypeSolver typeSolver, final List<ObserverCollection> observerCols) {
-        super(typeSolver, observerCols);
+    public NotificationMethodFinder(
+            final TypeSolver typeSolver,
+            final List<ObserverCollection> observerCols,
+            final ErrorLog errorLog
+    ) {
+        super(typeSolver, observerCols, errorLog);
     }
 
     @Override
@@ -109,7 +115,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
                     }
                 }
             } catch (UnsolvedSymbolException ex) {
-                // FIXME Fix exception log
+                getErrorLog().addError(ex);
             }
         }
 
@@ -162,7 +168,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
                 iterableValue = iterableExpr.asFieldAccessExpr().resolve();
             }
         } catch (UnsolvedSymbolException ex) {
-            // FIXME Fix exception log
+            getErrorLog().addError(ex);
         }
 
         // Check if iterableValue refers to a class property

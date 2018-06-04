@@ -12,6 +12,7 @@ import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.List;
 import java.util.Set;
@@ -31,15 +32,26 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
+     * A reference to the error log.
+     */
+    private final ErrorLog errorLog;
+
+    /**
      * AbstractObserverFinder constructor.
      *
      * @param typeSolver       A TypeSolver which can be used by this class
      * @param observerPatterns A list of potential observer patterns which have already been detected
+     * @param errorLog         A reference to the error log
      */
-    public AbstractObserverFinder(final TypeSolver typeSolver, final List<EligibleObserverPattern> observerPatterns) {
+    public AbstractObserverFinder(
+            final TypeSolver typeSolver,
+            final List<EligibleObserverPattern> observerPatterns,
+            final ErrorLog errorLog
+    ) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = observerPatterns;
+        this.errorLog = errorLog;
     }
 
     @Override
@@ -64,7 +76,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                 }
             }
         } catch (UnsolvedSymbolException ex) {
-            // FIXME Fix exception log
+            errorLog.addError(ex);
         }
     }
 
@@ -96,7 +108,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                         observerPattern.setAbstractObserver(abstObserver);
                     }
                 } catch (UnsolvedSymbolException ex) {
-                    // FIXME Fix exception log
+                    errorLog.addError(ex);
                 }
             }
         }
