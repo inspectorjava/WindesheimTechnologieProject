@@ -119,4 +119,13 @@ public class EligibleObserverPattern {
         this.cObservers.addAll(cObservers);
         return this;
     }
+
+    /**
+     * Determines whether the potential pattern is in fact a valid observer pattern.
+     *
+     * @return Whether this represents a valid observer pattern
+     */
+    public boolean isObserverPattern() {
+        return aObservable != null && aObserver != null;
+    }
 }

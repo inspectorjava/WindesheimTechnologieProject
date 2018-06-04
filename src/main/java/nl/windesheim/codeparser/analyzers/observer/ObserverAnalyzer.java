@@ -60,7 +60,9 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         List<IDesignPattern> patterns = new ArrayList<>();
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
-            patterns.add(makeObserverPattern(eligiblePattern));
+            if (eligiblePattern.isObserverPattern()) {
+                patterns.add(makeObserverPattern(eligiblePattern));
+            }
         }
 
         return patterns;
