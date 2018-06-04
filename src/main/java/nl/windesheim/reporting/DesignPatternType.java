@@ -21,6 +21,10 @@ public enum DesignPatternType {
      */
     COMMAND("Command"),
     /**
+     * Abstract factory pattern.
+     */
+    ABSTRACT_FACTORY("Abstract Factory"),
+    /**
      * Chain of responsibility pattern.
      */
     CHAIN_OF_RESPONSIBILITY("Chain of responsibility"),

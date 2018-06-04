@@ -7,6 +7,8 @@ import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Singleton;
 import nl.windesheim.codeparser.patterns.Strategy;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
+import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
 import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
 import nl.windesheim.reporting.builders.CompositeFoundBuilder;
@@ -40,6 +42,11 @@ public class CodeReportDesignPatternMapper {
             return buildStrategyBuilder((Strategy) pattern);
         }
 
+        // Abstract factory
+        if (pattern instanceof AbstractFactory) {
+            return buildAbstractFactory((AbstractFactory) pattern);
+        }
+
         // Command
         if (pattern instanceof Command) {
             return buildCommandBuilder((Command) pattern);
@@ -51,6 +58,15 @@ public class CodeReportDesignPatternMapper {
         }
 
         return null;
+    }
+
+    /**
+     * Build the abstract factory pattern builder class.
+     * @param pattern the pattern.
+     * @return the abstract factory pattern builder.
+     */
+    private AbstractFoundPatternBuilder buildAbstractFactory(final AbstractFactory pattern) {
+        return new AbstractFactoryFoundPatternBuilder(pattern);
     }
 
     /**
