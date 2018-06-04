@@ -52,7 +52,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         concreteObservableFinder(files, eligiblePatterns);
 
         // Find abstract observer classes
-        AbstractObserverFinder aObserverFinder = new AbstractObserverFinder(typeSolver, eligiblePatterns, getErrorLog());
+        AbstractObserverFinder aObserverFinder =
+                new AbstractObserverFinder(typeSolver, eligiblePatterns, getErrorLog());
         for (CompilationUnit compilationUnit : files) {
             aObserverFinder.visit(compilationUnit, null);
         }

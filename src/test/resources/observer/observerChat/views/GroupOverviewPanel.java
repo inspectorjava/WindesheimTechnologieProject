@@ -40,7 +40,6 @@ public class GroupOverviewPanel extends JPanel implements MouseListener, MyObser
 	}
 	
 	public void update () {
-		// TODO Niet alles in een keer leeggooien, maar lijst updaten
 		for (GroupBlock gp : this.groupPanels) {
 			this.remove(gp);
 		}

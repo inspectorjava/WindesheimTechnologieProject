@@ -101,18 +101,7 @@ public class GroupContentPanel extends JPanel implements ActionListener, MyObser
 	
 	@Override
 	public void update () {
-		// TODO Anders vormgeven
 		List<Message> messages = group.getMessages();
-		
-//		String toSet = "<html>";
-//		
-//		for (Message message : messages) {
-//			toSet += message.toString() + "<br />";
-//		}
-//		
-//		toSet += "</html>";
-//		
-//		this.messagesLabel.setText(toSet);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.FIRST_LINE_START;

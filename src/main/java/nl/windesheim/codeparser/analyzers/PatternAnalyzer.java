@@ -16,14 +16,15 @@ public abstract class PatternAnalyzer {
      */
     private PatternAnalyzerComposite parent;
 
-    private ErrorLog errorLog;
+    /**
+     * A log of errors which were encountered while analyzing.
+     */
+    private final ErrorLog errorLog;
 
     /**
-     * A list of errors which were encountered when analyzing.
+     * PatternAnalyzer constructor.
      */
-//    private final List<Exception> errors = new ArrayList<>();
-
-    public PatternAnalyzer () {
+    public PatternAnalyzer() {
         errorLog = new ErrorLog();
     }
 

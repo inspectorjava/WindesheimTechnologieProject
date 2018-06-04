@@ -147,8 +147,6 @@ public class ObserverAnalyzerHappyPathTest {
     }
 
     private void assertClassOrInterfaceInCollection (List<ClassOrInterface> resultData, Map<String, File> expectedData) {
-        // TODO Check of er niet stiekem meer in voorkomen
-
         for (String expectedName : expectedData.keySet()){
             File expectedFile = expectedData.get(expectedName);
             boolean contains = false;

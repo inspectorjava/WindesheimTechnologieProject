@@ -3,9 +3,18 @@ package nl.windesheim.codeparser.analyzers.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A wrapper for the error log.
+ */
 public class ErrorLog {
-    private List<Exception> errors;
+    /**
+     * The list of errors.
+     */
+    private final List<Exception> errors;
 
+    /**
+     * ErrorLog constructor.
+     */
     public ErrorLog() {
         errors = new ArrayList<>();
     }

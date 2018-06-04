@@ -49,7 +49,7 @@ public class AbstractObservableFinder
      * @param typeSolver A TypeSolver which can be used by this class
      * @param errorLog   A reference to the error log
      */
-    public AbstractObservableFinder(final TypeSolver typeSolver, ErrorLog errorLog) {
+    public AbstractObservableFinder(final TypeSolver typeSolver, final ErrorLog errorLog) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = new ArrayList<>();
