@@ -39,7 +39,7 @@ public abstract class ObservableMethodFinder {
      *
      * @param methodDeclaration The method to analyze
      */
-    public abstract void determine(final MethodDeclaration methodDeclaration);
+    public abstract void determine(MethodDeclaration methodDeclaration);
 
     /**
      * @return A tool which resolved relations between AST nodes
