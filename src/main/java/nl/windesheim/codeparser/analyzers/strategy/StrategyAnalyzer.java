@@ -14,6 +14,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import javafx.util.Pair;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -206,7 +207,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             //Add all errors which were encountered to the list
             for (Exception e : implFinder.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 
@@ -280,7 +281,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             eligibleContexts.addAll(contextFinder.getClasses());
 
             for (Exception e : contextFinder.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 

@@ -16,6 +16,7 @@ import nl.windesheim.codeparser.analyzers.composite.CompositeAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.ObserverAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.File;
@@ -122,7 +123,7 @@ public class FileAnalysisProvider {
      * @return a list of errors encountered while analyzing
      */
     public List<Exception> getErrors() {
-        return analyzer.getErrors();
+        return ErrorLog.getInstance().getErrors();
     }
 
     /**

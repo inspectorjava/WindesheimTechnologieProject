@@ -39,21 +39,14 @@ public class AbstractObservableFinder
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
-     * A reference to the error log.
-     */
-    private final ErrorLog errorLog;
-
-    /**
      * AbstractObservableFinder constructor.
      *
      * @param typeSolver A TypeSolver which can be used by this class
-     * @param errorLog   A reference to the error log
      */
-    public AbstractObservableFinder(final TypeSolver typeSolver, final ErrorLog errorLog) {
+    public AbstractObservableFinder(final TypeSolver typeSolver) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = new ArrayList<>();
-        this.errorLog = errorLog;
     }
 
     @Override
@@ -67,9 +60,9 @@ public class AbstractObservableFinder
 
             // Check if the class contains attach-, detach- and notify methods
             SubscriptionMethodFinder subscriptFinder =
-                    new SubscriptionMethodFinder(typeSolver, eligibleCols, errorLog);
+                    new SubscriptionMethodFinder(typeSolver, eligibleCols);
             NotificationMethodFinder notifyFinder =
-                    new NotificationMethodFinder(typeSolver, eligibleCols, errorLog);
+                    new NotificationMethodFinder(typeSolver, eligibleCols);
 
             List<MethodDeclaration> methods = classDeclaration.findAll(MethodDeclaration.class);
             for (MethodDeclaration method : methods) {
@@ -96,7 +89,7 @@ public class AbstractObservableFinder
                     observerPattern.setAbstractObservable(abstObservable);
                     observerPatterns.add(observerPattern);
                 } catch (UnsolvedSymbolException ex) {
-                    errorLog.addError(ex);
+                    ErrorLog.getInstance().addError(ex);
                 }
             }
         }
