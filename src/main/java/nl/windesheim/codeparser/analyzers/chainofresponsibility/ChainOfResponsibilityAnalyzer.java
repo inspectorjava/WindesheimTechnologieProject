@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
@@ -16,7 +17,9 @@ import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
+import nl.windesheim.codeparser.analyzers.util.visitor.EligibleCommonParentFinder;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -26,7 +29,7 @@ import java.util.List;
 
 /**
  * The analyzer for the chain of responsibility pattern.
- *
+ * <p>
  * A chain of responsibility pattern has to have the following:
  * - A abstract class or interface which all chains have in common (common parent)
  * - The 'common parent' should have at least one subclass (link)
@@ -34,7 +37,7 @@ import java.util.List;
  * -- The 'next link' may be inherited from a abstract parent
  * - The 'common parent' should at least have (abstract) one method
  * - A 'link' should call a function defined in the 'common parent' on the 'next link'
- *   from a the same function the the current 'link'
+ * from a the same function the the current 'link'
  * -- This call may also be from a function in a abstract 'common parent'
  */
 public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
@@ -47,7 +50,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     /**
      * A finder which searches for implementations of a interface.
      */
-    private ImplementationOrSuperclassFinder implFinder;
+    private final ImplementationOrSuperclassFinder implFinder;
 
     /**
      * A visitor which checks if a 'link' ever calls the next link in the chain.
@@ -65,13 +68,14 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     public ChainOfResponsibilityAnalyzer() {
         super();
 
-        parentFinder    = new EligibleCommonParentFinder();
+        //Initialize the finders
+        parentFinder = new EligibleCommonParentFinder();
         linkCallVisitor = new LinkCallsNextLinkVisitor();
+        implFinder = new ImplementationOrSuperclassFinder();
     }
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-
         //Get the typesolver from the parent
         typeSolver = getParent().getTypeSolver();
 
@@ -82,9 +86,6 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         if (typeSolver == null) {
             return chainList;
         }
-
-        //Initialize the finders
-        implFinder = new ImplementationOrSuperclassFinder(typeSolver);
 
         //Get a list of classes which could be 'common parent' classes or interfaces
         List<ClassOrInterfaceDeclaration> eligibleParents
@@ -128,11 +129,12 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * Finds eligible 'common parent' classes or interfaces.
+     *
      * @param files the files in which we want to find eligible parents
      * @return a list of eligible 'common parent' classes
      */
     private List<ClassOrInterfaceDeclaration>
-        findEligibleParents(final List<CompilationUnit> files) {
+    findEligibleParents(final List<CompilationUnit> files) {
 
         //For each file call the finder
         List<ClassOrInterfaceDeclaration> parents = new ArrayList<>();
@@ -147,8 +149,9 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * Finds 'links' of a 'common parent'.
+     *
      * @param parent the 'common parent' for which we are searching 'links'
-     * @param files the files in which we wan't to find the links
+     * @param files  the files in which we wan't to find the links
      * @return a list of found 'links'
      */
     private List<ClassOrInterfaceDeclaration> findLinksOfCommonParent(
@@ -161,6 +164,9 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             implFinder.reset();
             implFinder.visit(compilationUnit, parent);
             links.addAll(implFinder.getClasses());
+            for (Exception e : implFinder.getErrors()) {
+                ErrorLog.getInstance().addError(e);
+            }
         }
 
         return links;
@@ -168,9 +174,10 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * Checks if a 'link' class ever will call another 'link'.
-     * @param link the 'link' to check
+     *
+     * @param link         the 'link' to check
      * @param commonParent the 'common parent' of the 'link'
-     * @param files the files in which the 'link' and 'common parent' were found
+     * @param files        the files in which the 'link' and 'common parent' were found
      * @return true/false
      */
     private boolean linkHasNextLinkReference(
@@ -188,7 +195,14 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             }
 
             //if the field is not a reference to an other class it is not a reference to the 'common parent'
-            ResolvedType type = resolve.getType();
+            ResolvedType type;
+            try {
+                type = resolve.getType();
+            } catch (UnsolvedSymbolException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
+            }
+
             if (!(type instanceof ReferenceTypeImpl)) {
                 continue;
             }
@@ -215,7 +229,8 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * Finds resolved field declarations in 'link' classes and it's superclasses.
-     * @param link the link in which fields must be searched
+     *
+     * @param link  the link in which fields must be searched
      * @param files the files in which to search
      * @return a list of resolved field declarations
      */
@@ -228,52 +243,86 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
         //For each superclass of the current class
         for (ClassOrInterfaceType extendedType : link.getExtendedTypes()) {
-
-            //Resolve the name of the superclass
-            ResolvedReferenceType resolved = extendedType.resolve();
-            //It should be a reference and not a primitive type
-            if (!(resolved instanceof ReferenceTypeImpl)) {
-                continue;
-            }
-
-            ResolvedReferenceTypeDeclaration typeDeclaration = resolved.getTypeDeclaration();
-
-            //Check if the resolved type is a class
-            if (!(typeDeclaration instanceof JavaParserClassDeclaration)) {
-                continue;
-            }
-
-            ClassOrInterfaceDeclaration typeClass = ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
-
-            //Search the resolved class in the list of files
-            //We need to do this because resolving the type strips the SymbolSolver which we need
-            CompilationUnit compilationUnit = FilePartResolver.findCompilationUnitOfNode(files, typeClass);
-
-            //Get all classes from the file in which we found the superclass
-            List<ClassOrInterfaceDeclaration> classes = compilationUnit.findAll(ClassOrInterfaceDeclaration.class);
-
-            //for each class in the file in which we found the superclass
-            for (ClassOrInterfaceDeclaration cuTypeClass : classes) {
-                //if it is not the superclass go the the next class
-                if (!cuTypeClass.equals(typeClass)) {
-                    continue;
-                }
-
-                //for each field if it is not private field add it to the fields since it can be used by the subclass
-                for (FieldDeclaration field : cuTypeClass.getFields()) {
-                    if (!field.getModifiers().contains(Modifier.PRIVATE)) {
-                        resolvedFields.add(field.resolve());
-                    }
-                }
-
-                break;
-            }
+            resolvedFields.addAll(findResolvedFieldDeclarationInSuperclass(
+                    extendedType, files
+            ));
         }
 
         //For each field in the 'link' class add it to the list of fields
         for (FieldDeclaration fieldDeclaration : link.getFields()) {
-            ResolvedFieldDeclaration resolve = fieldDeclaration.resolve();
-            resolvedFields.add(resolve);
+            try {
+                ResolvedFieldDeclaration resolve = fieldDeclaration.resolve();
+                resolvedFields.add(resolve);
+            } catch (UnsolvedSymbolException e) {
+                ErrorLog.getInstance().addError(e);
+            }
+        }
+
+        return resolvedFields;
+    }
+
+    /**
+     * Finds resolved field declarations in a super class.
+     * @param extendedType the super class type in which to search
+     * @param files the files in which the super class exists
+     * @return a list of resolved field declarations
+     */
+    private List<ResolvedFieldDeclaration> findResolvedFieldDeclarationInSuperclass(
+            final ClassOrInterfaceType extendedType,
+            final List<CompilationUnit> files
+    ) {
+        //Initialize a list of fields which can be a reference to the next link
+        List<ResolvedFieldDeclaration> resolvedFields = new ArrayList<>();
+
+        ResolvedReferenceType resolved;
+        try {
+            //Resolve the name of the superclass
+            resolved = extendedType.resolve();
+        } catch (UnsolvedSymbolException e) {
+            ErrorLog.getInstance().addError(e);
+            return resolvedFields;
+        }
+
+        //It should be a reference and not a primitive type
+        if (!(resolved instanceof ReferenceTypeImpl)) {
+            return resolvedFields;
+        }
+
+        ResolvedReferenceTypeDeclaration typeDeclaration = resolved.getTypeDeclaration();
+
+        //Check if the resolved type is a class
+        if (!(typeDeclaration instanceof JavaParserClassDeclaration)) {
+            return resolvedFields;
+        }
+
+        ClassOrInterfaceDeclaration typeClass = ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
+
+        //Search the resolved class in the list of files
+        //We need to do this because resolving the type strips the SymbolSolver which we need
+        CompilationUnit compilationUnit = FilePartResolver.findCompilationUnitOfNode(files, typeClass);
+
+        //Get all classes from the file in which we found the superclass
+        List<ClassOrInterfaceDeclaration> classes = compilationUnit.findAll(ClassOrInterfaceDeclaration.class);
+
+        //for each class in the file in which we found the superclass
+        for (ClassOrInterfaceDeclaration cuTypeClass : classes) {
+            //if it is not the superclass go the the next class
+            if (!cuTypeClass.equals(typeClass)) {
+                continue;
+            }
+
+            //for each field if it is not private field add it to the fields since it can be used by the subclass
+            for (FieldDeclaration field : cuTypeClass.getFields()) {
+                if (!field.getModifiers().contains(Modifier.PRIVATE)) {
+                    try {
+                        resolvedFields.add(field.resolve());
+                    } catch (UnsolvedSymbolException e) {
+                        ErrorLog.getInstance().addError(e);
+                    }
+                }
+            }
+
+            break;
         }
 
         return resolvedFields;
@@ -281,7 +330,8 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * Checks if the 'link' class ever calls the next link in the chain.
-     * @param link the 'link' class which we are checking
+     *
+     * @param link   the 'link' class which we are checking
      * @param parent the 'common parent' of the link
      * @return true/false
      */
@@ -289,27 +339,20 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             final ClassOrInterfaceDeclaration link,
             final ClassOrInterfaceDeclaration parent
     ) {
+        linkCallVisitor.clearErrors();
+
         //Check if the 'link' class ever calls the next link
-        if (linkCallVisitor.visit(link, parent) != null) {
+        Boolean result = linkCallVisitor.visit(link, parent);
+        for (Exception e : linkCallVisitor.getErrors()) {
+            ErrorLog.getInstance().addError(e);
+        }
+        if (result != null) {
             return true;
         }
 
         //Check if one of the superclasses ever calls the next 'link'
-        for (ClassOrInterfaceType extendTypes : link.getExtendedTypes()) {
-            ResolvedReferenceType resolved = extendTypes.resolve();
-            if (!(resolved instanceof ReferenceTypeImpl)) {
-                continue;
-            }
-
-            ResolvedReferenceTypeDeclaration typeDeclaration = resolved.getTypeDeclaration();
-
-            if (!(typeDeclaration instanceof JavaParserClassDeclaration)) {
-                continue;
-            }
-
-            ClassOrInterfaceDeclaration typeClass = ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
-
-            if (linkCallVisitor.visit(typeClass, parent) != null) {
+        for (ClassOrInterfaceType extendType : link.getExtendedTypes()) {
+            if (linkSuperclassCallsNextLink(extendType, parent)) {
                 return true;
             }
         }
@@ -318,9 +361,50 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     }
 
     /**
+     * Checks if a super class of the current class ever calls the next link.
+     * @param extendType the type of the class to check
+     * @param parent the common parent
+     * @return true/false
+     */
+    private boolean linkSuperclassCallsNextLink(
+            final ClassOrInterfaceType extendType,
+            final ClassOrInterfaceDeclaration parent
+    ) {
+        ResolvedReferenceType resolved;
+        try {
+            resolved = extendType.resolve();
+        } catch (UnsolvedSymbolException e) {
+            ErrorLog.getInstance().addError(e);
+            return false;
+        }
+
+        if (!(resolved instanceof ReferenceTypeImpl)) {
+            return false;
+        }
+
+        ResolvedReferenceTypeDeclaration typeDeclaration = resolved.getTypeDeclaration();
+
+        if (!(typeDeclaration instanceof JavaParserClassDeclaration)) {
+            return false;
+        }
+
+        ClassOrInterfaceDeclaration typeClass = ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
+
+        linkCallVisitor.clearErrors();
+        Boolean result = linkCallVisitor.visit(typeClass, parent);
+
+        for (Exception e : linkCallVisitor.getErrors()) {
+            ErrorLog.getInstance().addError(e);
+        }
+
+        return result != null;
+    }
+
+    /**
      * Creates the pattern object which will be returned.
+     *
      * @param parent the 'common parent' which was found
-     * @param links the 'links' which were found
+     * @param links  the 'links' which were found
      * @return a ChainOfResponsibility object
      */
     private ChainOfResponsibility makePattern(
@@ -330,19 +414,19 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         ChainOfResponsibility pattern = new ChainOfResponsibility();
 
         pattern.setCommonParent(
-            new ClassOrInterface()
-                .setDeclaration(parent)
-                .setName(parent.getNameAsString())
-                .setFilePart(FilePartResolver.getFilePartOfNode(parent))
+                new ClassOrInterface()
+                        .setDeclaration(parent)
+                        .setName(parent.getNameAsString())
+                        .setFilePart(FilePartResolver.getFilePartOfNode(parent))
         );
 
         ArrayList<ClassOrInterface> linkClasses = new ArrayList<>();
         for (ClassOrInterfaceDeclaration link : links) {
             linkClasses.add(
-                new ClassOrInterface()
-                    .setDeclaration(link)
-                    .setName(link.getNameAsString())
-                    .setFilePart(FilePartResolver.getFilePartOfNode(link))
+                    new ClassOrInterface()
+                            .setDeclaration(link)
+                            .setName(link.getNameAsString())
+                            .setFilePart(FilePartResolver.getFilePartOfNode(link))
             );
         }
 

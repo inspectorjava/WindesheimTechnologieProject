@@ -17,6 +17,7 @@ public abstract class PatternAnalyzer {
 
     /**
      * Analyzes design patterns in a set of files.
+     *
      * @param files the file that will be analyzed
      * @return a list of DesignPatterns that were found in this file
      */
@@ -37,5 +38,4 @@ public abstract class PatternAnalyzer {
         this.parent = parent;
         return this;
     }
-
 }

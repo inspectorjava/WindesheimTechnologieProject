@@ -18,6 +18,7 @@ public class StrategyAnalyzerHappyPathTest {
     @Test
     public void testWikiStrategy() throws IOException {
         TestSettings settings = new TestSettings();
+
         settings.codeDir = new File(classLoader.getResource("strategy/wiki").getPath());
 
         settings.contextClassName = "Customer";

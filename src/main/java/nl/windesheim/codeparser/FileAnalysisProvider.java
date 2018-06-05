@@ -9,9 +9,14 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.abstractfactory.AbstractFactoryAnalyzer;
 import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
+import nl.windesheim.codeparser.analyzers.command.CommandAnalyzer;
+import nl.windesheim.codeparser.analyzers.composite.CompositeAnalyzer;
+import nl.windesheim.codeparser.analyzers.observer.ObserverAnalyzer;
 import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.analyzers.strategy.StrategyAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.io.File;
@@ -53,6 +58,11 @@ public class FileAnalysisProvider {
         typeSolver.add(new JavaParserTypeSolver(fileInputStream));
 
         analyzer.setTypeSolver(typeSolver);
+
+        //The type solver can now solve types from the standard library and the code we are analyzing
+        ParserConfiguration configuration =
+                JavaParser.getStaticConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        JavaParser.setStaticConfiguration(configuration);
 
         CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
@@ -110,6 +120,13 @@ public class FileAnalysisProvider {
     }
 
     /**
+     * @return a list of errors encountered while analyzing
+     */
+    public List<Exception> getErrors() {
+        return ErrorLog.getInstance().getErrors();
+    }
+
+    /**
      * @return a default preconfigured FileAnalysisProvider
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
@@ -117,6 +134,10 @@ public class FileAnalysisProvider {
         composite.addChild(new SingletonAnalyzer());
         composite.addChild(new StrategyAnalyzer());
         composite.addChild(new ChainOfResponsibilityAnalyzer());
+        composite.addChild(new ObserverAnalyzer());
+        composite.addChild(new AbstractFactoryAnalyzer());
+        composite.addChild(new CommandAnalyzer());
+        composite.addChild(new CompositeAnalyzer());
 
         return new FileAnalysisProvider(composite);
     }

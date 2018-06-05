@@ -3,10 +3,10 @@ package nl.windesheim.codeparser.analyzers.util.visitor;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,23 +19,12 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
     /**
      * The classes which implement the given interface.
      */
-    private List<ClassOrInterfaceDeclaration> classes;
+    private final List<ClassOrInterfaceDeclaration> classes = new ArrayList<>();
 
     /**
-     * The type solver is used find referenced classes.
+     * A list of errors which were encountered.
      */
-    private final TypeSolver typeSolver;
-
-    /**
-     * Make a new ImplementationOrSuperclassFinder.
-     * @param typeSolver a type solver
-     */
-    public ImplementationOrSuperclassFinder(final TypeSolver typeSolver) {
-        super();
-
-        classes = new ArrayList<>();
-        this.typeSolver = typeSolver;
-    }
+    private final List<Exception> errors = new ArrayList<>();
 
     /**
      * @return A list of classes which extend the given class.
@@ -45,10 +34,18 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
     }
 
     /**
+     * @return a list of errors which were encountered
+     */
+    public List<Exception> getErrors() {
+        return errors;
+    }
+
+    /**
      * Resets the list of classes.
      */
     public void reset() {
-        classes = new ArrayList<>();
+        errors.clear();
+        classes.clear();
     }
 
     @Override
@@ -57,28 +54,64 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
         super.visit(classToCheck, classDeclaration);
 
         if (classDeclaration.isInterface()) {
-            for (ClassOrInterfaceType type : classToCheck.getImplementedTypes()) {
-
-                ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
-                if (!(solved instanceof JavaParserInterfaceDeclaration)) {
-                    continue;
-                }
-
-                if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
-                    classes.add(classToCheck);
-                }
-            }
+            interfaceCheck(classToCheck, classDeclaration);
         } else {
-            for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
+            abstractClassCheck(classToCheck, classDeclaration);
+        }
+    }
 
-                ResolvedReferenceTypeDeclaration solved = typeSolver.solveType(type.getNameAsString());
-                if (!(solved instanceof JavaParserClassDeclaration)) {
-                    continue;
-                }
+    /**
+     * @param classToCheck     class to check
+     * @param classDeclaration class declaration
+     */
+    private void interfaceCheck(
+            final ClassOrInterfaceDeclaration classToCheck,
+            final ClassOrInterfaceDeclaration classDeclaration
+    ) {
+        for (ClassOrInterfaceType type : classToCheck.getImplementedTypes()) {
 
-                if (((JavaParserClassDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
-                    classes.add(classToCheck);
-                }
+            ResolvedReferenceTypeDeclaration solved;
+            try {
+                solved = type.resolve().getTypeDeclaration();
+            } catch (UnsolvedSymbolException e) {
+                errors.add(e);
+                continue;
+            }
+
+            if (!(solved instanceof JavaParserInterfaceDeclaration)) {
+                continue;
+            }
+
+            if (((JavaParserInterfaceDeclaration) solved).getWrappedNode().findCompilationUnit()
+                    .equals(classDeclaration.findCompilationUnit())) {
+                classes.add(classToCheck);
+            }
+        }
+    }
+
+    /**
+     * @param classToCheck     class to check
+     * @param classDeclaration class declaration
+     */
+    private void abstractClassCheck(
+            final ClassOrInterfaceDeclaration classToCheck,
+            final ClassOrInterfaceDeclaration classDeclaration
+    ) {
+        for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
+            ResolvedReferenceTypeDeclaration solved;
+            try {
+                solved = type.resolve().getTypeDeclaration();
+            } catch (UnsolvedSymbolException e) {
+                errors.add(e);
+                continue;
+            }
+
+            if (!(solved instanceof JavaParserClassDeclaration)) {
+                continue;
+            }
+
+            if (((JavaParserClassDeclaration) solved).getWrappedNode().equals(classDeclaration)) {
+                classes.add(classToCheck);
             }
         }
     }

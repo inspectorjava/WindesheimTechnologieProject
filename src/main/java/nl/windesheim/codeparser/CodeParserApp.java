@@ -9,7 +9,6 @@ public final class CodeParserApp {
      */
     private CodeParserApp() {
         System.out.println("[marslanden] running");
-
         System.out.println("[marslanden] done");
     }
 

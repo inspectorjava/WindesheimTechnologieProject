@@ -1,5 +1,8 @@
 package nl.windesheim.reporting.builders;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,22 +14,27 @@ import static org.junit.Assert.*;
 
 public class ChainOfResponsibilityFoundPatternBuilderTest {
 
-    private List<String> links;
+    private List<ClassOrInterface> links;
 
-    private String commonParent;
+    private ClassOrInterface commonParent;
 
-    private String link1 = "Link1";
-    private String link2 = "Link2";
-    private String link3 = "Link3";
+    private ClassOrInterface link1 = new ClassOrInterface();
+    private ClassOrInterface link2 = new ClassOrInterface();
+    private ClassOrInterface link3 = new ClassOrInterface();
 
     @Before
     public void setUp() {
         this.links = new ArrayList<>();
+        link1.setName("Link1");
         this.links.add(this.link1);
+
+        link2.setName("Link2");
         this.links.add(this.link2);
+
+        link3.setName("Link3");
         this.links.add(this.link3);
 
-        this.commonParent = "CommonParentTest";
+        this.commonParent = new ClassOrInterface().setName("CommonParentTest");
 
     }
 
@@ -36,7 +44,7 @@ public class ChainOfResponsibilityFoundPatternBuilderTest {
 
         IFoundPatternReport report = chainOfResponsibilityFoundPatternBuilder.buildReport();
 
-        assertEquals("Pattern: CHAIN_OF_RESPONSIBILITY found with certainty: NOT and uses interface: CommonParentTestLink: Link1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: NOT and uses interface: CommonParentTestLink: Link1\n\r" +
                 "Link: Link2\n\r" +
                 "Link: Link3\n\r", report.getReport());
     }

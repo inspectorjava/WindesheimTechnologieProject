@@ -1,4 +1,4 @@
-package nl.windesheim.codeparser.analyzers.chainofresponsibility;
+package nl.windesheim.codeparser.analyzers.util.visitor;
 
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;

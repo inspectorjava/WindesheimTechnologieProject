@@ -14,6 +14,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import javafx.util.Pair;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -46,7 +47,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
     /**
      * A finder which searches for implementations of a interface.
      */
-    private ImplementationOrSuperclassFinder implFinder;
+    private final ImplementationOrSuperclassFinder implFinder;
 
     /**
      * A finder which searches for eligible strategy context classes.
@@ -61,14 +62,12 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
         //Create visitors which will find classes with special properties
         contextFinder = new EligibleStrategyContextFinder();
-
+        implFinder = new ImplementationOrSuperclassFinder();
     }
 
     @Override
     public ArrayList<IDesignPattern> analyze(final List<CompilationUnit> files) {
         typeSolver = getParent().getTypeSolver();
-
-        javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
 
@@ -77,7 +76,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             return patterns;
         }
 
-        implFinder = new ImplementationOrSuperclassFinder(typeSolver);
+        javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
         List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = findEligibleContexts(files);
 
@@ -131,10 +130,11 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
     /**
      * Create a strategy pattern object.
-     * @param files the files in which we found the pattern
-     * @param context the context class
+     *
+     * @param files             the files in which we found the pattern
+     * @param context           the context class
      * @param strategyInterface the strategy interface
-     * @param strategies the strategies
+     * @param strategies        the strategies
      * @return the strategy pattern object
      */
     private Strategy createStrategy(
@@ -183,7 +183,8 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
     /**
      * Finds a list of classes which are strategy interface implementations.
-     * @param files the files in which to search
+     *
+     * @param files       the files in which to search
      * @param declaration the strategy interface
      * @return a list of classes
      */
@@ -203,6 +204,11 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             //Add the buffer to the collection
             strategies.addAll(implFinder.getClasses());
+
+            //Add all errors which were encountered to the list
+            for (Exception e : implFinder.getErrors()) {
+                ErrorLog.getInstance().addError(e);
+            }
         }
 
         return strategies;
@@ -210,7 +216,8 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
     /**
      * Determins if a context class ever calls a strategy interface.
-     * @param methodCalls list of method calls of the context class
+     *
+     * @param methodCalls       list of method calls of the context class
      * @param strategyInterface the strategy interface which should be called
      * @return a boolean
      */
@@ -252,11 +259,12 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
     /**
      * Finds a list of eligible context classes.
+     *
      * @param files the files to be searched
      * @return a list of eligible contexts
      */
     private List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>>
-        findEligibleContexts(final List<CompilationUnit> files
+    findEligibleContexts(final List<CompilationUnit> files
     ) {
 
         List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = new ArrayList<>();
@@ -271,6 +279,10 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             //Read buffer into collection
             eligibleContexts.addAll(contextFinder.getClasses());
+
+            for (Exception e : contextFinder.getErrors()) {
+                ErrorLog.getInstance().addError(e);
+            }
         }
 
         return eligibleContexts;

@@ -81,5 +81,4 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
 
         return patterns;
     }
-
 }
