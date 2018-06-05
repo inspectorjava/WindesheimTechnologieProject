@@ -17,6 +17,7 @@ import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.EligibleCommonParentFinder;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
@@ -75,9 +76,6 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        //Clear the errors
-        clearErrors();
-
         //Get the typesolver from the parent
         typeSolver = getParent().getTypeSolver();
 
@@ -167,7 +165,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             implFinder.visit(compilationUnit, parent);
             links.addAll(implFinder.getClasses());
             for (Exception e : implFinder.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 
@@ -201,7 +199,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             try {
                 type = resolve.getType();
             } catch (UnsolvedSymbolException exception) {
-                addError(exception);
+                ErrorLog.getInstance().addError(exception);
                 continue;
             }
 
@@ -256,7 +254,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
                 ResolvedFieldDeclaration resolve = fieldDeclaration.resolve();
                 resolvedFields.add(resolve);
             } catch (UnsolvedSymbolException e) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 
@@ -281,7 +279,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             //Resolve the name of the superclass
             resolved = extendedType.resolve();
         } catch (UnsolvedSymbolException e) {
-            addError(e);
+            ErrorLog.getInstance().addError(e);
             return resolvedFields;
         }
 
@@ -319,7 +317,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
                     try {
                         resolvedFields.add(field.resolve());
                     } catch (UnsolvedSymbolException e) {
-                        addError(e);
+                        ErrorLog.getInstance().addError(e);
                     }
                 }
             }
@@ -346,7 +344,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         //Check if the 'link' class ever calls the next link
         Boolean result = linkCallVisitor.visit(link, parent);
         for (Exception e : linkCallVisitor.getErrors()) {
-            addError(e);
+            ErrorLog.getInstance().addError(e);
         }
         if (result != null) {
             return true;
@@ -376,7 +374,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         try {
             resolved = extendType.resolve();
         } catch (UnsolvedSymbolException e) {
-            addError(e);
+            ErrorLog.getInstance().addError(e);
             return false;
         }
 
@@ -396,7 +394,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         Boolean result = linkCallVisitor.visit(typeClass, parent);
 
         for (Exception e : linkCallVisitor.getErrors()) {
-            addError(e);
+            ErrorLog.getInstance().addError(e);
         }
 
         return result != null;

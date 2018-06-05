@@ -81,13 +81,4 @@ public class PatternAnalyzerComposite extends PatternAnalyzer {
 
         return patterns;
     }
-
-    @Override
-    public List<Exception> getErrors() {
-        List<Exception> errors = new ArrayList<>();
-        for (PatternAnalyzer patternAnalyzer : this.children) {
-            errors.addAll(patternAnalyzer.getErrors());
-        }
-        return errors;
-    }
 }
