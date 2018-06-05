@@ -1,9 +1,9 @@
 package nl.windesheim.codeparser.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +17,16 @@ public abstract class PatternAnalyzer {
     private PatternAnalyzerComposite parent;
 
     /**
-     * A list of errors which were encountered when analyzing.
+     * A log of errors which were encountered while analyzing.
      */
-    private final List<Exception> errors = new ArrayList<>();
+    private final ErrorLog errorLog;
+
+    /**
+     * PatternAnalyzer constructor.
+     */
+    public PatternAnalyzer() {
+        errorLog = new ErrorLog();
+    }
 
     /**
      * Analyzes design patterns in a set of files.
@@ -46,25 +53,32 @@ public abstract class PatternAnalyzer {
     }
 
     /**
-     * Adds a error to the error list.
+     * @return The error log wrapper
+     */
+    protected ErrorLog getErrorLog() {
+        return errorLog;
+    }
+
+    /**
+     * Adds a error to the error log.
      *
-     * @param error the error to add
+     * @param error The error to add
      */
     protected void addError(final Exception error) {
-        errors.add(error);
+        errorLog.addError(error);
     }
 
     /**
-     * Clears the errors in the error list.
+     * Clears the error log.
      */
     protected void clearErrors() {
-        errors.clear();
+        errorLog.clearErrors();
     }
 
     /**
-     * @return the list of error found while analyzing
+     * @return The list of errors
      */
     public List<Exception> getErrors() {
-        return errors;
+        return errorLog.getErrors();
     }
 }

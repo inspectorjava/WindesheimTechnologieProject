@@ -40,7 +40,7 @@ public class CompositeAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        clearErrors();
+        getErrorLog().clearErrors();
 
         List<IDesignPattern> designPatterns = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class CompositeAnalyzer extends PatternAnalyzer {
                 }
 
                 for (Exception exception : selfRefVisitor.getErrors()) {
-                    addError(exception);
+                    getErrorLog().addError(exception);
                 }
             }
 
