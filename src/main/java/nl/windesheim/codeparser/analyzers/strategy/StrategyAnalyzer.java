@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -237,7 +238,14 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             }
 
             //Resolve the type of the scope
-            ResolvedType scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+            ResolvedType scopeType;
+            try {
+                scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+            } catch (UnsolvedSymbolException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
+            }
+
             if (!(scopeType instanceof ReferenceTypeImpl)) {
                 continue;
             }
