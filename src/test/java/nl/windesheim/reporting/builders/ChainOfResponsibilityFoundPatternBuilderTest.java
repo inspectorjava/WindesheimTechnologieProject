@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class ChainOfResponsibilityFoundPatternBuilderTest {
 
         IFoundPatternReport report = chainOfResponsibilityFoundPatternBuilder.buildReport();
 
-        assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: NOT and uses interface: CommonParentTestLink: Link1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: "+ Result.Certainty.CERTAIN +" and uses interface: CommonParentTestLink: Link1\n\r" +
                 "Link: Link2\n\r" +
                 "Link: Link3\n\r", report.getReport());
     }

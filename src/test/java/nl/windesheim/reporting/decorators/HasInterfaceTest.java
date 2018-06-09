@@ -3,6 +3,7 @@ package nl.windesheim.reporting.decorators;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Before;
@@ -26,7 +27,7 @@ public class HasInterfaceTest {
     @Test
     public void getReport() {
         String report = this.hasInterface.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOT and uses interface: INTERFACE name", report);
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +" and uses interface: INTERFACE name", report);
     }
 
     @Test

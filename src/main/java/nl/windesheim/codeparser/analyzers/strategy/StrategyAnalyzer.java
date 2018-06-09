@@ -3,7 +3,6 @@ package nl.windesheim.codeparser.analyzers.strategy;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
@@ -12,7 +11,6 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import javafx.util.Pair;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -32,6 +30,11 @@ import java.util.List;
  * - The 'context' class has a function which calls a function on the 'strategy interface' attribute
  * - There is a interface which is implemented by all strategies with at least one function (strategy interface)
  * - There is at least one class which implements the strategy interface (strategy)
+ *
+ * A partial match may be found if one or more of the following is true:
+ * - The 'context' doesn't have a setter for the strategy attribute
+ * - The 'context' doesn't call a function which calls a function on the 'strategy interface' attribute
+ * - the 'strategy interface' has at least one function
  */
 public class StrategyAnalyzer extends PatternAnalyzer {
 
@@ -79,15 +82,15 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
         javaSymbolSolver = new JavaSymbolSolver(typeSolver);
 
-        List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = findEligibleContexts(files);
+        List<EligibleStrategyContext> eligibleContexts = findEligibleContexts(files);
 
         //foreach eligible context class
-        for (Pair<VariableDeclarator, ClassOrInterfaceDeclaration> eligibleContext : eligibleContexts) {
+        for (EligibleStrategyContext eligibleContext : eligibleContexts) {
             //Get the strategy interface of which the context type has a variable
-            ClassOrInterfaceDeclaration strategyInterface = eligibleContext.getValue();
+            ClassOrInterfaceDeclaration strategyInterface = eligibleContext.getStrategyClass();
 
             //Walk up the tree until we have the class containing the variable declaration, this is the context class
-            Node currentNode = eligibleContext.getKey();
+            Node currentNode = eligibleContext.getInterfaceAttr();
             while (!(currentNode instanceof ClassOrInterfaceDeclaration)) {
                 if (!currentNode.getParentNode().isPresent()) {
                     break;
@@ -108,11 +111,6 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             boolean strategyCalled = doesClassCallStrategy(methodCalls, strategyInterface);
 
-            //If the context doesn't call the strategy it isn't a working strategy pattern
-            if (!strategyCalled) {
-                continue;
-            }
-
             List<ClassOrInterfaceDeclaration> strategies = findStrategies(files, strategyInterface);
 
             //We should at least have one implementation of the strategy interface, else the pattern won't work
@@ -121,7 +119,11 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             }
 
             //At this point every requirement has been met so we make the Strategy class
-            Strategy strategyPattern = createStrategy(files, context, strategyInterface, strategies);
+            Strategy strategyPattern = createStrategy(
+                    files, context, strategyInterface, strategies,
+                    eligibleContext.isHasSetter(), eligibleContext.isHasMethods(),
+                    strategyCalled
+            );
 
             patterns.add(strategyPattern);
         }
@@ -136,13 +138,19 @@ public class StrategyAnalyzer extends PatternAnalyzer {
      * @param context           the context class
      * @param strategyInterface the strategy interface
      * @param strategies        the strategies
+     * @param hasSetter         does the context have a setter
+     * @param hasMethods        does the strategy interface have methods
+     * @param hasCaller         does the context call the interface
      * @return the strategy pattern object
      */
     private Strategy createStrategy(
             final List<CompilationUnit> files,
             final ClassOrInterfaceDeclaration context,
             final ClassOrInterfaceDeclaration strategyInterface,
-            final List<ClassOrInterfaceDeclaration> strategies
+            final List<ClassOrInterfaceDeclaration> strategies,
+            final boolean hasSetter,
+            final boolean hasMethods,
+            final boolean hasCaller
     ) {
         //At this point every requirement has been met so we make the Strategy class
         Strategy strategyPattern = new Strategy();
@@ -178,6 +186,10 @@ public class StrategyAnalyzer extends PatternAnalyzer {
         }
 
         strategyPattern.setStrategies(fileParts);
+
+        strategyPattern.setContextHasSetter(hasSetter);
+        strategyPattern.setContextHasCaller(hasCaller);
+        strategyPattern.setStrategyMethods(hasMethods);
 
         return strategyPattern;
     }
@@ -271,11 +283,11 @@ public class StrategyAnalyzer extends PatternAnalyzer {
      * @param files the files to be searched
      * @return a list of eligible contexts
      */
-    private List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>>
+    private List<EligibleStrategyContext>
     findEligibleContexts(final List<CompilationUnit> files
     ) {
 
-        List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> eligibleContexts = new ArrayList<>();
+        List<EligibleStrategyContext> eligibleContexts = new ArrayList<>();
 
         //For each file
         for (CompilationUnit compilationUnit : files) {

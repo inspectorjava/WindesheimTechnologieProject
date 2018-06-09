@@ -3,6 +3,7 @@ package nl.windesheim.reporting.decorators;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Before;
@@ -26,7 +27,7 @@ public class HasContextTest {
     @Test
     public void getReport() {
         String report = this.contextDecorator.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOT - Context: " + this.context.getName() + "\n\r", report);
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +" - Context: " + this.context.getName() + "\n\r", report);
     }
 
     @Test

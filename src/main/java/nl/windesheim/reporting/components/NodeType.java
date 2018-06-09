@@ -28,4 +28,9 @@ public enum NodeType {
      * A list of classes of a pattern.
      */
     CLASS_LIST,
+
+    /**
+     * A fault or error in the design pattern.
+     */
+    PATTERN_ERROR
 }

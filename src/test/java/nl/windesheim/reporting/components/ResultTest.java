@@ -16,9 +16,5 @@ public class ResultTest extends TestCase {
         Result resultLikely = new Result();
         resultLikely.setCertainty(Result.Certainty.LIKELY);
         assertEquals("LIKELY", resultLikely.toString());
-
-        Result resultCertain = new Result();
-        resultCertain.setCertainty(Result.Certainty.NOT);
-        assertEquals("NOT", resultCertain.toString());
     }
 }

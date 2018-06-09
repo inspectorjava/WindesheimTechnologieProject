@@ -26,10 +26,6 @@ public class Result {
          * The pattern is unlikely found.
          */
         UNLIKELY,
-        /**
-         * The pattern is not found.
-         */
-        NOT
     }
 
     /**
@@ -38,6 +34,13 @@ public class Result {
      */
     public void setCertainty(final Certainty certainty) {
         this.result = certainty;
+    }
+
+    /**
+     * @return Get the certainty
+     */
+    public Certainty getResult() {
+        return result;
     }
 
     /**

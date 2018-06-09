@@ -2,6 +2,7 @@ package nl.windesheim.reporting.decorators;
 
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public class HasFilesTest {
     @Test
     public void getReport() {
         String report = this.hasFilesDecorator.getReport();
-        assertEquals("Pattern: " + DesignPatternType.NONE +" found with certainty: NOTFile: File1\n\r" +
+        assertEquals("Pattern: " + DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"File: File1\n\r" +
                 "File: File2\n\r", report);
     }
 

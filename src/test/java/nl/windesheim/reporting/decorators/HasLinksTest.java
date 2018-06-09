@@ -3,6 +3,7 @@ package nl.windesheim.reporting.decorators;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class HasLinksTest {
     @Test
     public void getReport() {
         String report = this.hasLinks.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOTLink: Test1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Link: Test1\n\r" +
                 "Link: Test2\n\r" +
                 "Link: Test3\n\r", report);
     }
