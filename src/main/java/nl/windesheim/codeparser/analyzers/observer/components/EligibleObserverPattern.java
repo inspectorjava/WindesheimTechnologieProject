@@ -126,6 +126,7 @@ public class EligibleObserverPattern {
      * @return Whether this represents a valid observer pattern
      */
     public boolean isObserverPattern() {
+        // TODO Refine this
         return aObservable != null && aObserver != null;
     }
 }

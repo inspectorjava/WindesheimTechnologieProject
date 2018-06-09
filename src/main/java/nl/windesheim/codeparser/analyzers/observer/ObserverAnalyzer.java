@@ -44,16 +44,24 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             aObsableFinder.visit(compilationUnit, null);
         }
 
-        List<EligibleObserverPattern> eligiblePatterns = aObsableFinder.getObserverPatterns();
+        List<EligibleObserverPattern> rawPatterns = aObsableFinder.getObserverPatterns();
 
         // Search for classes that extend the abstract observables
-        findConcreteObservables(files, eligiblePatterns);
+        findConcreteObservables(files, rawPatterns);
 
         // Find abstract observer classes
         AbstractObserverFinder aObserverFinder =
-                new AbstractObserverFinder(typeSolver, eligiblePatterns);
+                new AbstractObserverFinder(typeSolver, rawPatterns);
         for (CompilationUnit compilationUnit : files) {
             aObserverFinder.visit(compilationUnit, null);
+        }
+
+        // Filter eligible patterns
+        List<EligibleObserverPattern> eligiblePatterns = new ArrayList<>();
+        for (EligibleObserverPattern rawPattern : rawPatterns) {
+            if (rawPattern.getAbstractObserver() != null) {
+                eligiblePatterns.add(rawPattern);
+            }
         }
 
         // Search for classes that extend the abstract observers
