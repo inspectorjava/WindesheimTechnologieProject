@@ -12,6 +12,7 @@ import nl.windesheim.codeparser.patterns.Strategy;
 import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
 import nl.windesheim.reporting.builders.ChainOfResponsibilityFoundPatternBuilder;
 import nl.windesheim.reporting.builders.CommandFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CompositeFoundBuilder;
 import nl.windesheim.reporting.builders.ObserverFoundPatternBuilder;
 import nl.windesheim.reporting.builders.SingletonFoundPatternBuilder;
 import nl.windesheim.reporting.builders.StrategyFoundPatternBuilder;
@@ -42,7 +43,7 @@ public class CodeReportDesignPatternMapper {
         builderMap.put(Strategy.class, StrategyFoundPatternBuilder.class);
         builderMap.put(AbstractFactory.class, AbstractFactoryFoundPatternBuilder.class);
         builderMap.put(Command.class, CommandFoundPatternBuilder.class);
-        builderMap.put(CompositePattern.class, CommandFoundPatternBuilder.class);
+        builderMap.put(CompositePattern.class, CompositeFoundBuilder.class);
         builderMap.put(ObserverPattern.class, ObserverFoundPatternBuilder.class);
     }
 
