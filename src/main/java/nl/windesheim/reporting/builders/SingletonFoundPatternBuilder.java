@@ -1,10 +1,11 @@
 package nl.windesheim.reporting.builders;
 
-import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.Singleton;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.decorators.HasSingleFile;
 
 /**
@@ -13,25 +14,32 @@ import nl.windesheim.reporting.decorators.HasSingleFile;
 public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     /**
-     * file of file where pattern is found.
+     * The pattern for which we want to build a report.
      */
-    private final ClassOrInterface file;
+    private final Singleton pattern;
 
     /**
      * Create the builder.
-     * @param file filename of the file where singleton is found
+     *
+     * @param pattern the pattern for which we want to build a report
      */
-    public SingletonFoundPatternBuilder(final ClassOrInterface file) {
+    public SingletonFoundPatternBuilder(final Singleton pattern) {
         super();
-        this.file = file;
+        this.pattern = pattern;
     }
 
     @Override
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.SINGLETON);
+
+        if (!pattern.hasPrivateConstructor()) {
+            patternReport.setCertainty(Result.Certainty.LIKELY);
+            patternReport.addPatternError("The singleton has a non-private constructor");
+        }
+
         HasSingleFile hasSingleFile = new HasSingleFile(patternReport);
-        hasSingleFile.setFile(this.file);
+        hasSingleFile.setFile(this.pattern.getSingletonClass());
         return hasSingleFile;
     }
 }

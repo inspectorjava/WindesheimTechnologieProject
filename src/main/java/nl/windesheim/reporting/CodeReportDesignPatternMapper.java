@@ -92,7 +92,7 @@ public class CodeReportDesignPatternMapper {
      * @return Singleton builder
      */
     private AbstractFoundPatternBuilder buildSingletonBuilder(final Singleton pattern) {
-        return new SingletonFoundPatternBuilder(pattern.getSingletonClass());
+        return new SingletonFoundPatternBuilder(pattern);
     }
 
     /**
