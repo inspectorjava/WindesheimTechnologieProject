@@ -11,6 +11,9 @@ import java.util.List;
  */
 public abstract class PatternAnalyzer {
 
+    /**
+     * A TypeSolver which can be used to find relations between classes when analyzing.
+     */
     private TypeSolver typeSolver;
 
     /**
@@ -21,10 +24,17 @@ public abstract class PatternAnalyzer {
      */
     public abstract List<IDesignPattern> analyze(List<CompilationUnit> files);
 
+    /**
+     * @return A TypeSolver which can be used to find relations between classes.
+     */
     protected TypeSolver getTypeSolver() {
         return typeSolver;
     }
 
+    /**
+     * @param typeSolver A TypeSolver which can be used to find relations between classes.
+     * @return this
+     */
     public PatternAnalyzer setTypeSolver(final TypeSolver typeSolver) {
         this.typeSolver = typeSolver;
         return this;

@@ -38,22 +38,30 @@ public class FileAnalysisProvider {
     private List<PatternAnalyzer> analyzers;
 
     /**
-     * @param analyzer the pattern analyzer which will be used to analyze files
+     * FileAnalysisProvider constructor.
+     *
+     * @param analyzer A pattern analyzer which will be used to analyze files
      */
     public FileAnalysisProvider(final PatternAnalyzer analyzer) {
         this.analyzers = new ArrayList<>();
         this.analyzers.add(analyzer);
     }
 
+    /**
+     * FileAnalysisProvider constructor.
+     *
+     * @param analyzers The pattern analyzers which will be used to analyze files
+     */
     public FileAnalysisProvider(final List<PatternAnalyzer> analyzers) {
         this.analyzers = analyzers;
     }
 
     /**
      * Analyzes a single file for design patterns.
-     * @param fileName the file that should be analyzed
-     * @return a list of patterns which were found
-     * @throws FileNotFoundException if the file that was passed doesn't exist
+     *
+     * @param fileName The file that should be analyzed
+     * @return A list of patterns which were found
+     * @throws FileNotFoundException If the file that was passed doesn't exist
      */
     public List<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
         File fileInputStream = new File(fileName.getFile());
@@ -75,9 +83,11 @@ public class FileAnalysisProvider {
 
     /**
      * Analyzes a directory for design patterns.
-     * @param directoryPath the path to analyze
-     * @return a list of found patterns
-     * @throws IOException if the directory doesn't exist
+     *
+     * @param directoryPath The path to analyze
+     *
+     * @return A list of found patterns
+     * @throws IOException If the directory doesn't exist
      */
     public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
@@ -99,24 +109,49 @@ public class FileAnalysisProvider {
         return runAnalysis(sourceRoot.getCompilationUnits(), typeSolver);
     }
 
+    /**
+     * @param analyzer A pattern analyzer which will be used to analyze files
+     * @return this
+     */
     public FileAnalysisProvider addAnalyzer(final PatternAnalyzer analyzer) {
         analyzers.add(analyzer);
         return this;
     }
 
+    /**
+     * @param analyzers The pattern analyzers which will be used to analyze files
+     * @return this
+     */
     public FileAnalysisProvider setAnalyzers(final List<PatternAnalyzer> analyzers) {
         this.analyzers = analyzers;
         return this;
     }
 
-    private List<IDesignPattern> runAnalysis (final CompilationUnit compilationUnit, final TypeSolver typeSolver) {
+    /**
+     * @param compilationUnit The compilation unit to analyze
+     * @param typeSolver      A TypeSolver to resolve relations between AST nodes
+     * @return A list of found patterns
+     */
+    private List<IDesignPattern> runAnalysis(
+            final CompilationUnit compilationUnit,
+            final TypeSolver typeSolver
+    ) {
         List<CompilationUnit> compilationUnits = new ArrayList<>();
         compilationUnits.add(compilationUnit);
 
         return runAnalysis(compilationUnits, typeSolver);
     }
 
-    private List<IDesignPattern> runAnalysis (final List<CompilationUnit> compilationUnits, final TypeSolver typeSolver) {
+    /**
+     *
+     * @param compilationUnits The compilation units to analyze
+     * @param typeSolver       A TypeSolver to resolve relations between AST nodes
+     * @return A list of found patterns
+     */
+    private List<IDesignPattern> runAnalysis(
+            final List<CompilationUnit> compilationUnits,
+            final TypeSolver typeSolver
+    ) {
         List<IDesignPattern> patterns = new ArrayList<>();
 
         for (PatternAnalyzer analyzer : analyzers) {
@@ -128,14 +163,14 @@ public class FileAnalysisProvider {
     }
 
     /**
-     * @return a list of errors encountered while analyzing
+     * @return A list of errors encountered while analyzing
      */
     public List<Exception> getErrors() {
         return ErrorLog.getInstance().getErrors();
     }
 
     /**
-     * @return a default preconfigured FileAnalysisProvider
+     * @return A default preconfigured FileAnalysisProvider
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
         List<PatternAnalyzer> analyzers = new ArrayList<>();
