@@ -4,7 +4,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.analyzers.abstractfactory.finders.AbstractFactoryFinder;
 import nl.windesheim.codeparser.analyzers.abstractfactory.finders.InterfaceFactoryFinder;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
