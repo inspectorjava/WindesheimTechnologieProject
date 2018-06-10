@@ -1,14 +1,14 @@
 package nl.windesheim.reporting.builders;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasInterface;
+import nl.windesheim.reporting.components.Result;
+import nl.windesheim.reporting.decorators.HasCommonParent;
 import nl.windesheim.reporting.decorators.HasLinks;
-
-import java.util.List;
 
 /**
  * Chain Of Responsibility pattern builder.
@@ -16,38 +16,52 @@ import java.util.List;
 public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     /**
-     * Filename of file where pattern is found.
+     * The pattern for which we want to build a report.
      */
-    private final ClassOrInterface commonParent;
-
-    /**
-     * List of links.
-     */
-    private final List<ClassOrInterface> links;
+    private final ChainOfResponsibility pattern;
 
     /**
      * Create the builder.
-     * @param commonParent filename of the file where singleton is found
-     * @param links Links of the chain of responsiblity pattern
+     *
+     * @param pattern the pattern for which to build a report
      */
     public ChainOfResponsibilityFoundPatternBuilder(
-            final ClassOrInterface commonParent,
-            final List<ClassOrInterface> links
+            final ChainOfResponsibility pattern
     ) {
         super();
-        this.commonParent = commonParent;
-        this.links = links;
+        this.pattern = pattern;
     }
 
     @Override
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.CHAIN_OF_RESPONSIBILITY);
-        HasInterface hasInterface = new HasInterface(patternReport);
-        hasInterface.setInterfaceName(this.commonParent);
 
-        HasLinks hasLinks = new HasLinks(hasInterface);
-        hasLinks.setLinks(this.links);
+        int errors = 0;
+        if (!pattern.parentHasMethods()) {
+            errors++;
+            patternReport.addPatternError("Common parent has no methods defined");
+        }
+
+        for (ClassOrInterface badLink : pattern.getNonChainedLinks()) {
+            errors++;
+            patternReport.addPatternError("Link '" + badLink.getName() + "' never calls the next link");
+        }
+
+        if (errors > 0) {
+            patternReport.setCertainty(Result.Certainty.LIKELY);
+        }
+
+        if (errors > 1) {
+            patternReport.setCertainty(Result.Certainty.UNLIKELY);
+        }
+
+        HasCommonParent hasCommonParent = new HasCommonParent(patternReport);
+        hasCommonParent.setCommonParent(this.pattern.getCommonParent());
+
+        HasLinks hasLinks = new HasLinks(hasCommonParent);
+        hasLinks.setLinks(this.pattern.getChainLinks());
+
         return hasLinks;
     }
 }

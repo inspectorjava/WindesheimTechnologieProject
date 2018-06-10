@@ -102,7 +102,7 @@ public class CodeReportDesignPatternMapper {
      * @return ChainOfResponsibilityBuilder
      */
     private AbstractFoundPatternBuilder buildChainOfResponsibilityBuilder(final ChainOfResponsibility pattern) {
-        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent(), pattern.getChainLinks());
+        return new ChainOfResponsibilityFoundPatternBuilder(pattern);
     }
 
     /**

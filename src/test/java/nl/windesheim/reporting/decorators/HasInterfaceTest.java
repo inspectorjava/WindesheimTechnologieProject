@@ -21,7 +21,7 @@ public class HasInterfaceTest {
     public void setUp() throws Exception {
         this.hasInterface = new HasInterface(new FoundPatternReport());
         this.interfaceInstance = new ClassOrInterface().setName("INTERFACE name");
-        this.hasInterface.setInterfaceName(this.interfaceInstance);
+        this.hasInterface.setInterface(this.interfaceInstance);
     }
 
     @Test

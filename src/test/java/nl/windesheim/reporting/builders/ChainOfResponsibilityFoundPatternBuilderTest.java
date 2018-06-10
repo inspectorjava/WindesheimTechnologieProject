@@ -2,6 +2,7 @@ package nl.windesheim.reporting.builders;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.Result;
@@ -41,11 +42,18 @@ public class ChainOfResponsibilityFoundPatternBuilderTest {
 
     @Test
     public void buildReport() {
-        ChainOfResponsibilityFoundPatternBuilder chainOfResponsibilityFoundPatternBuilder = new ChainOfResponsibilityFoundPatternBuilder(this.commonParent, this.links);
+        ChainOfResponsibilityFoundPatternBuilder chainOfResponsibilityFoundPatternBuilder
+            = new ChainOfResponsibilityFoundPatternBuilder(
+                new ChainOfResponsibility()
+                    .setChainLinks(links)
+                    .setCommonParent(commonParent)
+        );
 
         IFoundPatternReport report = chainOfResponsibilityFoundPatternBuilder.buildReport();
 
-        assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: "+ Result.Certainty.CERTAIN +" and uses interface: CommonParentTestLink: Link1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: "+ Result.Certainty.LIKELY +" with the following errors: \n" +
+                " - Common parent has no methods defined\n" +
+                " and uses common parent: CommonParentTestLink: Link1\n\r" +
                 "Link: Link2\n\r" +
                 "Link: Link3\n\r", report.getReport());
     }

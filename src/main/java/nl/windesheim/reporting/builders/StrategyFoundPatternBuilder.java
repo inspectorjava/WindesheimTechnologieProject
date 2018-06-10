@@ -70,7 +70,7 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
         hasContext.setContext(pattern.getContext());
 
         HasInterface hasInterface = new HasInterface(hasContext);
-        hasInterface.setInterfaceName(pattern.getStrategyInterface());
+        hasInterface.setInterface(pattern.getStrategyInterface());
 
         return hasInterface;
     }

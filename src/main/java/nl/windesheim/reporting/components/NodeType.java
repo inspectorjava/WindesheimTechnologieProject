@@ -20,6 +20,11 @@ public enum NodeType {
     CLASS,
 
     /**
+     * A abstract class of a pattern.
+     */
+    ABSTRACT_CLASS,
+
+    /**
      * A interface of a pattern.
      */
     INTERFACE,
