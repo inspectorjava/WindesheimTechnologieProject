@@ -26,14 +26,16 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         }
 
         InterfaceFactoryFinder interfaceFinder = new InterfaceFactoryFinder();
-        AbstractFactoryFinder abstractFinder   = new AbstractFactoryFinder();
 
         List<ClassOrInterfaceDeclaration> declarations = this.findDeclarations(files);
 
         List<ClassOrInterfaceDeclaration> factoryClasses = new ArrayList<>();
 
         factoryClasses.addAll(interfaceFinder.find(declarations));
-        factoryClasses.addAll(abstractFinder.find(declarations));
+
+        // Removing the abstract factory finder since it was deemed not necessary by our product owner.
+//        AbstractFactoryFinder abstractFinder   = new AbstractFactoryFinder();
+//        factoryClasses.addAll(abstractFinder.find(declarations));
 
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             AbstractFactory abstractFactory = new AbstractFactory();
