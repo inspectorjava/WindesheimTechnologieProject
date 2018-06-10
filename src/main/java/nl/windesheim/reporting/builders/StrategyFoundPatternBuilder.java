@@ -8,7 +8,7 @@ import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.decorators.HasContext;
 import nl.windesheim.reporting.decorators.HasInterface;
-import nl.windesheim.reporting.decorators.HasStrategies;
+import nl.windesheim.reporting.decorators.HasClassList;
 
 /**
  * Strategy pattern found builder.
@@ -63,10 +63,11 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
             patternReport.setCertainty(Result.Certainty.UNLIKELY);
         }
 
-        HasStrategies strategy = new HasStrategies(patternReport);
-        strategy.setStrategies(pattern.getStrategies());
+        HasClassList strategies = new HasClassList(patternReport);
+        strategies.setName("Strategies");
+        strategies.setClasses(pattern.getStrategies());
 
-        HasContext hasContext = new HasContext(strategy);
+        HasContext hasContext = new HasContext(strategies);
         hasContext.setContext(pattern.getContext());
 
         HasInterface hasInterface = new HasInterface(hasContext);

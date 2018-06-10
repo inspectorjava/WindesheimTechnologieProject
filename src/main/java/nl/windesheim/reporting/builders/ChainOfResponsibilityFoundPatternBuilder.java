@@ -7,8 +7,8 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.Result;
+import nl.windesheim.reporting.decorators.HasClassList;
 import nl.windesheim.reporting.decorators.HasCommonParent;
-import nl.windesheim.reporting.decorators.HasLinks;
 
 /**
  * Chain Of Responsibility pattern builder.
@@ -59,8 +59,9 @@ public class ChainOfResponsibilityFoundPatternBuilder extends AbstractFoundPatte
         HasCommonParent hasCommonParent = new HasCommonParent(patternReport);
         hasCommonParent.setCommonParent(this.pattern.getCommonParent());
 
-        HasLinks hasLinks = new HasLinks(hasCommonParent);
-        hasLinks.setLinks(this.pattern.getChainLinks());
+        HasClassList hasLinks = new HasClassList(hasCommonParent);
+        hasLinks.setName("Links");
+        hasLinks.setClasses(this.pattern.getChainLinks());
 
         return hasLinks;
     }

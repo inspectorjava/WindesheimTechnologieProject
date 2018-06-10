@@ -1,15 +1,12 @@
 package nl.windesheim.reporting.builders;
 
-import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasImplementations;
+import nl.windesheim.reporting.decorators.HasClassList;
 import nl.windesheim.reporting.decorators.HasInterface;
-
-import java.util.List;
 
 /**
  * The abstract factory found pattern builder.
@@ -17,24 +14,18 @@ import java.util.List;
 public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
     /**
-     * The factory name to use.
+     * The factory pattern.
      */
-    private final ClassOrInterface factory;
-
-    /**
-     * List of the factory implementations.
-     */
-    private final List<ClassOrInterface> implementations;
+    private final AbstractFactory pattern;
 
     /**
      * The constructor.
-     * @param factory The name for this factory.
+     * @param pattern factory pattern.
      */
-    public AbstractFactoryFoundPatternBuilder(final AbstractFactory factory) {
+    public AbstractFactoryFoundPatternBuilder(final AbstractFactory pattern) {
         super();
 
-        this.factory = factory.getFactoryInterface();
-        this.implementations = factory.getImplementations();
+        this.pattern = pattern;
     }
 
     @Override
@@ -42,10 +33,11 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.ABSTRACT_FACTORY);
         HasInterface hasInterface = new HasInterface(patternReport);
-        hasInterface.setInterface(this.factory);
+        hasInterface.setInterface(this.pattern.getFactoryInterface());
 
-        HasImplementations hasImpl = new HasImplementations(hasInterface);
-        hasImpl.setImplementations(this.implementations);
+        HasClassList hasImpl = new HasClassList(hasInterface);
+        hasImpl.setName("Implementations");
+        hasImpl.setClasses(this.pattern.getImplementations());
 
         return hasImpl;
     }

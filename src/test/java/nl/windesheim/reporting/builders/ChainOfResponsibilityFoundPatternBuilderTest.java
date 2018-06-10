@@ -53,8 +53,8 @@ public class ChainOfResponsibilityFoundPatternBuilderTest {
 
         assertEquals("Pattern: "+ DesignPatternType.CHAIN_OF_RESPONSIBILITY +" found with certainty: "+ Result.Certainty.LIKELY +" with the following errors: \n" +
                 " - Common parent has no methods defined\n" +
-                " and uses common parent: CommonParentTestLink: Link1\n\r" +
-                "Link: Link2\n\r" +
-                "Link: Link3\n\r", report.getReport());
+                " and uses common parent: CommonParentTestLinks:\n\r- Link1\n\r" +
+                "- Link2\n\r" +
+                "- Link3\n\r", report.getReport());
     }
 }
