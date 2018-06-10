@@ -4,6 +4,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Finds eligible 'common parent' classes.
  */
-public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeSolver> {
+public class EligibleCommonParentFinder extends VoidVisitorAdapter<TypeSolver> {
 
     /**
      * The list of classes which were found.
@@ -43,7 +44,7 @@ public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeS
     }
 
     @Override
-    public void visit(final ClassOrInterfaceDeclaration declaration, final CombinedTypeSolver typeSolver) {
+    public void visit(final ClassOrInterfaceDeclaration declaration, final TypeSolver typeSolver) {
         super.visit(declaration, typeSolver);
 
         boolean isInterface = declaration.isInterface();

@@ -1,7 +1,6 @@
 package nl.windesheim.codeparser.analyzers.composite;
 
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Before;
@@ -30,10 +29,10 @@ public class CompositeAnalyzerTest {
             File dir = new File(classLoader.getResource("composite/simpleComposite").getPath());
             Path directoryPath = dir.toPath();
 
-            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-            analyzer.addChild(new CompositeAnalyzer());
+//            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
+//            analyzer.addChild(new CompositeAnalyzer());
 
-            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+            FileAnalysisProvider provider = new FileAnalysisProvider(new CompositeAnalyzer());
 
             List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
 
@@ -59,10 +58,7 @@ public class CompositeAnalyzerTest {
             File dir = new File(classLoader.getResource("composite/shapeComposite").getPath());
             Path directoryPath = dir.toPath();
 
-            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-            analyzer.addChild(new CompositeAnalyzer());
-
-            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+            FileAnalysisProvider provider = new FileAnalysisProvider(new CompositeAnalyzer());
 
             List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
 
@@ -90,10 +86,7 @@ public class CompositeAnalyzerTest {
             File dir = new File(classLoader.getResource("composite/notAComposite").getPath());
             Path directoryPath = dir.toPath();
 
-            PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-            analyzer.addChild(new CompositeAnalyzer());
-
-            FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+            FileAnalysisProvider provider = new FileAnalysisProvider(new CompositeAnalyzer());
 
             List<IDesignPattern> patterns = provider.analyzeDirectory(directoryPath);
 

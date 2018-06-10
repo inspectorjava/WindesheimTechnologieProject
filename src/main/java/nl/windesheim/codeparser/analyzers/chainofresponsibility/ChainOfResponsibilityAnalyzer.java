@@ -13,6 +13,7 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
@@ -45,7 +46,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     /**
      * A solver for data types.
      */
-    private CombinedTypeSolver typeSolver;
+    private TypeSolver typeSolver;
 
     /**
      * A finder which searches for implementations of a interface.
@@ -77,7 +78,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         //Get the typesolver from the parent
-        typeSolver = getParent().getTypeSolver();
+        typeSolver = getTypeSolver();
 
         //Initialize the list of chain of responsibility patterns we will be returning
         ArrayList<IDesignPattern> chainList = new ArrayList<>();

@@ -1,22 +1,13 @@
 package nl.windesheim.codeparser.analyzers.strategy;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import com.github.javaparser.utils.SourceRoot;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
-import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
-import nl.windesheim.codeparser.analyzers.singleton.SingletonAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Strategy;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,10 +24,7 @@ class StrategyAnalyzerTestHelper {
     StrategyAnalyzerTestHelper(){
         classLoader = this.getClass().getClassLoader();
 
-        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
-        composite.addChild(new StrategyAnalyzer());
-
-        provider = new FileAnalysisProvider(composite);
+        provider = new FileAnalysisProvider(new StrategyAnalyzer());
     }
 
     List<IDesignPattern> analyzeDirectory(File dir) throws IOException{

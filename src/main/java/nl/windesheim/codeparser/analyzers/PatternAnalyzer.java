@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.analyzers;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.List;
@@ -10,10 +11,7 @@ import java.util.List;
  */
 public abstract class PatternAnalyzer {
 
-    /**
-     * The parent of a analyzer.
-     */
-    private PatternAnalyzerComposite parent;
+    private TypeSolver typeSolver;
 
     /**
      * Analyzes design patterns in a set of files.
@@ -23,19 +21,12 @@ public abstract class PatternAnalyzer {
      */
     public abstract List<IDesignPattern> analyze(List<CompilationUnit> files);
 
-    /**
-     * @return the parent of this analyzer
-     */
-    public PatternAnalyzerComposite getParent() {
-        return parent;
+    protected TypeSolver getTypeSolver() {
+        return typeSolver;
     }
 
-    /**
-     * @param parent the parent of this analyzer
-     * @return this
-     */
-    public PatternAnalyzer setParent(final PatternAnalyzerComposite parent) {
-        this.parent = parent;
+    public PatternAnalyzer setTypeSolver(final TypeSolver typeSolver) {
+        this.typeSolver = typeSolver;
         return this;
     }
 }
