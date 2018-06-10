@@ -23,6 +23,21 @@ public class AbstractFactoryAnalyzerHappyPathTest {
     }
 
     @Test
+    public void abstractFactoryDemoTest() throws Exception {
+        TestSettings settings = new TestSettings();
+
+        File dir = new File(classLoader.getResource("abstractFactory/hjmf1954").getPath());
+        settings.codeDir = dir;
+
+        settings.commonParentName = "App";
+        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/hjmf1954/AbstractFactoryDemo.java").getPath());
+
+        List<IDesignPattern> patterns = this.analyzeDirectory(settings.codeDir);
+
+        assertEquals(patterns.size(), 1);
+    }
+
+    @Test
     public void abstractFactoryKingdomTest() throws Exception {
         TestSettings settings = new TestSettings();
 
