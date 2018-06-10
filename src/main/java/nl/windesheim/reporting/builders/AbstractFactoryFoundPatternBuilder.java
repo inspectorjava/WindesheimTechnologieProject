@@ -6,7 +6,7 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasClassList;
-import nl.windesheim.reporting.decorators.HasInterface;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * The abstract factory found pattern builder.
@@ -32,8 +32,9 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.ABSTRACT_FACTORY);
-        HasInterface hasInterface = new HasInterface(patternReport);
-        hasInterface.setInterface(this.pattern.getFactoryInterface());
+        HasClassOrInterface hasInterface = new HasClassOrInterface(patternReport);
+        hasInterface.setName("Factory interface");
+        hasInterface.setClassOrInterface(this.pattern.getFactoryInterface());
 
         HasClassList hasImpl = new HasClassList(hasInterface);
         hasImpl.setName("Implementations");

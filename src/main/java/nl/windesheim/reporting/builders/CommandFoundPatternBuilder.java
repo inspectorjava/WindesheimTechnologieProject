@@ -6,8 +6,7 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasClassList;
-import nl.windesheim.reporting.decorators.HasInterface;
-import nl.windesheim.reporting.decorators.HasReceivers;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Command pattern found builder.
@@ -40,11 +39,13 @@ public class CommandFoundPatternBuilder extends AbstractFoundPatternBuilder {
         command.setName("Commands");
         command.setClasses(this.pattern.getCommands());
 
-        HasInterface hasInterface = new HasInterface(command);
-        hasInterface.setInterface(this.pattern.getCommandParent());
+        HasClassOrInterface hasInterface = new HasClassOrInterface(command);
+        hasInterface.setName("Command parent");
+        hasInterface.setClassOrInterface(this.pattern.getCommandParent());
 
-        HasReceivers hasReceivers = new HasReceivers(command);
-        hasReceivers.setReceivers(this.pattern.getReceivers());
+        HasClassList hasReceivers = new HasClassList(command);
+        hasReceivers.setName("Receivers");
+        hasReceivers.setClasses(this.pattern.getReceivers());
 
         return hasInterface;
     }

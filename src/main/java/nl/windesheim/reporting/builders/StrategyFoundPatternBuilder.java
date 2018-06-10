@@ -6,9 +6,8 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.Result;
-import nl.windesheim.reporting.decorators.HasContext;
-import nl.windesheim.reporting.decorators.HasInterface;
 import nl.windesheim.reporting.decorators.HasClassList;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Strategy pattern found builder.
@@ -67,11 +66,13 @@ public class StrategyFoundPatternBuilder extends AbstractFoundPatternBuilder {
         strategies.setName("Strategies");
         strategies.setClasses(pattern.getStrategies());
 
-        HasContext hasContext = new HasContext(strategies);
-        hasContext.setContext(pattern.getContext());
+        HasClassOrInterface hasContext = new HasClassOrInterface(strategies);
+        hasContext.setName("Context");
+        hasContext.setClassOrInterface(pattern.getContext());
 
-        HasInterface hasInterface = new HasInterface(hasContext);
-        hasInterface.setInterface(pattern.getStrategyInterface());
+        HasClassOrInterface hasInterface = new HasClassOrInterface(hasContext);
+        hasInterface.setName("Strategy interface");
+        hasInterface.setClassOrInterface(pattern.getStrategyInterface());
 
         return hasInterface;
     }

@@ -42,6 +42,6 @@ public class StrategyFoundPatternBuilderTest {
                 "- Strategy1\n\r" +
                 "- Strategy2\n\r" +
                 " - Context: Context\n\r" +
-                " and uses interface: Interfacename", foundPatternReport.getReport());
+                " - Strategy interface: Interfacename\n\r", foundPatternReport.getReport());
     }
 }

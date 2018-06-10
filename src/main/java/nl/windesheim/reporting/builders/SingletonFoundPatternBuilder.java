@@ -6,7 +6,7 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.components.Result;
-import nl.windesheim.reporting.decorators.HasSingleFile;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Singleton pattern builder.
@@ -38,8 +38,9 @@ public class SingletonFoundPatternBuilder extends AbstractFoundPatternBuilder {
             patternReport.addPatternError("The singleton has a non-private constructor");
         }
 
-        HasSingleFile hasSingleFile = new HasSingleFile(patternReport);
-        hasSingleFile.setFile(this.pattern.getSingletonClass());
+        HasClassOrInterface hasSingleFile = new HasClassOrInterface(patternReport);
+        hasSingleFile.setName("Singleton");
+        hasSingleFile.setClassOrInterface(this.pattern.getSingletonClass());
         return hasSingleFile;
     }
 }

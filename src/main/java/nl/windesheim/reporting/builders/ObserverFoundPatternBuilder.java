@@ -5,10 +5,8 @@ import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasAbstractObservable;
-import nl.windesheim.reporting.decorators.HasAbstractObserver;
-import nl.windesheim.reporting.decorators.HasConcreteObservables;
-import nl.windesheim.reporting.decorators.HasConcreteObservers;
+import nl.windesheim.reporting.decorators.HasClassList;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Strategy pattern found builder.
@@ -36,17 +34,21 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.OBSERVER);
 
-        HasAbstractObservable aObservable = new HasAbstractObservable(patternReport);
-        aObservable.setAbstractObservable(this.pattern.getAbstractObservable());
+        HasClassOrInterface aObservable = new HasClassOrInterface(patternReport);
+        aObservable.setName("Abstract Observable");
+        aObservable.setClassOrInterface(this.pattern.getAbstractObservable());
 
-        HasAbstractObserver aObserver = new HasAbstractObserver(patternReport);
-        aObserver.setAbstractObserver(this.pattern.getAbstractObserver());
+        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
+        aObserver.setName("Abstract Observer");
+        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
 
-        HasConcreteObservables cObservables = new HasConcreteObservables(aObservable);
-        cObservables.setConcreteObservables(this.pattern.getConcreteObservables());
+        HasClassList cObservables = new HasClassList(aObservable);
+        cObservables.setName("Concrete Observables");
+        cObservables.setClasses(this.pattern.getConcreteObservables());
 
-        HasConcreteObservers cObservers = new HasConcreteObservers(aObserver);
-        cObservers.setConcreteObservers(this.pattern.getConcreteObservers());
+        HasClassList cObservers = new HasClassList(aObserver);
+        cObservers.setName("Concrete Observers");
+        cObservers.setClasses(this.pattern.getConcreteObservers());
 
         return cObservers;
     }

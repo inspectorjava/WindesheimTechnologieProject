@@ -1,5 +1,6 @@
 package nl.windesheim.reporting.decorators;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
@@ -13,15 +14,16 @@ import static org.junit.Assert.*;
 
 public class HasContextTest {
 
-    private HasContext contextDecorator;
+    private HasClassOrInterface contextDecorator;
 
     private ClassOrInterface context;
 
     @Before
     public void setUp() {
-        this.context = new ClassOrInterface().setName("SetContextDecorator");
-        this.contextDecorator = new HasContext(new FoundPatternReport());
-        this.contextDecorator.setContext(this.context);
+        this.context = new ClassOrInterface().setName("SetContextDecorator").setDeclaration(new ClassOrInterfaceDeclaration());
+        this.contextDecorator = new HasClassOrInterface(new FoundPatternReport());
+        this.contextDecorator.setName("Context");
+        this.contextDecorator.setClassOrInterface(this.context);
     }
 
     @Test

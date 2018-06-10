@@ -6,7 +6,7 @@ import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
 import nl.windesheim.reporting.decorators.HasClassList;
-import nl.windesheim.reporting.decorators.HasComponent;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Composite found builder.
@@ -35,8 +35,9 @@ public class CompositeFoundBuilder extends AbstractFoundPatternBuilder {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.COMPOSITE);
 
-        HasComponent hasComponent = new HasComponent(patternReport);
-        hasComponent.setComponent(pattern.getComponent());
+        HasClassOrInterface hasComponent = new HasClassOrInterface(patternReport);
+        hasComponent.setName("Component");
+        hasComponent.setClassOrInterface(pattern.getComponent());
 
         HasClassList hasComposites = new HasClassList(hasComponent);
         hasComposites.setName("Composites");
