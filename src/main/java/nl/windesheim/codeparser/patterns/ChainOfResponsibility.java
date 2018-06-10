@@ -23,12 +23,20 @@ public class ChainOfResponsibility implements IDesignPattern {
     /**
      * The list of chain links in the cain of responsibility.
      */
-    private List<ClassOrInterface> chainLinks = new ArrayList<>();
+    private List<ClassOrInterface> chainLinks;
 
     /**
      * A list of links which don't call the next link.
      */
-    private List<ClassOrInterface> nonChainedLinks = new ArrayList<>();
+    private List<ClassOrInterface> nonChainedLinks;
+
+    /**
+     * default constructor.
+     */
+    public ChainOfResponsibility() {
+        chainLinks = new ArrayList<>();
+        nonChainedLinks = new ArrayList<>();
+    }
 
     /**
      * @return the common parent of the cain links

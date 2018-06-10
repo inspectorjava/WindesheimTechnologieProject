@@ -23,7 +23,7 @@ public class FoundPatternReport implements IFoundPatternReport {
     /**
      * A list of reasons why the pattern is partially found.
      */
-    private final List<String> patternErrors = new ArrayList<>();
+    private final List<String> patternErrors;
 
     /**
      * Default constructor.
@@ -32,6 +32,7 @@ public class FoundPatternReport implements IFoundPatternReport {
         this.result = new Result();
         this.result.setCertainty(Result.Certainty.CERTAIN);
         this.designPatternType = DesignPatternType.NONE;
+        this.patternErrors = new ArrayList<>();
     }
 
     /**
