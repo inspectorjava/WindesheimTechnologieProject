@@ -3,7 +3,6 @@ package nl.windesheim.codeparser.analyzers;
 import com.github.javaparser.ast.CompilationUnit;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,11 +14,6 @@ public abstract class PatternAnalyzer {
      * The parent of a analyzer.
      */
     private PatternAnalyzerComposite parent;
-
-    /**
-     * A list of errors which were encountered when analyzing.
-     */
-    private final List<Exception> errors = new ArrayList<>();
 
     /**
      * Analyzes design patterns in a set of files.
@@ -43,28 +37,5 @@ public abstract class PatternAnalyzer {
     public PatternAnalyzer setParent(final PatternAnalyzerComposite parent) {
         this.parent = parent;
         return this;
-    }
-
-    /**
-     * Adds a error to the error list.
-     *
-     * @param error the error to add
-     */
-    protected void addError(final Exception error) {
-        errors.add(error);
-    }
-
-    /**
-     * Clears the errors in the error list.
-     */
-    protected void clearErrors() {
-        errors.clear();
-    }
-
-    /**
-     * @return the list of error found while analyzing
-     */
-    public List<Exception> getErrors() {
-        return errors;
     }
 }

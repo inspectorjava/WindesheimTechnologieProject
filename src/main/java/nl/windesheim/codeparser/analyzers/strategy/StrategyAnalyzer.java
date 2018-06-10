@@ -5,6 +5,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -14,6 +15,7 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import javafx.util.Pair;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
@@ -206,7 +208,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
             //Add all errors which were encountered to the list
             for (Exception e : implFinder.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 
@@ -236,7 +238,14 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             }
 
             //Resolve the type of the scope
-            ResolvedType scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+            ResolvedType scopeType;
+            try {
+                scopeType = javaSymbolSolver.calculateType(methodCallExpr.getScope().get());
+            } catch (UnsolvedSymbolException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
+            }
+
             if (!(scopeType instanceof ReferenceTypeImpl)) {
                 continue;
             }
@@ -280,7 +289,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
             eligibleContexts.addAll(contextFinder.getClasses());
 
             for (Exception e : contextFinder.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 

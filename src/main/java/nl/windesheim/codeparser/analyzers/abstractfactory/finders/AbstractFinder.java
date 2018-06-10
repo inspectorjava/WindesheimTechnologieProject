@@ -4,13 +4,14 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,6 +33,7 @@ public abstract class AbstractFinder {
 
     /**
      * Find all the (abstract) factory implementations.
+     *
      * @param declarations List of all the declarations.
      * @return List of all the found patterns.
      */
@@ -44,7 +46,7 @@ public abstract class AbstractFinder {
      * @param declarations List of all the declarations
      * @return the implementations of the given declaration.
      */
-    public Collection<? extends ClassOrInterfaceDeclaration>
+    public List<ClassOrInterfaceDeclaration>
     findImplementations(final ClassOrInterfaceDeclaration factory,
                         final List<ClassOrInterfaceDeclaration> declarations) {
         this.implFinder.reset();
@@ -78,7 +80,7 @@ public abstract class AbstractFinder {
     /**
      * Find all the factory classes. These are all the classes that implement or extend the factory classes.
      *
-     * @param declarations           List of all the file declarations.
+     * @param declarations    List of all the file declarations.
      * @param implementations List of all the abstract factory pattern implementations
      * @return A list with all the factory classes.
      */
@@ -99,9 +101,10 @@ public abstract class AbstractFinder {
 
     /**
      * Find all the factory implementations and fill the given list.
+     *
      * @param implementations List of factory implementations.
-     * @param factoryClasses List of the factory classes.
-     * @param method The method we have to search.
+     * @param factoryClasses  List of the factory classes.
+     * @param method          The method we have to search.
      */
     private void findAndFillFactoryClasses(
             final List<ClassOrInterfaceDeclaration> implementations,
@@ -112,32 +115,72 @@ public abstract class AbstractFinder {
                 continue;
             }
             ClassOrInterfaceType type = (ClassOrInterfaceType) method.getType();
-            ResolvedReferenceTypeDeclaration typeDeclaration =
-                    (ResolvedReferenceTypeDeclaration) type.resolve().getTypeDeclaration();
+            ResolvedReferenceTypeDeclaration typeDeclaration;
+            try {
+                typeDeclaration = type.resolve().getTypeDeclaration();
+            } catch (UnsolvedSymbolException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
+            }
 
             //If the type is a interface
             if (typeDeclaration instanceof JavaParserInterfaceDeclaration) {
-                ClassOrInterfaceDeclaration resolvedInterface =
-                        ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
-                String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
-                String interfaceName = implementation.getImplementedTypes().get(0).getNameAsString();
-                if (declarationName.equals(interfaceName)
-                        && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
-                    factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
-                }
+                findFactoryForInterface(typeDeclaration, implementation, factoryClasses);
             } else if (typeDeclaration instanceof JavaParserClassDeclaration) {
-                ClassOrInterfaceDeclaration resolvedInterface =
-                        ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
-                String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
-                String interfaceName = implementation.getExtendedTypes().get(0).getNameAsString();
-                if (declarationName.equals(interfaceName)
-                        && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
-                    factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
-                }
+                findFactoryForClass(typeDeclaration, implementation, factoryClasses);
             }
         }
     }
 
+    /**
+     * @param typeDeclaration type declaration
+     * @param implementation  implementation
+     * @param factoryClasses  factory classes
+     */
+    private void findFactoryForInterface(
+            final ResolvedReferenceTypeDeclaration typeDeclaration,
+            final ClassOrInterfaceDeclaration implementation,
+            final List<ClassOrInterfaceDeclaration> factoryClasses
+    ) {
+        if (implementation.getImplementedTypes().isEmpty()) {
+            return;
+        }
+
+        ClassOrInterfaceDeclaration resolvedInterface =
+                ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
+        String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+
+        String interfaceName = implementation.getImplementedTypes().get(0).getNameAsString();
+        if (declarationName.equals(interfaceName)
+                && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
+            factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
+        }
+    }
+
+    /**
+     * @param typeDeclaration type declaration
+     * @param implementation  implementation
+     * @param factoryClasses  factory classes
+     */
+    private void findFactoryForClass(
+            final ResolvedReferenceTypeDeclaration typeDeclaration,
+            final ClassOrInterfaceDeclaration implementation,
+            final List<ClassOrInterfaceDeclaration> factoryClasses
+    ) {
+        if (implementation.getExtendedTypes().isEmpty()) {
+            return;
+        }
+
+        ClassOrInterfaceDeclaration resolvedInterface =
+                ((JavaParserClassDeclaration) typeDeclaration).getWrappedNode();
+        String declarationName = resolvedInterface.asClassOrInterfaceDeclaration().getNameAsString();
+
+        String interfaceName = implementation.getExtendedTypes().get(0).getNameAsString();
+        if (declarationName.equals(interfaceName)
+                && !factoryClasses.contains(resolvedInterface.asClassOrInterfaceDeclaration())) {
+            factoryClasses.add(resolvedInterface.asClassOrInterfaceDeclaration());
+        }
+    }
 
     /**
      * Simple log helper to output some text.
