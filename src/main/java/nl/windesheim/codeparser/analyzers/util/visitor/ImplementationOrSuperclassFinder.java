@@ -98,7 +98,6 @@ public class ImplementationOrSuperclassFinder extends VoidVisitorAdapter<ClassOr
             final ClassOrInterfaceDeclaration classDeclaration
     ) {
         for (ClassOrInterfaceType type : classToCheck.getExtendedTypes()) {
-
             ResolvedReferenceTypeDeclaration solved;
             try {
                 solved = type.resolve().getTypeDeclaration();

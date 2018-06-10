@@ -4,9 +4,10 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
@@ -128,25 +129,7 @@ public class InterfaceFactoryFinder extends AbstractFinder {
             // Make sure this interface has return types that are other interfaces.
             boolean hasValidInterface = false;
             for (Node node : declaration.getChildNodes()) {
-                if (!(node instanceof MethodDeclaration)) {
-                    continue;
-                }
-                MethodDeclaration methodDeclaration = (MethodDeclaration) node;
-                if (!(methodDeclaration.getType() instanceof ClassOrInterfaceType)) {
-                    continue;
-                }
-                ClassOrInterfaceType type = (ClassOrInterfaceType) methodDeclaration.getType();
-                ResolvedReferenceTypeDeclaration typeDeclaration =
-                        ((ResolvedReferenceType) type.resolve()).getTypeDeclaration();
-
-                //If the type is a interface
-                if (!(typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
-                    continue;
-                }
-
-                ClassOrInterfaceDeclaration resolvedInterface =
-                        ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
-                if (resolvedInterface != null) {
+                if (nodeIsValidChild(node)) {
                     hasValidInterface = true;
                     break;
                 }
@@ -157,5 +140,37 @@ public class InterfaceFactoryFinder extends AbstractFinder {
         }
 
         return interfaces;
+    }
+
+    /**
+     * @param node node to check
+     * @return true/false
+     */
+    private boolean nodeIsValidChild(final Node node) {
+        if (!(node instanceof MethodDeclaration)) {
+            return false;
+        }
+        MethodDeclaration methodDeclaration = (MethodDeclaration) node;
+        if (!(methodDeclaration.getType() instanceof ClassOrInterfaceType)) {
+            return false;
+        }
+        ClassOrInterfaceType type = (ClassOrInterfaceType) methodDeclaration.getType();
+        ResolvedReferenceTypeDeclaration typeDeclaration;
+        try {
+            typeDeclaration = type.resolve().getTypeDeclaration();
+        } catch (UnsolvedSymbolException exception) {
+            ErrorLog.getInstance().addError(exception);
+            return false;
+        }
+
+        //If the type is a interface
+        if (!(typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
+            return false;
+        }
+
+        ClassOrInterfaceDeclaration resolvedInterface =
+                ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
+
+        return resolvedInterface != null;
     }
 }

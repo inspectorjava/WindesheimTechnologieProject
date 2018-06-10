@@ -31,7 +31,11 @@ public enum DesignPatternType {
     /**
      * Composite pattern.
      */
-    COMPOSITE("Composite");
+    COMPOSITE("Composite"),
+    /**
+     * Observer pattern.
+     */
+    OBSERVER("ObserverPattern");
 
     /**
      * the name to display.
