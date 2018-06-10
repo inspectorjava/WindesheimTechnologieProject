@@ -23,42 +23,6 @@ public class AbstractFactoryAnalyzerHappyPathTest {
     }
 
     @Test
-    public void abstractFactoryCakeTest() throws Exception {
-        TestSettings settings = new TestSettings();
-
-        File dir = new File(classLoader.getResource("abstractFactory/promienam").getPath());
-        settings.codeDir = dir;
-
-        settings.commonParentName = "DEMO";
-        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/promienam/DEMO.java").getPath());
-
-        settings.links.put(
-                "Cake",
-                new File(classLoader.getResource("abstractFactory/promienam/Cake.java").getPath())
-        );
-        settings.links.put(
-                "CakeFactory",
-                new File(classLoader.getResource("abstractFactory/promienam/CakeFactory.java").getPath())
-        );
-        settings.links.put(
-                "Custard",
-                new File(classLoader.getResource("abstractFactory/promienam/Custard.java").getPath())
-        );
-        settings.links.put(
-                "Muffin",
-                new File(classLoader.getResource("abstractFactory/promienam/Muffin.java").getPath())
-        );
-        settings.links.put(
-                "Pizza",
-                new File(classLoader.getResource("abstractFactory/promienam/Pizza.java").getPath())
-        );
-
-        List<IDesignPattern> patterns = this.analyzeDirectory(settings.codeDir);
-
-        assertEquals(patterns.size(), 1);
-    }
-
-    @Test
     public void abstractFactoryKingdomTest() throws Exception {
         TestSettings settings = new TestSettings();
 
