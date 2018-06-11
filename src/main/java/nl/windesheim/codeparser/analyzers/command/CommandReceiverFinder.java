@@ -4,7 +4,6 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
@@ -77,20 +76,14 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
             return;
         }
 
-        Node node = methodCall;
-        while (!(node instanceof MethodDeclaration)) {
-            if (!node.getParentNode().isPresent()) {
-                return;
-            }
-            node = node.getParentNode().get();
+        MethodDeclaration methodDeclaration = getMethodDeclaration(methodCall);
+        if (methodDeclaration == null) {
+            return;
         }
-        MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 
         if (!methodExitsInDefinition(methodDeclaration, commandDefinition)
                 || !methodCall.getScope().isPresent()
-                || !methodReturnsVoid(methodDeclaration)
-                || methodDeclaration.getParameters().size() > 0
-                || methodIsGetterOrSetter(methodDeclaration)) {
+                || methodIsValid(methodDeclaration)) {
 
             return;
         }
@@ -119,6 +112,33 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         ClassOrInterfaceDeclaration receiverClass = ((JavaParserClassDeclaration) referenceType).getWrappedNode();
 
         classes.add(receiverClass);
+    }
+
+    /**
+     * Get the method declaration of the method call.
+     * @param methodCall Method call.
+     * @return Method declaration.
+     */
+    private MethodDeclaration getMethodDeclaration(final MethodCallExpr methodCall) {
+        Node node = methodCall;
+        while (!(node instanceof MethodDeclaration)) {
+            if (!node.getParentNode().isPresent()) {
+                return null;
+            }
+            node = node.getParentNode().get();
+        }
+        return (MethodDeclaration) node;
+    }
+
+    /**
+     * Check if the method return type is void, has no parameters and isn't a getter or setter.
+     * @param methodDeclaration
+     * @return If method is valid command execution method.
+     */
+    private boolean methodIsValid(final MethodDeclaration methodDeclaration) {
+        return !methodReturnsVoid(methodDeclaration)
+                || methodDeclaration.getParameters().size() > 0
+                || methodIsGetterOrSetter(methodDeclaration);
     }
 
     /**
@@ -155,11 +175,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
     private boolean methodReturnsVoid(
             final MethodDeclaration methodDeclaration
     ) {
-        if (methodDeclaration.getType().toString().equals("void")) {
-            return true;
-        }
-
-        return false;
+        return methodDeclaration.getType().toString().equals("void");
     }
 
     /**
@@ -172,11 +188,8 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
             final MethodDeclaration methodDeclaration
     ) {
         String methodName = methodDeclaration.getNameAsString().toLowerCase();
-        // When the method contains get or set it is certain getter or setter.
-        if (methodName.contains("get") || methodName.contains("set")) {
-            return true;
-        }
 
-        return false;
+        // When the method contains get or set it is certain getter or setter.
+        return methodName.contains("get") || methodName.contains("set");
     }
 }
