@@ -89,6 +89,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         if (!methodExitsInDefinition(methodDeclaration, commandDefinition)
                 || !methodCall.getScope().isPresent()
                 || !methodReturnsVoid(methodDeclaration)
+                || methodDeclaration.getParameters().size() > 0
                 || methodIsGetterOrSetter(methodDeclaration)) {
 
             return;

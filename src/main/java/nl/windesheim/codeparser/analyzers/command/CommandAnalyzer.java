@@ -26,6 +26,7 @@ import java.util.Set;
  * - The command execute method executes a method of the receiver
  * - The command execute method return type is void
  * - The command execute method isn't a getter or setter.
+ * - The command execute method has no parameters
  * - The commands are defined in a list
  */
 public class CommandAnalyzer extends PatternAnalyzer {
