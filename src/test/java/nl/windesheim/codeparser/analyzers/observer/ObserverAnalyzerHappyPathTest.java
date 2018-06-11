@@ -1,20 +1,16 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import nl.windesheim.codeparser.ClassOrInterface;
-import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -22,9 +18,11 @@ import static org.junit.Assert.fail;
 
 public class ObserverAnalyzerHappyPathTest {
     private ClassLoader classLoader;
+    private ObserverAnalyzerTestHelper helper;
 
     public ObserverAnalyzerHappyPathTest () {
         classLoader = this.getClass().getClassLoader();
+        helper = new ObserverAnalyzerTestHelper();
     }
 
     @Test
@@ -109,7 +107,7 @@ public class ObserverAnalyzerHappyPathTest {
     }
 
     private void assertValidPattern (TestSettings settings) throws IOException {
-        List<IDesignPattern> patterns = analyzeDirectory(settings.codeDir);
+        List<IDesignPattern> patterns = helper.analyzeDirectory(settings.codeDir);
 
         // Check if the expected amount of patterns is found
         assertEquals(1, patterns.size());
@@ -163,26 +161,5 @@ public class ObserverAnalyzerHappyPathTest {
                 fail("Missing concrete observable class '" + expectedName + "' which was expected to be found in '" + expectedFile + "'");
             }
         }
-    }
-
-    private List<IDesignPattern> analyzeDirectory (File dir) throws IOException {
-        Path directoryPath = dir.toPath();
-
-        FileAnalysisProvider provider = new FileAnalysisProvider(new ObserverAnalyzer());
-
-        return provider.analyzeDirectory(directoryPath);
-    }
-
-    private class TestSettings {
-        private File codeDir;
-
-        private String abstractObservableName;
-        private File abstractObservableFile;
-
-        private String abstractObserverName;
-        private File abstractObserverFile;
-
-        private HashMap<String, File> concreteObservables = new HashMap<>();
-        private HashMap<String, File> concreteObservers = new HashMap<>();
     }
 }
