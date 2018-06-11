@@ -4,6 +4,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
@@ -85,7 +86,11 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         }
         MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 
-        if (!methodExitsInDefinition(methodDeclaration, commandDefinition) || !methodCall.getScope().isPresent()) {
+        if (!methodExitsInDefinition(methodDeclaration, commandDefinition)
+                || !methodCall.getScope().isPresent()
+                || !methodReturnsVoid(methodDeclaration)
+                || methodIsGetterOrSetter(methodDeclaration)) {
+
             return;
         }
 
@@ -132,6 +137,40 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
             if (methodDefinition.getNameAsString().equals(methodDeclaration.getNameAsString())) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the method return type is void.
+     *
+     * @param methodDeclaration Delectation of the current method.
+     * @return If the method return type is void.
+     */
+    private boolean methodReturnsVoid(
+            final MethodDeclaration methodDeclaration
+    ) {
+        if (methodDeclaration.getType().toString().equals("void")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the method name contains not the words getter or setter.
+     *
+     * @param methodDeclaration Delectation of the current method.
+     * @return If the method is an getter or setter.
+     */
+    private boolean methodIsGetterOrSetter(
+            final MethodDeclaration methodDeclaration
+    ) {
+        String methodName = methodDeclaration.getNameAsString().toLowerCase();
+        // When the method contains get or set it is certain getter or setter.
+        if (methodName.contains("get") || methodName.contains("set")) {
+            return true;
         }
 
         return false;

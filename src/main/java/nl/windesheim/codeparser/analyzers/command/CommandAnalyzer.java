@@ -23,6 +23,8 @@ import java.util.Set;
  * - The execution method of the command is at least implemented on one class
  * - The command class contains a reference to a receiver
  * - The command execute method executes a method of the receiver
+ * - The command execute method return type is void
+ * - The command execute method isn't a getter or setter.
  * - The commands are defined in a list
  */
 public class CommandAnalyzer extends PatternAnalyzer {
