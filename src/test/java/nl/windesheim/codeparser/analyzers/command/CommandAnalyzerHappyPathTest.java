@@ -77,9 +77,4 @@ public class CommandAnalyzerHappyPathTest {
         helper.testInvalidCommandPattern(new File(classLoader.getResource("chainOfResponsibility/atm").getPath()));
     }
 
-    @Test
-    public void testCompositeGrid() throws IOException {
-        helper.testInvalidCommandPattern(new File(classLoader.getResource("composite/grid").getPath()));
-    }
-
 }
