@@ -32,26 +32,18 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
-     * A reference to the error log.
-     */
-    private final ErrorLog errorLog;
-
-    /**
      * AbstractObserverFinder constructor.
      *
      * @param typeSolver       A TypeSolver which can be used by this class
      * @param observerPatterns A list of potential observer patterns which have already been detected
-     * @param errorLog         A reference to the error log
      */
     public AbstractObserverFinder(
             final TypeSolver typeSolver,
-            final List<EligibleObserverPattern> observerPatterns,
-            final ErrorLog errorLog
+            final List<EligibleObserverPattern> observerPatterns
     ) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = observerPatterns;
-        this.errorLog = errorLog;
     }
 
     @Override
@@ -76,7 +68,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                 }
             }
         } catch (UnsolvedSymbolException ex) {
-            errorLog.addError(ex);
+            ErrorLog.getInstance().addError(ex);
         }
     }
 
@@ -108,7 +100,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                         observerPattern.setAbstractObserver(abstObserver);
                     }
                 } catch (UnsolvedSymbolException ex) {
-                    errorLog.addError(ex);
+                    ErrorLog.getInstance().addError(ex);
                 }
             }
         }

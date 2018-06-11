@@ -5,6 +5,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.EligibleCommonParentFinder;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
@@ -62,8 +63,6 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        clearErrors();
-
         typeSolver = getParent().getTypeSolver();
 
         ArrayList<IDesignPattern> commandPatterns = new ArrayList<IDesignPattern>();
@@ -213,7 +212,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
             receivers.addAll(commandReceiver.getClasses());
 
             for (Exception e : commandReceiver.getErrors()) {
-                addError(e);
+                ErrorLog.getInstance().addError(e);
             }
         }
 

@@ -34,14 +34,12 @@ import java.util.Map;
  * - (Optional) The code contains concrete implementations of observer classes
  */
 public class ObserverAnalyzer extends PatternAnalyzer {
-
-
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         CombinedTypeSolver typeSolver = getParent().getTypeSolver();
 
         // Find abstract observable classes
-        AbstractObservableFinder aObsableFinder = new AbstractObservableFinder(typeSolver, getErrorLog());
+        AbstractObservableFinder aObsableFinder = new AbstractObservableFinder(typeSolver);
         for (CompilationUnit compilationUnit : files) {
             aObsableFinder.visit(compilationUnit, null);
         }
@@ -53,7 +51,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         // Find abstract observer classes
         AbstractObserverFinder aObserverFinder =
-                new AbstractObserverFinder(typeSolver, eligiblePatterns, getErrorLog());
+                new AbstractObserverFinder(typeSolver, eligiblePatterns);
         for (CompilationUnit compilationUnit : files) {
             aObserverFinder.visit(compilationUnit, null);
         }

@@ -6,7 +6,12 @@ import java.util.List;
 /**
  * A wrapper for the error log.
  */
-public class ErrorLog {
+public final class ErrorLog {
+    /**
+     * Singleton instance of ErrorLog.
+     */
+    private static ErrorLog instance;
+
     /**
      * The list of errors.
      */
@@ -15,7 +20,7 @@ public class ErrorLog {
     /**
      * ErrorLog constructor.
      */
-    public ErrorLog() {
+    private ErrorLog() {
         errors = new ArrayList<>();
     }
 
@@ -40,5 +45,16 @@ public class ErrorLog {
      */
     public List<Exception> getErrors() {
         return errors;
+    }
+
+    /**
+     * @return Instance of ErrorLog.
+     */
+    public static ErrorLog getInstance() {
+        if (instance == null) {
+            instance = new ErrorLog();
+        }
+
+        return instance;
     }
 }

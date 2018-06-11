@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.FindAllInterfaces;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
@@ -40,8 +41,6 @@ public class CompositeAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        getErrorLog().clearErrors();
-
         List<IDesignPattern> designPatterns = new ArrayList<>();
 
         // Get all interfaces
@@ -73,7 +72,7 @@ public class CompositeAnalyzer extends PatternAnalyzer {
                 }
 
                 for (Exception exception : selfRefVisitor.getErrors()) {
-                    getErrorLog().addError(exception);
+                    ErrorLog.getInstance().addError(exception);
                 }
             }
 

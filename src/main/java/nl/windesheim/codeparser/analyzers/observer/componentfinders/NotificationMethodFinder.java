@@ -36,14 +36,12 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
      *
      * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
-     * @param errorLog     A reference to the error log
      */
     public NotificationMethodFinder(
             final TypeSolver typeSolver,
-            final List<ObserverCollection> observerCols,
-            final ErrorLog errorLog
+            final List<ObserverCollection> observerCols
     ) {
-        super(typeSolver, observerCols, errorLog);
+        super(typeSolver, observerCols);
     }
 
     @Override
@@ -115,7 +113,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
                     }
                 }
             } catch (UnsolvedSymbolException ex) {
-                getErrorLog().addError(ex);
+                ErrorLog.getInstance().addError(ex);
             }
         }
 
@@ -168,7 +166,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
                 iterableValue = iterableExpr.asFieldAccessExpr().resolve();
             }
         } catch (UnsolvedSymbolException ex) {
-            getErrorLog().addError(ex);
+            ErrorLog.getInstance().addError(ex);
         }
 
         // Check if iterableValue refers to a class property

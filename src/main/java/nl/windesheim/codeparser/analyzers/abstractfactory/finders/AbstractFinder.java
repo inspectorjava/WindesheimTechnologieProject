@@ -4,9 +4,11 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
@@ -113,8 +115,13 @@ public abstract class AbstractFinder {
                 continue;
             }
             ClassOrInterfaceType type = (ClassOrInterfaceType) method.getType();
-            ResolvedReferenceTypeDeclaration typeDeclaration =
-                    (ResolvedReferenceTypeDeclaration) type.resolve().getTypeDeclaration();
+            ResolvedReferenceTypeDeclaration typeDeclaration;
+            try {
+                typeDeclaration = type.resolve().getTypeDeclaration();
+            } catch (UnsolvedSymbolException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
+            }
 
             //If the type is a interface
             if (typeDeclaration instanceof JavaParserInterfaceDeclaration) {

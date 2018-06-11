@@ -44,14 +44,12 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
      *
      * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
-     * @param errorLog     A reference to the error log
      */
     public SubscriptionMethodFinder(
             final TypeSolver typeSolver,
-            final List<ObserverCollection> observerCols,
-            final ErrorLog errorLog
+            final List<ObserverCollection> observerCols
     ) {
-        super(typeSolver, observerCols, errorLog);
+        super(typeSolver, observerCols);
         eligibleParams = new HashMap<>();
     }
 
@@ -104,7 +102,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                     }
                 }
             } catch (UnsolvedSymbolException ex) {
-                getErrorLog().addError(ex);
+                ErrorLog.getInstance().addError(ex);
             }
         }
 
@@ -148,7 +146,7 @@ public class SubscriptionMethodFinder extends ObservableMethodFinder {
                     handleSubscriptionMethod(operatesOn, methodDeclaration, subscriptionType);
                 }
             } catch (UnsolvedSymbolException ex) {
-                getErrorLog().addError(ex);
+                ErrorLog.getInstance().addError(ex);
             }
         }
     }
