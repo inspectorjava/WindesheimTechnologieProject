@@ -1,10 +1,14 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
@@ -51,7 +55,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
         try {
             ResolvedReferenceTypeDeclaration classType = classDeclaration.resolve();
 
-            // Check whether the class is being called somewhere in an observercollection
+            // Check whether the class is being called somewhere in an observer collection
             for (EligibleObserverPattern observerPattern : observerPatterns) {
                 AbstractObservable abstObservable = observerPattern.getAbstractObservable();
                 List<ObserverCollection> observerCols = abstObservable.getObserverCollections();
@@ -60,11 +64,21 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                     ResolvedReferenceTypeDeclaration parameterType =
                             observerCol.getParameterType().getTypeDeclaration();
 
-                    if (parameterType.equals(classType)) {
-                        AbstractObserver abstractObserver =
-                                new AbstractObserver(classDeclaration, classType);
-                        findUpdateMethod(abstractObserver, observerPattern, observerCol);
+                    if (!parameterType.equals(classType)) {
+                        continue;
                     }
+
+                    AbstractObserver abstractObserver = new AbstractObserver(classDeclaration, classType);
+                    if (!findUpdateMethod(abstractObserver, observerCol)) {
+                        continue;
+                    }
+
+                    observerPattern.setAbstractObserver(abstractObserver);
+
+                    // Check for field reference, attach method and detach method
+                    findObserverProperties(abstractObserver, observerPattern, observerCol);
+
+                    break;
                 }
             }
         } catch (UnsolvedSymbolException ex) {
@@ -72,16 +86,58 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
         }
     }
 
+    // TODO Verplaatsen naar aparte klasse
+    // TODO Opdelen in methoden
+    private void findObserverProperties (
+            final AbstractObserver abstractObserver,
+            final EligibleObserverPattern pattern,
+            final ObserverCollection collection
+    ) {
+        // Check of er een field in abstractObserver is die verwijst naar abstractobserver (pattern.aObservable)
+        ClassOrInterfaceDeclaration observerClass = abstractObserver.getClassDeclaration();
+        List<FieldDeclaration> fields = observerClass.getFields();
+        FieldDeclaration observableField = null;
+        VariableDeclarator observableVar = null;
+
+        for (FieldDeclaration field : fields) {
+            for (VariableDeclarator variableDecl : field.getVariables()) {
+                // Check of het type van de variabele overeenkomt met de abstractobservable
+                ResolvedType variableType = variableDecl.getType().resolve();
+
+                if (variableType.isReferenceType()) {
+                    AbstractObservable aObservable = pattern.getAbstractObservable();
+                    ResolvedReferenceTypeDeclaration variableTypeDecl = variableType.asReferenceType().getTypeDeclaration();
+
+                    if (variableTypeDecl.equals(aObservable.getResolvedTypeDeclaration())) {
+                        observableVar = variableDecl;
+                    }
+                }
+            }
+        }
+
+        if (observableVar == null) {
+            return;
+        }
+
+        System.out.println("Has a reference (via " + observableVar.getNameAsString() + ")");
+
+        // Check of er een verwijzing is naar de attach method (op het field, een methode die overeenkomt met...)
+
+
+        // Check of er een verwijzing is naar de detach method (op het field, een methode die overeenkomt met...)
+
+    }
+
     /**
      * Finds the update method in the AbstractObserver which is being referred to from the observable classes.
      *
      * @param abstObserver    The AbstractObservable referring to this AbstractObserver
-     * @param observerPattern A potential observer pattern which has been detected
      * @param observerCol     A potential observer collection
      */
-    private void findUpdateMethod(final AbstractObserver abstObserver,
-                                  final EligibleObserverPattern observerPattern,
-                                  final ObserverCollection observerCol) {
+    private boolean findUpdateMethod(
+            final AbstractObserver abstObserver,
+            final ObserverCollection observerCol
+    ) {
         // Class or interface contains the update-method as called in the notification method
         List<NotificationMethod> notifyMethods = observerCol.getNotificationMethods();
 
@@ -97,12 +153,14 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
 
                     if (resNotify.getQualifiedSignature().equals(method.getQualifiedSignature())) {
                         abstObserver.setUpdateMethod(resNotify);
-                        observerPattern.setAbstractObserver(abstObserver);
+                        return true;
                     }
                 } catch (UnsolvedSymbolException ex) {
                     ErrorLog.getInstance().addError(ex);
                 }
             }
         }
+
+        return false;
     }
 }

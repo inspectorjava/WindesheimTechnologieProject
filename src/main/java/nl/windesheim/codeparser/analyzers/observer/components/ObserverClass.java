@@ -1,8 +1,10 @@
 package nl.windesheim.codeparser.analyzers.observer.components;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import javassist.compiler.ast.Variable;
 
 /**
  * Encapsulates information on an observer class.
@@ -12,6 +14,15 @@ public class ObserverClass extends EligibleObserverComponent {
      * The declaration of the update method.
      */
     private ResolvedMethodDeclaration updateMethod;
+
+    // Has field of AbstractObservable type
+    private VariableDeclarator abstObservableVar;
+
+    // Attaches itself to the subject
+    private boolean hasAttachStmt;
+
+    // Detaches itself from the subject
+    private boolean hasDetachStmt;
 
     /**
      * ObserverClass constructor.
@@ -47,6 +58,10 @@ public class ObserverClass extends EligibleObserverComponent {
                             final ResolvedMethodDeclaration updateMethod) {
         super(classDeclaration, resolvedType);
         this.updateMethod = updateMethod;
+
+        this.abstObservableVar = null;
+        this.hasAttachStmt = false;
+        this.hasDetachStmt = false;
     }
 
     /**
@@ -61,5 +76,29 @@ public class ObserverClass extends EligibleObserverComponent {
      */
     public void setUpdateMethod(final ResolvedMethodDeclaration updateMethod) {
         this.updateMethod = updateMethod;
+    }
+
+    public VariableDeclarator getAbstractObservableVariable () {
+        return abstObservableVar;
+    }
+
+    public void setAbstractObservableVariable (final VariableDeclarator abstObservableVar) {
+        this.abstObservableVar = abstObservableVar;
+    }
+
+    public boolean getHasAttachStatement () {
+        return hasAttachStmt;
+    }
+
+    public void setHasAttachStatement (final boolean hasAttachStmt) {
+        this.hasAttachStmt = hasAttachStmt;
+    }
+
+    public boolean getHasDetachStatement () {
+        return hasDetachStmt;
+    }
+
+    public void setHasDetachStatement (final boolean hasDetachStmt) {
+        this.hasDetachStmt = hasDetachStmt;
     }
 }
