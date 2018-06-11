@@ -62,4 +62,9 @@ public class CommandAnalyzerHappyPathTest {
         helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/compression").getPath()));
     }
 
+    @Test
+    public void testStrategyWiki() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/wiki").getPath()));
+    }
+
 }
