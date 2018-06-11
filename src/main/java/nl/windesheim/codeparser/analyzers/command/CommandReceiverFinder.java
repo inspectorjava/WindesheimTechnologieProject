@@ -134,7 +134,10 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         for (MethodDeclaration methodDefinition : commandDefinition.getMethods()) {
 
             // The current method exists in the command declaration.
-            if (methodDefinition.getNameAsString().equals(methodDeclaration.getNameAsString())) {
+            if (methodDefinition.getNameAsString().equals(methodDeclaration.getNameAsString())
+                    && methodDefinition.getType().toString().equals(methodDeclaration.getType().toString())
+                    && methodDefinition.isAbstract() == methodDeclaration.isAbstract()) {
+
                 return true;
             }
         }
