@@ -67,4 +67,9 @@ public class CommandAnalyzerHappyPathTest {
         helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/wiki").getPath()));
     }
 
+    @Test
+    public void testObserverNumberSystem() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("observer/numbersystem").getPath()));
+    }
+
 }
