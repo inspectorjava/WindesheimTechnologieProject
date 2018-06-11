@@ -1,8 +1,6 @@
 package nl.windesheim.codeparser.analyzers.abstractfactory;
 
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
-import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Test;
 
@@ -125,10 +123,7 @@ public class AbstractFactoryAnalyzerHappyPathTest {
     private List<IDesignPattern> analyzeDirectory(File dir) throws IOException {
         Path directoryPath = dir.toPath();
 
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new AbstractFactoryAnalyzer());
-
-        FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+        FileAnalysisProvider provider = new FileAnalysisProvider(new AbstractFactoryAnalyzer());
 
         return provider.analyzeDirectory(directoryPath);
     }
