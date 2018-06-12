@@ -68,18 +68,19 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
         aObservable.setName("Abstract Observable");
         aObservable.setClassOrInterface(this.pattern.getAbstractObservable());
 
-        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
-        aObserver.setName("Abstract Observer");
-        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
+//        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
+//        aObserver.setName("Abstract Observer");
+//        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
 
         HasClassList cObservables = new HasClassList(aObservable);
         cObservables.setName("Concrete Observables");
         cObservables.setClasses(this.pattern.getConcreteObservables());
 
-        HasClassList cObservers = new HasClassList(aObserver);
-        cObservers.setName("Concrete Observers");
-        cObservers.setClasses(this.pattern.getConcreteObservers());
+//        HasClassList cObservers = new HasClassList(aObserver);
+//        cObservers.setName("Concrete Observers");
+//        cObservers.setClasses(this.pattern.getConcreteObservers());
 
-        return cObservers;
+//        return cObservers;
+        return cObservables;
     }
 }
