@@ -9,6 +9,8 @@ public class ObserverPatternProperties {
 
     private boolean obsHasDetachCall;
 
+    private boolean updateHasArgs;
+
     public ObserverPatternProperties () {
         obsableHasDetach = false;
         obsHasObsable = false;
@@ -61,6 +63,15 @@ public class ObserverPatternProperties {
             this.obsHasDetachCall = obsHasDetachCall;
         }
 
+        return this;
+    }
+
+    public boolean isUpdateHasArguments() {
+        return updateHasArgs;
+    }
+
+    public ObserverPatternProperties setUpdateHasArguments(final boolean updateHasArgs) {
+        this.updateHasArgs = updateHasArgs;
         return this;
     }
 }

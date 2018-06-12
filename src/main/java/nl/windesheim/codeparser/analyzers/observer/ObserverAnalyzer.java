@@ -80,11 +80,10 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         // Search for classes that extend the abstract observers
         findConcreteObservers(files, eligiblePatterns);
 
-        // Voor alle abstract en concrete observers
-        // Vind properties
-
+        // Map eligible patterns to observer pattern results
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
             if (eligiblePattern.isObserverPattern()) {
+                // Find properties
                 ObserverPropertyFinder propertyFinder = new ObserverPropertyFinder(eligiblePattern);
                 propertyFinder.findObserverProperties();
 
@@ -260,9 +259,11 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                         .setDeclaration(aObserver.getClassDeclaration())
         );
 
-        patternProps.setObserverHasObservable(aObserver.getObservableVariable() != null);
-        patternProps.setObserverHasAttachCall(aObserver.getHasAttachStatement());
-        patternProps.setObserverHasDetachCall(aObserver.getHasDetachStatement());
+        patternProps
+                .setObserverHasObservable(aObserver.getObservableVariable() != null)
+                .setObserverHasAttachCall(aObserver.getHasAttachStatement())
+                .setObserverHasDetachCall(aObserver.getHasDetachStatement())
+                .setUpdateHasArguments(aObserver.isUpdateMethodHasArguments());
 
 
         // Fill concrete observable
@@ -287,9 +288,11 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                             .setDeclaration(cObserver.getClassDeclaration())
             );
 
-            patternProps.setObserverHasObservable(cObserver.getObservableVariable() != null);
-            patternProps.setObserverHasAttachCall(cObserver.getHasAttachStatement());
-            patternProps.setObserverHasDetachCall(cObserver.getHasDetachStatement());
+            patternProps
+                    .setObserverHasObservable(cObserver.getObservableVariable() != null)
+                    .setObserverHasAttachCall(cObserver.getHasAttachStatement())
+                    .setObserverHasDetachCall(cObserver.getHasDetachStatement())
+                    .setUpdateHasArguments(aObserver.isUpdateMethodHasArguments());
         }
 
         observerPattern.setPatternProperties(patternProps);

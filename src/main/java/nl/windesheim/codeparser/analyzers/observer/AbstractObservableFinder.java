@@ -118,6 +118,7 @@ public class AbstractObservableFinder
      * @param classDeclaration The class to find the eligible collection in
      * @return A list of object properties which fit the criteria for being an Observer collection
      */
+    // TODO Mag naar eigen klasse?
     private List<ObserverCollection> findEligibleCollections(
             final ClassOrInterfaceDeclaration classDeclaration,
             final ResolvedReferenceTypeDeclaration classTypeDecl

@@ -100,4 +100,8 @@ public class ObserverClass extends EligibleObserverComponent {
     public void setHasDetachStatement (final boolean hasDetachStmt) {
         this.hasDetachStmt = hasDetachStmt;
     }
+
+    public boolean isUpdateMethodHasArguments () {
+        return updateMethod != null && updateMethod.getNumberOfParams() > 0;
+    }
 }
