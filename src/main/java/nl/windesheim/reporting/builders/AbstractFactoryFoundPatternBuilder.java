@@ -6,6 +6,7 @@ import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.decorators.HasFactoryImplementations;
 import nl.windesheim.reporting.decorators.HasImplementations;
 import nl.windesheim.reporting.decorators.HasInterface;
 
@@ -27,6 +28,11 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     private final List<ClassOrInterface> implementations;
 
     /**
+     * List of the implementations used by the factory.
+     */
+    private final List<ClassOrInterface> factoryImplementations;
+
+    /**
      * The constructor.
      * @param factory The name for this factory.
      */
@@ -35,6 +41,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
 
         this.factory = factory.getFactoryInterface();
         this.implementations = factory.getImplementations();
+        this.factoryImplementations = factory.getConcreteImplementations();
     }
 
     @Override
@@ -46,6 +53,9 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
 
         HasImplementations hasImpl = new HasImplementations(hasInterface);
         hasImpl.setImplementations(this.implementations);
+
+        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(hasImpl);
+        hasFacImpl.setImplementations(this.factoryImplementations);
 
         return hasImpl;
     }
