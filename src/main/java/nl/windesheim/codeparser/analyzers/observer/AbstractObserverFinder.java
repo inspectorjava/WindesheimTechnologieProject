@@ -1,24 +1,18 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.resolution.types.ResolvedReferenceType;
-import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import nl.windesheim.codeparser.analyzers.observer.componentfinders.FieldMethodCallFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Suspendable;
 
 import java.util.List;
 import java.util.Set;

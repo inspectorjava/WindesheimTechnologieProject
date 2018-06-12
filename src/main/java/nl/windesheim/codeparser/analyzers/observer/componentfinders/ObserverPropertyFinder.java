@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.util.visitor.MethodCallFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,17 +64,27 @@ public class ObserverPropertyFinder {
         observer.setObservableVariable(observableVar);
 
         // Check whether there's a call to the attach method
-        FieldMethodCallFinder methodCallFinder = new FieldMethodCallFinder();
+        MethodCallFinder methodCallFinder = new MethodCallFinder();
+
+        List<ResolvedMethodDeclaration> resAttachMethods = new ArrayList<>();
+        for (MethodDeclaration method : collection.getAttachMethods()) {
+            resAttachMethods.add(method.resolve());
+        }
 
         Boolean hasAttachCalls =
-                methodCallFinder.visit(observer.getClassDeclaration(), collection.getAttachMethods());
+                methodCallFinder.visit(observer.getClassDeclaration(), resAttachMethods);
         if (hasAttachCalls != null && hasAttachCalls) {
             observer.setHasAttachStatement(true);
         }
 
         // Check whether there's a call to the detach method
+        List<ResolvedMethodDeclaration> resDetachMethods = new ArrayList<>();
+        for (MethodDeclaration method : collection.getDetachMethods()) {
+            resDetachMethods.add(method.resolve());
+        }
+
         Boolean hasDetachCalls =
-                methodCallFinder.visit(observer.getClassDeclaration(), collection.getDetachMethods());
+                methodCallFinder.visit(observer.getClassDeclaration(), resDetachMethods);
         if (hasDetachCalls != null && hasDetachCalls) {
             observer.setHasDetachStatement(true);
         }
