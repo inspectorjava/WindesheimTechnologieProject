@@ -19,6 +19,7 @@ import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +138,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
     private void findConcreteObservers(final List<CompilationUnit> files,
                                        final List<EligibleObserverPattern> eligiblePatterns
     ) {
+        // TODO Refactoren naar eigen klasse
         Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap =
                 generateConcreteObserverMap(files, eligiblePatterns);
 
@@ -231,6 +233,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
      */
     private ObserverPattern makeObserverPattern(final EligibleObserverPattern eligiblePattern) {
         ObserverPattern observerPattern = new ObserverPattern();
+        ObserverPatternProperties patternProps = new ObserverPatternProperties();
 
         // Fill abstract observable
         AbstractObservable aObservable = eligiblePattern.getAbstractObservable();
@@ -241,6 +244,9 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                         .setDeclaration(aObservable.getClassDeclaration())
         );
 
+        patternProps.setObservableHasDetach(eligiblePattern.getActiveCollection().hasDetachMethods());
+
+
         // Fill abstract observer
         AbstractObserver aObserver = eligiblePattern.getAbstractObserver();
         observerPattern.setAbstractObserver(
@@ -249,6 +255,11 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                         .setName(aObserver.getResolvedTypeDeclaration().getQualifiedName())
                         .setDeclaration(aObserver.getClassDeclaration())
         );
+
+        patternProps.setObserverHasObservable(aObserver.getObservableVariable() != null);
+        patternProps.setObserverHasAttachCall(aObserver.getHasAttachStatement());
+        patternProps.setObserverHasDetachCall(aObserver.getHasDetachStatement());
+
 
         // Fill concrete observable
         List<ConcreteObservable> cObservables = eligiblePattern.getConcreteObservables();
@@ -261,6 +272,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             );
         }
 
+
         // Fill concrete observer
         List<ConcreteObserver> cObservers = eligiblePattern.getConcreteObservers();
         for (ConcreteObserver cObserver : cObservers) {
@@ -270,7 +282,13 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                             .setName(cObserver.getResolvedTypeDeclaration().getQualifiedName())
                             .setDeclaration(cObserver.getClassDeclaration())
             );
+
+            patternProps.setObserverHasObservable(cObserver.getObservableVariable() != null);
+            patternProps.setObserverHasAttachCall(cObserver.getHasAttachStatement());
+            patternProps.setObserverHasDetachCall(cObserver.getHasDetachStatement());
         }
+
+        observerPattern.setPatternProperties(patternProps);
 
         return observerPattern;
     }

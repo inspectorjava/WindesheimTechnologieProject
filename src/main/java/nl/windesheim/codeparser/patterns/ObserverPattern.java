@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ public class ObserverPattern implements IDesignPattern {
      * A list of file parts which contain concrete observer classes.
      */
     private List<ClassOrInterface> cObservers;
+
+    private ObserverPatternProperties patternProps;
 
     /**
      * ObserverPattern constructor.
@@ -116,6 +119,15 @@ public class ObserverPattern implements IDesignPattern {
      */
     public ObserverPattern addConcreteObserver(final ClassOrInterface cObserver) {
         this.cObservers.add(cObserver);
+        return this;
+    }
+
+    public ObserverPatternProperties getPatternProperties() {
+        return patternProps;
+    }
+
+    public ObserverPattern setPatternProperties (final ObserverPatternProperties patternProps) {
+        this.patternProps = patternProps;
         return this;
     }
 }

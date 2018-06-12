@@ -55,14 +55,15 @@ public class ObserverPropertyFinder {
             observableVar = obsVarFinder.findObservableVariable(observer, observables);
         }
 
-        // If there's a reference, find calls to the attach and detach methods
         if (observableVar != null) {
             observer.setObservableVariable(observableVar);
-            findMethodCalls(observer, observableVar, collection);
         }
+
+        // Find calls to the attach and detach methods
+        findMethodCalls(observer, collection);
     }
 
-    private void findMethodCalls (final ObserverClass observer, final VariableDeclarator observableVar, final ObserverCollection collection) {
+    private void findMethodCalls (final ObserverClass observer, final ObserverCollection collection) {
         // Check whether there's a call to the attach method
         MethodCallFinder methodCallFinder = new MethodCallFinder();
 
@@ -75,12 +76,14 @@ public class ObserverPropertyFinder {
         }
 
         // Check whether there's a call to the detach method
-        List<ResolvedMethodDeclaration> resDetachMethods = resolveMethodDeclarations(collection.getDetachMethods());
+        if (collection.hasDetachMethods()) {
+            List<ResolvedMethodDeclaration> resDetachMethods = resolveMethodDeclarations(collection.getDetachMethods());
 
-        Boolean hasDetachCalls =
-                methodCallFinder.visit(observer.getClassDeclaration(), resDetachMethods);
-        if (hasDetachCalls != null && hasDetachCalls) {
-            observer.setHasDetachStatement(true);
+            Boolean hasDetachCalls =
+                    methodCallFinder.visit(observer.getClassDeclaration(), resDetachMethods);
+            if (hasDetachCalls != null && hasDetachCalls) {
+                observer.setHasDetachStatement(true);
+            }
         }
     }
 
