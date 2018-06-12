@@ -1,6 +1,5 @@
 package nl.windesheim.reporting;
 
-import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.Command;
@@ -83,10 +82,7 @@ public class CodeReportDesignPatternMapper {
      * @return Strategy builder
      */
     private AbstractFoundPatternBuilder buildStrategyBuilder(final Strategy pattern) {
-        ClassOrInterface interfaceName = pattern.getStrategyInterface();
-        ClassOrInterface context = pattern.getContext();
-
-        return new StrategyFoundPatternBuilder(context, interfaceName, pattern.getStrategies());
+        return new StrategyFoundPatternBuilder(pattern);
     }
 
     /**
@@ -96,7 +92,7 @@ public class CodeReportDesignPatternMapper {
      * @return Singleton builder
      */
     private AbstractFoundPatternBuilder buildSingletonBuilder(final Singleton pattern) {
-        return new SingletonFoundPatternBuilder(pattern.getSingletonClass());
+        return new SingletonFoundPatternBuilder(pattern);
     }
 
     /**
@@ -106,7 +102,7 @@ public class CodeReportDesignPatternMapper {
      * @return ChainOfResponsibilityBuilder
      */
     private AbstractFoundPatternBuilder buildChainOfResponsibilityBuilder(final ChainOfResponsibility pattern) {
-        return new ChainOfResponsibilityFoundPatternBuilder(pattern.getCommonParent(), pattern.getChainLinks());
+        return new ChainOfResponsibilityFoundPatternBuilder(pattern);
     }
 
     /**

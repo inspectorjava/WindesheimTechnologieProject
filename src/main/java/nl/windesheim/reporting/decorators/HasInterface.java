@@ -14,7 +14,7 @@ public class HasInterface extends FoundPatternReportDecorator {
     /**
      * interface Name.
      */
-    private ClassOrInterface interfaceName;
+    private ClassOrInterface interfaceObject;
 
     /**
      * Default constructor.
@@ -28,8 +28,8 @@ public class HasInterface extends FoundPatternReportDecorator {
      * Set the interface name.
      * @param interfaceName the interface name.
      */
-    public void setInterfaceName(final ClassOrInterface interfaceName) {
-        this.interfaceName = interfaceName;
+    public void setInterface(final ClassOrInterface interfaceName) {
+        this.interfaceObject = interfaceName;
     }
 
     /**
@@ -37,13 +37,13 @@ public class HasInterface extends FoundPatternReportDecorator {
      * @return interface report.
      */
     public String getReport() {
-        return super.getReport() + " and uses interface: " + this.interfaceName.getName();
+        return super.getReport() + " and uses interface: " + this.interfaceObject.getName();
     }
 
     @Override
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Interface: " + this.interfaceName.getName())
-                .setClassOrInterface(interfaceName)
+        TreeNode node = new TreeNode("Interface: " + this.interfaceObject.getName())
+                .setClassOrInterface(interfaceObject)
                 .setNodeType(NodeType.INTERFACE);
         builder.addNode(node);
         return super.buildTreeReport(builder);

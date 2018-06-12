@@ -12,6 +12,11 @@ public class Singleton implements IDesignPattern {
     private ClassOrInterface singletonClass;
 
     /**
+     * True if the singleton has a private constructor.
+     */
+    private boolean privateConstr;
+
+    /**
      * @return the singletonClass in which the singeton is found
      */
     public ClassOrInterface getSingletonClass() {
@@ -24,6 +29,22 @@ public class Singleton implements IDesignPattern {
      */
     public Singleton setSingletonClass(final ClassOrInterface singletonClass) {
         this.singletonClass = singletonClass;
+        return this;
+    }
+
+    /**
+     * @return true/false
+     */
+    public boolean hasPrivateConstructor() {
+        return privateConstr;
+    }
+
+    /**
+     * @param privateConstr true/false
+     * @return this
+     */
+    public Singleton setPrivateConstructor(final boolean privateConstr) {
+        this.privateConstr = privateConstr;
         return this;
     }
 }

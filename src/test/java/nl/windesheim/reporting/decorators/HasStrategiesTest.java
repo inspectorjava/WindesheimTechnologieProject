@@ -3,6 +3,7 @@ package nl.windesheim.reporting.decorators;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.FoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class HasStrategiesTest {
     @Test
     public void getReport() {
         String report = this.hasStrategies.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: NOTStrategy: Test1\n\r" +
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Strategy: Test1\n\r" +
                 "Strategy: Test2\n\r" +
                 "Strategy: Test3\n\r", report);
     }

@@ -54,11 +54,6 @@ public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeS
             return;
         }
 
-        //The common parent should have at least on method
-        if (declaration.getMethods().isEmpty()) {
-            return;
-        }
-
         //if the common parent is a abstract class it should at least have one abstract method
         if (!isInterface) {
             boolean hasAbstractMethod = false;

@@ -58,7 +58,7 @@ public class CommandFoundPatternBuilder extends AbstractFoundPatternBuilder {
         command.setCommands(this.commands);
 
         HasInterface hasInterface = new HasInterface(command);
-        hasInterface.setInterfaceName(this.commandInterface);
+        hasInterface.setInterface(this.commandInterface);
 
         HasReceivers hasReceivers = new HasReceivers(command);
         hasReceivers.setReceivers(this.receivers);

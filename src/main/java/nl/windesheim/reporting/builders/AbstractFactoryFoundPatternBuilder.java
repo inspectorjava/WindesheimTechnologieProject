@@ -42,7 +42,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.ABSTRACT_FACTORY);
         HasInterface hasInterface = new HasInterface(patternReport);
-        hasInterface.setInterfaceName(this.factory);
+        hasInterface.setInterface(this.factory);
 
         HasImplementations hasImpl = new HasImplementations(hasInterface);
         hasImpl.setImplementations(this.implementations);
