@@ -1,10 +1,12 @@
 package nl.windesheim.reporting.builders;
 
 import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.decorators.HasClassList;
 import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
@@ -33,6 +35,34 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.OBSERVER);
+
+        ObserverPatternProperties patternProps = this.pattern.getPatternProperties();
+
+        int errors = 0;
+
+        if (!patternProps.isObservableHasDetach()) {
+            patternReport.addPatternRemark("Observable doesn't have a unsubscribe method");
+        } else if (!patternProps.isObservableHasDetach()) {
+            patternReport.addPatternRemark("Observer does not unsubscribe itself from Observable");
+        }
+
+        if (!patternProps.isObserverHasObservable() && !patternProps.isUpdateHasArguments()) {
+            errors += 2;
+            patternReport.addPatternError("Observer does not contain a reference to the observable");
+        } else if (patternProps.isUpdateHasArguments()) {
+            patternReport.addPatternRemark("Arguments are passed to the update method");
+        }
+
+        if (!patternProps.isObserverHasAttachCall()) {
+            errors++;
+            patternReport.addPatternError("Observer does not subscribe itself to Observable");
+        }
+
+        if (errors == 1) {
+            patternReport.setCertainty(Result.Certainty.LIKELY);
+        } else if (errors > 1) {
+            patternReport.setCertainty(Result.Certainty.UNLIKELY);
+        }
 
         HasClassOrInterface aObservable = new HasClassOrInterface(patternReport);
         aObservable.setName("Abstract Observable");

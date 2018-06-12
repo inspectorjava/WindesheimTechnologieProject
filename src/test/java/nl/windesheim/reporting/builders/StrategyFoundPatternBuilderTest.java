@@ -34,7 +34,7 @@ public class StrategyFoundPatternBuilderTest {
 
         IFoundPatternReport foundPatternReport = strategyFoundPatternBuilder.buildReport();
 
-        assertEquals("Pattern: " + DesignPatternType.STRATEGY +" found with certainty: "+ Result.Certainty.UNLIKELY +" with the following errors: \n" +
+        assertEquals("Pattern: " + DesignPatternType.STRATEGY +" found with certainty: "+ Result.Certainty.UNLIKELY +" with the following errors:\n" +
                 " - The context doesn't call the strategy\n" +
                 " - The context has no setter for the strategy\n" +
                 " - The strategy interface has no methods declared\n" +

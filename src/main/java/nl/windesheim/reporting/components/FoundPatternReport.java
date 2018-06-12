@@ -26,6 +26,11 @@ public class FoundPatternReport implements IFoundPatternReport {
     private final List<String> patternErrors;
 
     /**
+     * A list of remarks about the pattern
+     */
+    private final List<String> patternRemarks;
+
+    /**
      * Default constructor.
      */
     public FoundPatternReport() {
@@ -33,6 +38,7 @@ public class FoundPatternReport implements IFoundPatternReport {
         this.result.setCertainty(Result.Certainty.CERTAIN);
         this.designPatternType = DesignPatternType.NONE;
         this.patternErrors = new ArrayList<>();
+        this.patternRemarks = new ArrayList<>();
     }
 
     /**
@@ -70,6 +76,22 @@ public class FoundPatternReport implements IFoundPatternReport {
     }
 
     /**
+     * @return a list of remarks about the design pattern
+     */
+    public List<String> getPatternRemarks () {
+        return patternRemarks;
+    }
+
+    /**
+     * @param remark a remark about the found design pattern
+     * @return this
+     */
+    public FoundPatternReport addPatternRemark(final String remark) {
+        patternRemarks.add(remark);
+        return this;
+    }
+
+    /**
      * @param certainty the certainty of the detected pattern
      * @return this
      */
@@ -90,8 +112,15 @@ public class FoundPatternReport implements IFoundPatternReport {
         StringBuilder reportBuffer = new StringBuilder(report.length());
         reportBuffer.append(report);
 
+        if (!patternRemarks.isEmpty()) {
+            reportBuffer.append(" with the following remarks:\n ");
+            for (String remark : patternRemarks) {
+                reportBuffer.append(" - " + remark + "\n");
+            }
+        }
+
         if (!patternErrors.isEmpty()) {
-            reportBuffer.append(" with the following errors: \n");
+            reportBuffer.append(" with the following errors:\n");
 
             for (String error : patternErrors) {
                 reportBuffer.append(" - " + error + "\n");
@@ -106,6 +135,12 @@ public class FoundPatternReport implements IFoundPatternReport {
         TreeNode node = new TreeNode("Pattern: " + this.designPatternType);
         node.setNodeType(NodeType.DESIGN_PATTERN);
         node.setResultCertainty(this.result.getResult());
+
+        for (String remark : patternRemarks) {
+            TreeNode remarkNode = new TreeNode(remark);
+            remarkNode.setNodeType(NodeType.PATTERN_REMARK);
+            node.addChild(remarkNode);
+        }
 
         for (String error : patternErrors) {
             TreeNode errorNode = new TreeNode(error);
