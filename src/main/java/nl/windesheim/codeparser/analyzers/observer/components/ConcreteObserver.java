@@ -11,9 +11,6 @@ import java.util.List;
  * Encapsulates information on a concrete observer.
  */
 public class ConcreteObserver extends ObserverClass {
-    // Has field of ConcreteObservable type
-    private boolean hasConcObservable;
-
     /**
      * ConcreteObserver constructor.
      *

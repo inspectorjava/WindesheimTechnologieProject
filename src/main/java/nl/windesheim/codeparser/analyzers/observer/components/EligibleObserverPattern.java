@@ -27,6 +27,8 @@ public class EligibleObserverPattern {
      */
     private final List<ConcreteObserver> cObservers;
 
+    private ObserverCollection activeCollection;
+
     /**
      * EligibleObserverPattern constructor.
      */
@@ -36,6 +38,8 @@ public class EligibleObserverPattern {
 
         this.aObserver = null;
         this.cObservers = new ArrayList<>();
+
+        this.activeCollection = null;
     }
 
     /**
@@ -95,6 +99,10 @@ public class EligibleObserverPattern {
         return this;
     }
 
+    public boolean hasAbstractObserver () {
+        return aObserver != null;
+    }
+
     /**
      * @return The classes that have been identified as concrete observers
      */
@@ -117,6 +125,15 @@ public class EligibleObserverPattern {
      */
     public EligibleObserverPattern addConcreteObserver(final List<ConcreteObserver> cObservers) {
         this.cObservers.addAll(cObservers);
+        return this;
+    }
+
+    public ObserverCollection getActiveCollection () {
+        return activeCollection;
+    }
+
+    public EligibleObserverPattern setActiveCollection (final ObserverCollection activeCollection) {
+        this.activeCollection = activeCollection;
         return this;
     }
 

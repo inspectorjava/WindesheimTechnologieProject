@@ -9,12 +9,13 @@ import java.util.List;
 /**
  * Encapsulates information on a concrete observable class.
  */
-public class ConcreteObservable extends ObserverClass {
+public class ConcreteObservable extends ObservableClass {
     /**
      * ConcreteObservable constructor.
      *
      * Never called, just here to silence PMD warnings
      */
+    // TODO Surpress PMD warning instead
     private ConcreteObservable() {
         super(null, null);
     }

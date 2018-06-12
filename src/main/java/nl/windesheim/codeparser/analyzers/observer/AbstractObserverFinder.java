@@ -11,12 +11,14 @@ import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import nl.windesheim.codeparser.analyzers.observer.componentfinders.FieldMethodCallFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Suspendable;
 
 import java.util.List;
 import java.util.Set;
@@ -57,6 +59,10 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
 
             // Check whether the class is being called somewhere in an observer collection
             for (EligibleObserverPattern observerPattern : observerPatterns) {
+                if (observerPattern.hasAbstractObserver()) {
+                    continue;
+                }
+
                 AbstractObservable abstObservable = observerPattern.getAbstractObservable();
                 List<ObserverCollection> observerCols = abstObservable.getObserverCollections();
 
@@ -74,10 +80,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                     }
 
                     observerPattern.setAbstractObserver(abstractObserver);
-
-                    // Check for field reference, attach method and detach method
-                    findObserverProperties(abstractObserver, observerPattern, observerCol);
-
+                    observerPattern.setActiveCollection(observerCol);
                     break;
                 }
             }
@@ -86,47 +89,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
         }
     }
 
-    // TODO Verplaatsen naar aparte klasse
-    // TODO Opdelen in methoden
-    private void findObserverProperties (
-            final AbstractObserver abstractObserver,
-            final EligibleObserverPattern pattern,
-            final ObserverCollection collection
-    ) {
-        // Check of er een field in abstractObserver is die verwijst naar abstractobserver (pattern.aObservable)
-        ClassOrInterfaceDeclaration observerClass = abstractObserver.getClassDeclaration();
-        List<FieldDeclaration> fields = observerClass.getFields();
-        FieldDeclaration observableField = null;
-        VariableDeclarator observableVar = null;
 
-        for (FieldDeclaration field : fields) {
-            for (VariableDeclarator variableDecl : field.getVariables()) {
-                // Check of het type van de variabele overeenkomt met de abstractobservable
-                ResolvedType variableType = variableDecl.getType().resolve();
-
-                if (variableType.isReferenceType()) {
-                    AbstractObservable aObservable = pattern.getAbstractObservable();
-                    ResolvedReferenceTypeDeclaration variableTypeDecl = variableType.asReferenceType().getTypeDeclaration();
-
-                    if (variableTypeDecl.equals(aObservable.getResolvedTypeDeclaration())) {
-                        observableVar = variableDecl;
-                    }
-                }
-            }
-        }
-
-        if (observableVar == null) {
-            return;
-        }
-
-        System.out.println("Has a reference (via " + observableVar.getNameAsString() + ")");
-
-        // Check of er een verwijzing is naar de attach method (op het field, een methode die overeenkomt met...)
-
-
-        // Check of er een verwijzing is naar de detach method (op het field, een methode die overeenkomt met...)
-
-    }
 
     /**
      * Finds the update method in the AbstractObserver which is being referred to from the observable classes.

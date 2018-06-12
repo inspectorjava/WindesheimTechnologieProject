@@ -9,6 +9,7 @@ import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParse
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
+import nl.windesheim.codeparser.analyzers.observer.componentfinders.ObserverPropertyFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
@@ -74,8 +75,28 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         // Search for classes that extend the abstract observers
         findConcreteObservers(files, eligiblePatterns);
 
+        // Voor alle abstract en concrete observers
+        // Vind properties
+
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
             if (eligiblePattern.isObserverPattern()) {
+                ObserverPropertyFinder propertyFinder = new ObserverPropertyFinder(eligiblePattern);
+                propertyFinder.findObserverProperties();
+
+                AbstractObserver observer = eligiblePattern.getAbstractObserver();
+                System.out.println(observer.getClassDeclaration().getNameAsString());
+                System.out.println(observer.getHasAttachStatement() ? "- has attach" : "- doesn't have attach");
+                System.out.println(observer.getHasDetachStatement() ? "- has detach" : "- doesn't have detach");
+                System.out.println();
+
+                List<ConcreteObserver> cObservers = eligiblePattern.getConcreteObservers();
+                for (ConcreteObserver cObserver : cObservers) {
+                    System.out.println(cObserver.getClassDeclaration().getNameAsString());
+                    System.out.println(cObserver.getHasAttachStatement() ? "- has attach" : "- doesn't have attach");
+                    System.out.println(cObserver.getHasDetachStatement() ? "- has detach" : "- doesn't have detach");
+                    System.out.println();
+                }
+
                 patterns.add(makeObserverPattern(eligiblePattern));
             }
         }

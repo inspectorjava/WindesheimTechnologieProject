@@ -4,7 +4,6 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import javassist.compiler.ast.Variable;
 
 /**
  * Encapsulates information on an observer class.
@@ -16,7 +15,7 @@ public class ObserverClass extends EligibleObserverComponent {
     private ResolvedMethodDeclaration updateMethod;
 
     // Has field of AbstractObservable type
-    private VariableDeclarator abstObservableVar;
+    private VariableDeclarator observableVar;
 
     // Attaches itself to the subject
     private boolean hasAttachStmt;
@@ -59,7 +58,7 @@ public class ObserverClass extends EligibleObserverComponent {
         super(classDeclaration, resolvedType);
         this.updateMethod = updateMethod;
 
-        this.abstObservableVar = null;
+        this.observableVar = null;
         this.hasAttachStmt = false;
         this.hasDetachStmt = false;
     }
@@ -78,12 +77,12 @@ public class ObserverClass extends EligibleObserverComponent {
         this.updateMethod = updateMethod;
     }
 
-    public VariableDeclarator getAbstractObservableVariable () {
-        return abstObservableVar;
+    public VariableDeclarator getObservableVariable() {
+        return observableVar;
     }
 
-    public void setAbstractObservableVariable (final VariableDeclarator abstObservableVar) {
-        this.abstObservableVar = abstObservableVar;
+    public void setObservableVariable(final VariableDeclarator abstObservableVar) {
+        this.observableVar = abstObservableVar;
     }
 
     public boolean getHasAttachStatement () {
