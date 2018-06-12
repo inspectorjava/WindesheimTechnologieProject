@@ -55,7 +55,11 @@ public class FoundPatternReport implements IFoundPatternReport {
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Pattern: " + this.designPatternType);
         node.setNodeType(NodeType.DESIGN_PATTERN);
-        builder.addNode(node);
+        if(builder.getRoot() == null){
+            builder.setRoot(node);
+        }else {
+            builder.addNode(node);
+        }
         return builder;
     }
 }
