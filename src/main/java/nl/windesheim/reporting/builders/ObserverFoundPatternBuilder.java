@@ -32,6 +32,7 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
 
     @Override
+    @SuppressWarnings("PMD.ConfusingTernary")
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.OBSERVER);
@@ -42,15 +43,15 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
         if (!patternProps.isSubjectHasDetach()) {
             patternReport.addPatternRemark("Subject doesn't have a unsubscribe method");
-        } else if (!patternProps.isSubjectHasDetach()) {
+        } else if (!patternProps.isObserverHasDetachCall()) {
             patternReport.addPatternRemark("Observer does not unsubscribe itself from Subject");
         }
 
-        if (!patternProps.isObserverHasSubject() && !patternProps.isUpdateHasArguments()) {
+        if (patternProps.isUpdateHasArguments()) {
+            patternReport.addPatternRemark("Arguments are passed to the update method");
+        } else if (!patternProps.isObserverHasSubject() && !patternProps.isUpdateHasArguments()) {
             errors += 2;
             patternReport.addPatternError("Observer does not contain a reference to the subject");
-        } else if (patternProps.isUpdateHasArguments()) {
-            patternReport.addPatternRemark("Arguments are passed to the update method");
         }
 
         if (!patternProps.isObserverHasAttachCall()) {

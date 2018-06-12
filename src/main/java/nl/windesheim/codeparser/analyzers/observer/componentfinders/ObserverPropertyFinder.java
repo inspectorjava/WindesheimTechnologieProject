@@ -25,7 +25,7 @@ public class ObserverPropertyFinder {
     /**
      * A potential observer pattern to analyze.
      */
-    private EligibleObserverPattern pattern;
+    private final EligibleObserverPattern pattern;
 
     /**
      * ObserverPropertyFinder constructor.

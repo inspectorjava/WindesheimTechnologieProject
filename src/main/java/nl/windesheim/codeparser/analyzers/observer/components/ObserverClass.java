@@ -100,7 +100,7 @@ public class ObserverClass extends EligibleObserverComponent {
     /**
      * @return Whether the class contains a call to an attach method
      */
-    public boolean getHasAttachStatement() {
+    public boolean isHasAttachStatement() {
         return hasAttachStmt;
     }
 
@@ -114,7 +114,7 @@ public class ObserverClass extends EligibleObserverComponent {
     /**
      * @return Whether the class contains a call to a detach method
      */
-    public boolean getHasDetachStatement() {
+    public boolean isHasDetachStatement() {
         return hasDetachStmt;
     }
 

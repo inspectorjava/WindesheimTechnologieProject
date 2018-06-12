@@ -186,11 +186,7 @@ public class AbstractSubjectFinder
 
         List<ResolvedReferenceType> classAncestors = classTypeDecl.getAncestors();
 
-        if (classAncestors.contains(parameterType)) {
-            return true;
-        }
-
-        return false;
+        return classAncestors.contains(parameterType);
     }
 
     /**

@@ -122,8 +122,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
         patternProps
                 .setObserverHasSubject(aObserver.getSubjectVariable() != null)
-                .setObserverHasAttachCall(aObserver.getHasAttachStatement())
-                .setObserverHasDetachCall(aObserver.getHasDetachStatement())
+                .setObserverHasAttachCall(aObserver.isHasAttachStatement())
+                .setObserverHasDetachCall(aObserver.isHasDetachStatement())
                 .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
 
 
@@ -151,8 +151,8 @@ public class ObserverAnalyzer extends PatternAnalyzer {
 
             patternProps
                     .setObserverHasSubject(cObserver.getSubjectVariable() != null)
-                    .setObserverHasAttachCall(cObserver.getHasAttachStatement())
-                    .setObserverHasDetachCall(cObserver.getHasDetachStatement())
+                    .setObserverHasAttachCall(cObserver.isHasAttachStatement())
+                    .setObserverHasDetachCall(cObserver.isHasDetachStatement())
                     .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
         }
 

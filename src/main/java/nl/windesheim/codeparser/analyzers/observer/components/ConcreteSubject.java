@@ -9,17 +9,8 @@ import java.util.List;
 /**
  * Encapsulates information on a concrete subject class.
  */
+@SuppressWarnings("PMD.UseUtilityClass")
 public class ConcreteSubject extends SubjectClass {
-    /**
-     * ConcreteSubject constructor.
-     *
-     * Never called, just here to silence PMD warnings
-     */
-    // TODO Surpress PMD warning instead
-    private ConcreteSubject() {
-        super(null, null);
-    }
-
     /**
      * ConcreteSubject constructor.
      *
