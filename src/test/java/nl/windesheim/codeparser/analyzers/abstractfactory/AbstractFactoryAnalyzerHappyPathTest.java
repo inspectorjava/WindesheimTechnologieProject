@@ -3,10 +3,10 @@ package nl.windesheim.codeparser.analyzers.abstractfactory;
 import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.reporting.Report;
 import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
-import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.components.TreeBuilder;
-import nl.windesheim.reporting.components.TreeNode;
+import nl.windesheim.reporting.builders.CodeReportBuilder;
+import nl.windesheim.reporting.components.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -107,10 +107,11 @@ public class AbstractFactoryAnalyzerHappyPathTest {
             if(!(pattern instanceof AbstractFactory)) {
                 continue;
             }
-            AbstractFactory abstractFactory = (AbstractFactory) pattern;
-            AbstractFactoryFoundPatternBuilder builder = new AbstractFactoryFoundPatternBuilder(abstractFactory);
-            IFoundPatternReport report = builder.buildReport();
-            TreeNode tree = report.buildTreeReport(new TreeBuilder()).build();
+
+            CodeReportBuilder codeReportBuilder = Report.create();
+            codeReportBuilder.addFoundPatternBuilder(Report.getMapper().getBuilder(pattern));
+            CodeReport codeReport = codeReportBuilder.buildReport();
+            TreePresentation tree = codeReport.getTreePresentation();
             System.out.println("test");
         }
     }
