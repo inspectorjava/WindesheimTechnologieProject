@@ -23,7 +23,7 @@ public class AbstractFactory implements IDesignPattern {
     /**
      * List of all the used interfaces by the concrete factories.
      */
-    private List<ClassOrInterface> concreteInterfaces;
+    private List<ClassOrInterface> concreteInter;
 
     /**
      * Get the factory interface.
@@ -46,7 +46,7 @@ public class AbstractFactory implements IDesignPattern {
      * @return the conrete interfaces.
      */
     public List<ClassOrInterface> getConcreteImplementations() {
-        return concreteInterfaces;
+        return concreteInter;
     }
 
     /**
@@ -69,7 +69,7 @@ public class AbstractFactory implements IDesignPattern {
      * Set the list of concrete interfaces.
      * @param implInterfaces the concrete interfaces
      */
-    public void setConcreteInterfaces(List<ClassOrInterface> implInterfaces) {
-        this.concreteInterfaces = implInterfaces;
+    public void setConcreteInterfaces(final List<ClassOrInterface> implInterfaces) {
+        this.concreteInter = implInterfaces;
     }
 }

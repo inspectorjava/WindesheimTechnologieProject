@@ -35,6 +35,22 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         this.implementations = implementations;
     }
 
+    @Override
+    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
+        TreeNode node = new TreeNode("Factory implementations");
+
+        for (ClassOrInterface link : this.implementations) {
+            node.addChild(new TreeNode(link.getName())
+                .setClassOrInterface(link)
+                .setNodeType(NodeType.CLASS)
+            );
+        }
+        node.setNodeType(NodeType.CLASS_LIST);
+        builder.addNode(node);
+
+        return super.buildTreeReport(builder);
+    }
+
     /**
      * Append the string with all implementations.
      * @return appended string
@@ -48,19 +64,5 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         }
 
         return baseString.toString();
-    }
-
-    @Override
-    public TreeBuilder buildTreeReport(final TreeBuilder builder) {
-        TreeNode node = new TreeNode("Factory implementations");
-        node.setNodeType(NodeType.CLASS_LIST);
-        for (ClassOrInterface link : this.implementations) {
-            node.addChild(new TreeNode(link.getName())
-                .setClassOrInterface(link)
-                .setNodeType(NodeType.CLASS)
-            );
-        }
-        builder.addNode(node);
-        return super.buildTreeReport(builder);
     }
 }

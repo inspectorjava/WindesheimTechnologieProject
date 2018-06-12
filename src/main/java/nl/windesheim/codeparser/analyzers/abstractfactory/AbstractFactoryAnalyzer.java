@@ -72,13 +72,13 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
      *
      * @param factory         the factory class
      * @param implementations it's implementations
-     * @param factoryInterfaces
+     * @param factoryInterfaces the factory interfaces
      * @return AbstractFactory
      */
     private AbstractFactory makeAbstractFactory(
             final ClassOrInterfaceDeclaration factory,
             final List<ClassOrInterfaceDeclaration> implementations,
-            List<ClassOrInterfaceDeclaration> factoryInterfaces) {
+            final List<ClassOrInterfaceDeclaration> factoryInterfaces) {
         // The factory interface. (KingdomFactory)
         AbstractFactory abstractFactory = new AbstractFactory();
         abstractFactory.setFactoryInterface(

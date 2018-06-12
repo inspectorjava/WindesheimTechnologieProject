@@ -30,7 +30,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     /**
      * List of the implementations used by the factory.
      */
-    private final List<ClassOrInterface> factoryImplementations;
+    private final List<ClassOrInterface> factoryImpl;
 
     /**
      * The constructor.
@@ -41,7 +41,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
 
         this.factory = factory.getFactoryInterface();
         this.implementations = factory.getImplementations();
-        this.factoryImplementations = factory.getConcreteImplementations();
+        this.factoryImpl = factory.getConcreteImplementations();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         hasImpl.setImplementations(this.implementations);
 
         HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(hasImpl);
-        hasFacImpl.setImplementations(this.factoryImplementations);
+        hasFacImpl.setImplementations(this.factoryImpl);
 
         return hasImpl;
     }

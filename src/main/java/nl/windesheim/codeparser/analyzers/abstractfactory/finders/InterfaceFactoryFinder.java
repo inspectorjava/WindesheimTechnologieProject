@@ -174,14 +174,26 @@ public class InterfaceFactoryFinder extends AbstractFinder {
         return resolvedInterface != null;
     }
 
-    public List<ClassOrInterfaceDeclaration> findInterfacesFromFactory(List<ClassOrInterfaceDeclaration> implementations) {
+    /**
+     * Find the interfaces used in a factory class.
+     * @param implementations the implementations to check
+     * @return The found interfaces in the factory class.
+     */
+    public List<ClassOrInterfaceDeclaration> findInterfacesFromFactory(
+            final List<ClassOrInterfaceDeclaration> implementations) {
         List<ClassOrInterfaceDeclaration> factoryInterfaces = new ArrayList<>();
 
-        for(ClassOrInterfaceDeclaration declaration : implementations){
-            for(Node childNode : declaration.getChildNodes()){
-                if(!(childNode instanceof MethodDeclaration)) continue;
+        for (ClassOrInterfaceDeclaration declaration : implementations) {
+            for (Node childNode : declaration.getChildNodes()) {
+                if (!(childNode instanceof MethodDeclaration)) {
+                    continue;
+                }
 
                 MethodDeclaration methodDeclaration = (MethodDeclaration) childNode;
+
+                if (!(methodDeclaration.getType() instanceof ClassOrInterfaceType)) {
+                    continue;
+                }
 
                 ClassOrInterfaceType type = (ClassOrInterfaceType) methodDeclaration.getType();
                 ResolvedReferenceTypeDeclaration typeDeclaration;
@@ -200,7 +212,7 @@ public class InterfaceFactoryFinder extends AbstractFinder {
                 ClassOrInterfaceDeclaration resolvedInterface =
                         ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
 
-                if(!factoryInterfaces.contains(resolvedInterface)) {
+                if (!factoryInterfaces.contains(resolvedInterface)) {
                     factoryInterfaces.add(resolvedInterface);
                 }
             }
