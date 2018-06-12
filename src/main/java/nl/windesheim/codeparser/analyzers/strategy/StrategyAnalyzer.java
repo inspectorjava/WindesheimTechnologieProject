@@ -9,8 +9,8 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -46,7 +46,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
     /**
      * A solver for data types.
      */
-    private CombinedTypeSolver typeSolver;
+    private TypeSolver typeSolver;
 
     /**
      * A finder which searches for implementations of a interface.
@@ -71,7 +71,7 @@ public class StrategyAnalyzer extends PatternAnalyzer {
 
     @Override
     public ArrayList<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        typeSolver = getParent().getTypeSolver();
+        typeSolver = getTypeSolver();
 
         ArrayList<IDesignPattern> patterns = new ArrayList<>();
 

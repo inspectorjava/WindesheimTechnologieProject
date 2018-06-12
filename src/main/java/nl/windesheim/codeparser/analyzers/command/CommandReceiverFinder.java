@@ -11,7 +11,7 @@ import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
     /**
      * Type solver.
      */
-    private CombinedTypeSolver typeSolver;
+    private TypeSolver typeSolver;
 
     /**
      * @return A list of context, interface pairs which were found in the last visit
@@ -55,7 +55,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
      *
      * @param typeSolver Current type solver.
      */
-    public void setTypeSolver(final CombinedTypeSolver typeSolver) {
+    public void setTypeSolver(final TypeSolver typeSolver) {
         this.typeSolver = typeSolver;
     }
 

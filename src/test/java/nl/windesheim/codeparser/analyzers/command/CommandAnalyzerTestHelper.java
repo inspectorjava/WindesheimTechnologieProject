@@ -2,7 +2,6 @@ package nl.windesheim.codeparser.analyzers.command;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.Command;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
@@ -18,10 +17,7 @@ class CommandAnalyzerTestHelper {
     private FileAnalysisProvider provider;
 
     CommandAnalyzerTestHelper() {
-        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
-        composite.addChild(new CommandAnalyzer());
-
-        provider = new FileAnalysisProvider(composite);
+        provider = new FileAnalysisProvider(new CommandAnalyzer());
     }
 
     List<IDesignPattern> analyzeDirectory(File dir) throws IOException{
