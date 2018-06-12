@@ -36,14 +36,10 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
 
         factoryClasses.addAll(interfaceFinder.find(declarations));
 
-        // Removing the abstract factory finder since it was deemed not necessary by our product owner.
-//        AbstractFactoryFinder abstractFinder   = new AbstractFactoryFinder();
-//        factoryClasses.addAll(abstractFinder.find(declarations));
-
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             List<ClassOrInterfaceDeclaration> implementations =
                     interfaceFinder.findImplementations(factory, declarations);
-            HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces =
+            Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces =
                     interfaceFinder.findInterfacesFromFactory(implementations, declarations);
             patterns.add(makeAbstractFactory(factory, implementations, factoryInterfaces));
         }
@@ -80,7 +76,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
     private AbstractFactory makeAbstractFactory(
             final ClassOrInterfaceDeclaration factory,
             final List<ClassOrInterfaceDeclaration> implementations,
-            final HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces) {
+            final Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces) {
         // The factory interface. (KingdomFactory)
         AbstractFactory abstractFactory = new AbstractFactory();
         abstractFactory.setFactoryInterface(
@@ -106,8 +102,8 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         HashMap<ClassOrInterface, List<ClassOrInterface>>
                 implInterfaces = new HashMap<>();
         for (
-                Map.Entry<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> entry :
-                factoryInterfaces.entrySet()) {
+                Map.Entry<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> entry
+                : factoryInterfaces.entrySet()) {
 
             List<ClassOrInterface> products = new ArrayList<>();
 

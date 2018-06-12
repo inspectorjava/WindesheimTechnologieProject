@@ -10,8 +10,8 @@ import nl.windesheim.reporting.decorators.HasFactoryImplementations;
 import nl.windesheim.reporting.decorators.HasImplementations;
 import nl.windesheim.reporting.decorators.HasInterface;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The abstract factory found pattern builder.
@@ -31,7 +31,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     /**
      * List of the implementations used by the factory.
      */
-    private final HashMap<ClassOrInterface, List<ClassOrInterface>> factoryImpl;
+    private final Map<ClassOrInterface, List<ClassOrInterface>> factoryImpl;
 
     /**
      * The constructor.

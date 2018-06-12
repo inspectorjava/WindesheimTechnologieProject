@@ -13,6 +13,7 @@ import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclas
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Find all the interface factories.
@@ -178,9 +179,10 @@ public class InterfaceFactoryFinder extends AbstractFinder {
     /**
      * Find the interfaces used in a factory class.
      * @param implementations the implementations to check
+     * @param declarations List of the declarations.
      * @return The found interfaces in the factory class.
      */
-    public HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> findInterfacesFromFactory(
+    public Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> findInterfacesFromFactory(
             final List<ClassOrInterfaceDeclaration> implementations,
             final List<ClassOrInterfaceDeclaration> declarations) {
         HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces = new HashMap<>();
@@ -227,19 +229,25 @@ public class InterfaceFactoryFinder extends AbstractFinder {
         return factoryInterfaces;
     }
 
+    /**
+     * Find the concrete implementations of the given interface.
+     * @param resolvedInterface The given interface.
+     * @param declarations The declarations.
+     * @return List of the found implementations.
+     */
     private List<ClassOrInterfaceDeclaration> findConcreteInterfaceImplementations(
             final ClassOrInterfaceDeclaration resolvedInterface,
             final List<ClassOrInterfaceDeclaration> declarations) {
         List<ClassOrInterfaceDeclaration> implementations = new ArrayList<>();
 
         for (ClassOrInterfaceDeclaration declaration : declarations) {
-            if(declaration.getImplementedTypes().size() == 0) {
+            if (declaration.getImplementedTypes().size() == 0) {
                 continue;
             }
 
             for (ClassOrInterfaceType implemented : declaration.getImplementedTypes()) {
-                if (implemented.getName().equals(resolvedInterface.getName()) &&
-                        !implementations.contains(declaration)) {
+                if (implemented.getName().equals(resolvedInterface.getName())
+                        && !implementations.contains(declaration)) {
                     implementations.add(declaration);
                 }
             }

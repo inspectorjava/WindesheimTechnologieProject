@@ -42,10 +42,6 @@ public class TreeBuilder {
         this.tree.setRoot(node);
     }
 
-    public TreeNode getRoot () {
-        return this.tree.getRoot();
-    }
-
     /**
      * Return the root node of the tree.
      * @return tree root

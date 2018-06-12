@@ -6,7 +6,6 @@ import nl.windesheim.reporting.components.NodeType;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
     /**
      * List of implementations.
      */
-    private HashMap<ClassOrInterface, List<ClassOrInterface>> facImplementations;
+    private Map<ClassOrInterface, List<ClassOrInterface>> facImplements;
 
 
     /**
@@ -33,8 +32,8 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
      * Set implementations.
      * @param implementations list of implementations
      */
-    public void setImplementations(final HashMap<ClassOrInterface, List<ClassOrInterface>> implementations) {
-        this.facImplementations = implementations;
+    public void setImplementations(final Map<ClassOrInterface, List<ClassOrInterface>> implementations) {
+        this.facImplements = implementations;
     }
 
     @Override
@@ -42,7 +41,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         TreeNode node = new TreeNode("Factory implementations");
 
         for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
-                entry : this.facImplementations.entrySet()){
+                entry : this.facImplements.entrySet()) {
             TreeNode treeNode = new TreeNode(entry.getKey().getName())
                     .setClassOrInterface(entry.getKey())
                     .setNodeType(NodeType.INTERFACE);
@@ -70,7 +69,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         @SuppressWarnings("PMD.InsufficientStringBufferDeclaration")
         StringBuilder baseString = new StringBuilder(super.getReport());
         for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
-                entry : this.facImplementations.entrySet()) {
+                entry : this.facImplements.entrySet()) {
             baseString.append("factory implementation: ").append(entry.getKey()).append("\n\r");
             for (ClassOrInterface declaration : entry.getValue()) {
                 baseString.append("- ").append(declaration.getName()).append("\n\r");
