@@ -6,7 +6,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
@@ -36,7 +36,14 @@ import java.util.Map;
 public class ObserverAnalyzer extends PatternAnalyzer {
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        CombinedTypeSolver typeSolver = getParent().getTypeSolver();
+        List<IDesignPattern> patterns = new ArrayList<>();
+
+        TypeSolver typeSolver = getTypeSolver();
+
+        // Without a typesolver, the observeranalyzer cannot function
+        if (typeSolver == null) {
+            return patterns;
+        }
 
         // Find abstract observable classes
         AbstractObservableFinder aObsableFinder = new AbstractObservableFinder(typeSolver);
@@ -59,7 +66,6 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         // Search for classes that extend the abstract observers
         findConcreteObservers(files, eligiblePatterns);
 
-        List<IDesignPattern> patterns = new ArrayList<>();
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
             if (eligiblePattern.isObserverPattern()) {
                 patterns.add(makeObserverPattern(eligiblePattern));

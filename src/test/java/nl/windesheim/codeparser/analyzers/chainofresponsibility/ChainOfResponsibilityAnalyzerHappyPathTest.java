@@ -2,7 +2,6 @@ package nl.windesheim.codeparser.analyzers.chainofresponsibility;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.ChainOfResponsibility;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import org.junit.Test;
@@ -31,10 +30,7 @@ public class ChainOfResponsibilityAnalyzerHappyPathTest {
     private List<IDesignPattern> analyzeDirectory(File dir) throws IOException {
         Path directoryPath = dir.toPath();
 
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new ChainOfResponsibilityAnalyzer());
-
-        FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+        FileAnalysisProvider provider = new FileAnalysisProvider(new ChainOfResponsibilityAnalyzer());
 
         return provider.analyzeDirectory(directoryPath);
     }

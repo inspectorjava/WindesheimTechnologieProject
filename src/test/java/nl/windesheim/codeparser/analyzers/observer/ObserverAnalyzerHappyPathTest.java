@@ -2,8 +2,6 @@ package nl.windesheim.codeparser.analyzers.observer;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FileAnalysisProvider;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
 import org.junit.Test;
@@ -170,10 +168,7 @@ public class ObserverAnalyzerHappyPathTest {
     private List<IDesignPattern> analyzeDirectory (File dir) throws IOException {
         Path directoryPath = dir.toPath();
 
-        PatternAnalyzerComposite analyzer = new PatternAnalyzerComposite();
-        analyzer.addChild(new ObserverAnalyzer());
-
-        FileAnalysisProvider provider = new FileAnalysisProvider(analyzer);
+        FileAnalysisProvider provider = new FileAnalysisProvider(new ObserverAnalyzer());
 
         return provider.analyzeDirectory(directoryPath);
     }
