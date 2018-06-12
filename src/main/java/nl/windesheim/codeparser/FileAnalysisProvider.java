@@ -4,11 +4,12 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.SourceRoot;
-import nl.windesheim.codeparser.analyzers.PatternAnalyzerComposite;
+import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.abstractfactory.AbstractFactoryAnalyzer;
 import nl.windesheim.codeparser.analyzers.chainofresponsibility.ChainOfResponsibilityAnalyzer;
 import nl.windesheim.codeparser.analyzers.command.CommandAnalyzer;
@@ -32,22 +33,35 @@ import java.util.List;
  */
 public class FileAnalysisProvider {
     /**
-     * The patter analyzer composite which will be called in the analyzeFile and analyzeDirectory functions.
+     * The pattern analyzers, which will be called in the analyzeFile and analyzeDirectory functions.
      */
-    private PatternAnalyzerComposite analyzer;
+    private List<PatternAnalyzer> analyzers;
 
     /**
-     * @param analyzer the pattern analyzer which will be used to analyze files
+     * FileAnalysisProvider constructor.
+     *
+     * @param analyzer A pattern analyzer which will be used to analyze files
      */
-    public FileAnalysisProvider(final PatternAnalyzerComposite analyzer) {
-        this.analyzer = analyzer;
+    public FileAnalysisProvider(final PatternAnalyzer analyzer) {
+        this.analyzers = new ArrayList<>();
+        this.analyzers.add(analyzer);
+    }
+
+    /**
+     * FileAnalysisProvider constructor.
+     *
+     * @param analyzers The pattern analyzers which will be used to analyze files
+     */
+    public FileAnalysisProvider(final List<PatternAnalyzer> analyzers) {
+        this.analyzers = analyzers;
     }
 
     /**
      * Analyzes a single file for design patterns.
-     * @param fileName the file that should be analyzed
-     * @return a list of patterns which were found
-     * @throws FileNotFoundException if the file that was passed doesn't exist
+     *
+     * @param fileName The file that should be analyzed
+     * @return A list of patterns which were found
+     * @throws FileNotFoundException If the file that was passed doesn't exist
      */
     public List<IDesignPattern> analyzeFile(final URL fileName) throws FileNotFoundException {
         File fileInputStream = new File(fileName.getFile());
@@ -57,8 +71,6 @@ public class FileAnalysisProvider {
         typeSolver.add(new ReflectionTypeSolver());
         typeSolver.add(new JavaParserTypeSolver(fileInputStream));
 
-        analyzer.setTypeSolver(typeSolver);
-
         //The type solver can now solve types from the standard library and the code we are analyzing
         ParserConfiguration configuration =
                 JavaParser.getStaticConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
@@ -66,17 +78,16 @@ public class FileAnalysisProvider {
 
         CompilationUnit compilationUnit = JavaParser.parse(fileInputStream);
 
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.add(compilationUnit);
-
-        return analyzer.analyze(compilationUnits);
+        return runAnalysis(compilationUnit, typeSolver);
     }
 
     /**
      * Analyzes a directory for design patterns.
-     * @param directoryPath the path to analyze
-     * @return a list of found patterns
-     * @throws IOException if the directory doesn't exist
+     *
+     * @param directoryPath The path to analyze
+     *
+     * @return A list of found patterns
+     * @throws IOException If the directory doesn't exist
      */
     public List<IDesignPattern> analyzeDirectory(final Path directoryPath) throws IOException {
         SourceRoot sourceRoot = new SourceRoot(directoryPath);
@@ -95,50 +106,83 @@ public class FileAnalysisProvider {
 
         sourceRoot.tryToParse();
 
-        analyzer.setTypeSolver(typeSolver);
-
-        ArrayList<CompilationUnit> compilationUnits = new ArrayList<CompilationUnit>();
-        compilationUnits.addAll(sourceRoot.getCompilationUnits());
-
-        return analyzer.analyze(compilationUnits);
+        return runAnalysis(sourceRoot.getCompilationUnits(), typeSolver);
     }
 
     /**
-     * @return the current analyzer that is used
-     */
-    public PatternAnalyzerComposite getAnalyzer() {
-        return analyzer;
-    }
-
-    /**
-     * @param analyzer the analyzer that will be used to analyze files
+     * @param analyzer A pattern analyzer which will be used to analyze files
      * @return this
      */
-    public FileAnalysisProvider setAnalyzer(final PatternAnalyzerComposite analyzer) {
-        this.analyzer = analyzer;
+    public FileAnalysisProvider addAnalyzer(final PatternAnalyzer analyzer) {
+        analyzers.add(analyzer);
         return this;
     }
 
     /**
-     * @return a list of errors encountered while analyzing
+     * @param analyzers The pattern analyzers which will be used to analyze files
+     * @return this
+     */
+    public FileAnalysisProvider setAnalyzers(final List<PatternAnalyzer> analyzers) {
+        this.analyzers = analyzers;
+        return this;
+    }
+
+    /**
+     * @param compilationUnit The compilation unit to analyze
+     * @param typeSolver      A TypeSolver to resolve relations between AST nodes
+     * @return A list of found patterns
+     */
+    private List<IDesignPattern> runAnalysis(
+            final CompilationUnit compilationUnit,
+            final TypeSolver typeSolver
+    ) {
+        List<CompilationUnit> compilationUnits = new ArrayList<>();
+        compilationUnits.add(compilationUnit);
+
+        return runAnalysis(compilationUnits, typeSolver);
+    }
+
+    /**
+     *
+     * @param compilationUnits The compilation units to analyze
+     * @param typeSolver       A TypeSolver to resolve relations between AST nodes
+     * @return A list of found patterns
+     */
+    private List<IDesignPattern> runAnalysis(
+            final List<CompilationUnit> compilationUnits,
+            final TypeSolver typeSolver
+    ) {
+        List<IDesignPattern> patterns = new ArrayList<>();
+
+        for (PatternAnalyzer analyzer : analyzers) {
+            analyzer.setTypeSolver(typeSolver);
+            patterns.addAll(analyzer.analyze(compilationUnits));
+        }
+
+        return patterns;
+    }
+
+    /**
+     * @return A list of errors encountered while analyzing
      */
     public List<Exception> getErrors() {
         return ErrorLog.getInstance().getErrors();
     }
 
     /**
-     * @return a default preconfigured FileAnalysisProvider
+     * @return A default preconfigured FileAnalysisProvider
      */
     public static FileAnalysisProvider getConfiguredFileAnalysisProvider() {
-        PatternAnalyzerComposite composite = new PatternAnalyzerComposite();
-        composite.addChild(new SingletonAnalyzer());
-        composite.addChild(new StrategyAnalyzer());
-        composite.addChild(new ChainOfResponsibilityAnalyzer());
-        composite.addChild(new ObserverAnalyzer());
-        composite.addChild(new AbstractFactoryAnalyzer());
-        composite.addChild(new CommandAnalyzer());
-        composite.addChild(new CompositeAnalyzer());
+        List<PatternAnalyzer> analyzers = new ArrayList<>();
 
-        return new FileAnalysisProvider(composite);
+        analyzers.add(new SingletonAnalyzer());
+        analyzers.add(new StrategyAnalyzer());
+        analyzers.add(new ChainOfResponsibilityAnalyzer());
+        analyzers.add(new ObserverAnalyzer());
+        analyzers.add(new AbstractFactoryAnalyzer());
+        analyzers.add(new CommandAnalyzer());
+        analyzers.add(new CompositeAnalyzer());
+
+        return new FileAnalysisProvider(analyzers);
     }
 }

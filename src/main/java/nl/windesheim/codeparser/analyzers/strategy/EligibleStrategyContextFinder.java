@@ -11,7 +11,7 @@ import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import javafx.util.Pair;
 import nl.windesheim.codeparser.analyzers.util.visitor.SetterFinder;
 
@@ -22,7 +22,7 @@ import java.util.List;
  * Visitor which finds all classes which can be 'context' classes.
  */
 public class EligibleStrategyContextFinder
-        extends VoidVisitorAdapter<CombinedTypeSolver> {
+        extends VoidVisitorAdapter<TypeSolver> {
 
     /**
      * The context, interface pairs found in the last visit.
@@ -70,7 +70,7 @@ public class EligibleStrategyContextFinder
     }
 
     @Override
-    public void visit(final ClassOrInterfaceDeclaration declaration, final CombinedTypeSolver typeSolver) {
+    public void visit(final ClassOrInterfaceDeclaration declaration, final TypeSolver typeSolver) {
         //If this is a interface don't process further
         if (declaration.isInterface()) {
             return;
