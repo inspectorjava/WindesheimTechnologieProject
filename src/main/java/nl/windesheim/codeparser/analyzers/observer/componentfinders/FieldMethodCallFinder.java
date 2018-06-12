@@ -16,6 +16,10 @@ public class FieldMethodCallFinder extends GenericVisitorAdapter<Boolean, List<M
             return parentHasFound;
         }
 
+        if (subscribeMethods.isEmpty()) {
+            return false;
+        }
+
         List<ResolvedMethodDeclaration> resSubsMethods = new ArrayList<>();
         for (MethodDeclaration subscribeMethod : subscribeMethods) {
             resSubsMethods.add(subscribeMethod.resolve());
