@@ -18,11 +18,11 @@ public class ObserverPatternProperties {
         obsHasAttachCall = false;
     }
 
-    public boolean isObservableHasDetach () {
+    public boolean isSubjectHasDetach() {
         return obsableHasDetach;
     }
 
-    public ObserverPatternProperties setObservableHasDetach (final boolean obsableHasDetach) {
+    public ObserverPatternProperties setSubjectHasDetach(final boolean obsableHasDetach) {
         if (!this.obsableHasDetach) {
             this.obsableHasDetach = obsableHasDetach;
         }
@@ -30,11 +30,11 @@ public class ObserverPatternProperties {
         return this;
     }
 
-    public boolean isObserverHasObservable () {
+    public boolean isObserverHasSubject() {
         return obsHasObsable;
     }
 
-    public ObserverPatternProperties setObserverHasObservable (final boolean obsHasObsable) {
+    public ObserverPatternProperties setObserverHasSubject(final boolean obsHasObsable) {
         if (!this.obsHasObsable) {
             this.obsHasObsable = obsHasObsable;
         }

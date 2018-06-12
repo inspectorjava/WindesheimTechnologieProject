@@ -40,22 +40,22 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
         int errors = 0;
 
-        if (!patternProps.isObservableHasDetach()) {
-            patternReport.addPatternRemark("Observable doesn't have a unsubscribe method");
-        } else if (!patternProps.isObservableHasDetach()) {
-            patternReport.addPatternRemark("Observer does not unsubscribe itself from Observable");
+        if (!patternProps.isSubjectHasDetach()) {
+            patternReport.addPatternRemark("Subject doesn't have a unsubscribe method");
+        } else if (!patternProps.isSubjectHasDetach()) {
+            patternReport.addPatternRemark("Observer does not unsubscribe itself from Subject");
         }
 
-        if (!patternProps.isObserverHasObservable() && !patternProps.isUpdateHasArguments()) {
+        if (!patternProps.isObserverHasSubject() && !patternProps.isUpdateHasArguments()) {
             errors += 2;
-            patternReport.addPatternError("Observer does not contain a reference to the observable");
+            patternReport.addPatternError("Observer does not contain a reference to the subject");
         } else if (patternProps.isUpdateHasArguments()) {
             patternReport.addPatternRemark("Arguments are passed to the update method");
         }
 
         if (!patternProps.isObserverHasAttachCall()) {
             errors++;
-            patternReport.addPatternError("Observer does not subscribe itself to Observable");
+            patternReport.addPatternError("Observer does not subscribe itself to Subject");
         }
 
         if (errors == 1) {
@@ -64,23 +64,22 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
             patternReport.setCertainty(Result.Certainty.UNLIKELY);
         }
 
-        HasClassOrInterface aObservable = new HasClassOrInterface(patternReport);
-        aObservable.setName("Abstract Observable");
-        aObservable.setClassOrInterface(this.pattern.getAbstractObservable());
+        HasClassOrInterface abstractSubject = new HasClassOrInterface(patternReport);
+        abstractSubject.setName("Abstract Subject");
+        abstractSubject.setClassOrInterface(this.pattern.getAbstractSubject());
 
-//        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
-//        aObserver.setName("Abstract Observer");
-//        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
+        HasClassOrInterface abstractObserver = new HasClassOrInterface(patternReport);
+        abstractObserver.setName("Abstract Observer");
+        abstractObserver.setClassOrInterface(this.pattern.getAbstractObserver());
 
-        HasClassList cObservables = new HasClassList(aObservable);
-        cObservables.setName("Concrete Observables");
-        cObservables.setClasses(this.pattern.getConcreteObservables());
+        HasClassList concreteSubjects = new HasClassList(abstractSubject);
+        concreteSubjects.setName("Concrete Subjects");
+        concreteSubjects.setClasses(this.pattern.getConcreteSubjects());
 
-//        HasClassList cObservers = new HasClassList(aObserver);
-//        cObservers.setName("Concrete Observers");
-//        cObservers.setClasses(this.pattern.getConcreteObservers());
+        HasClassList concreteObservers = new HasClassList(abstractObserver);
+        concreteObservers.setName("Concrete Observers");
+        concreteObservers.setClasses(this.pattern.getConcreteObservers());
 
-//        return cObservers;
-        return cObservables;
+        return concreteObservers;
     }
 }

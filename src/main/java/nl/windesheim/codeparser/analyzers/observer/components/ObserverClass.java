@@ -14,8 +14,8 @@ public class ObserverClass extends EligibleObserverComponent {
      */
     private ResolvedMethodDeclaration updateMethod;
 
-    // Has field of AbstractObservable type
-    private VariableDeclarator observableVar;
+    // Has field of AbstractSubject type
+    private VariableDeclarator subjectVar;
 
     // Attaches itself to the subject
     private boolean hasAttachStmt;
@@ -36,7 +36,7 @@ public class ObserverClass extends EligibleObserverComponent {
      * ObserverClass constructor.
      *
      * @param classDeclaration The class or interface defining the observer
-     * @param resolvedType     The type of the observable class
+     * @param resolvedType     The type of the subject class
      */
     public ObserverClass(
             final ClassOrInterfaceDeclaration classDeclaration,
@@ -58,7 +58,7 @@ public class ObserverClass extends EligibleObserverComponent {
         super(classDeclaration, resolvedType);
         this.updateMethod = updateMethod;
 
-        this.observableVar = null;
+        this.subjectVar = null;
         this.hasAttachStmt = false;
         this.hasDetachStmt = false;
     }
@@ -77,12 +77,12 @@ public class ObserverClass extends EligibleObserverComponent {
         this.updateMethod = updateMethod;
     }
 
-    public VariableDeclarator getObservableVariable() {
-        return observableVar;
+    public VariableDeclarator getSubjectVariable() {
+        return subjectVar;
     }
 
-    public void setObservableVariable(final VariableDeclarator abstObservableVar) {
-        this.observableVar = abstObservableVar;
+    public void setSubjectVariable(final VariableDeclarator abstSubjectVar) {
+        this.subjectVar = abstSubjectVar;
     }
 
     public boolean getHasAttachStatement () {

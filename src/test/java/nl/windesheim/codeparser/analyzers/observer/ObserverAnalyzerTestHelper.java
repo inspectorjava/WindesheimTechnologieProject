@@ -37,15 +37,15 @@ class ObserverAnalyzerTestHelper {
 
         ObserverPattern observerPattern = (ObserverPattern) patterns.get(0);
 
-        // The pattern should at least contain an abstract observable and abstract observer
-        assertNotNull(observerPattern.getAbstractObservable());
+        // The pattern should at least contain an abstract subject and abstract observer
+        assertNotNull(observerPattern.getAbstractSubject());
         assertNotNull(observerPattern.getAbstractObserver());
 
-        // Check of de abstract observable overeenkomt met wat we verwachten
-        assertEquals(settings.abstractObservableName, observerPattern.getAbstractObservable().getName());
+        // Check of de abstract subject overeenkomt met wat we verwachten
+        assertEquals(settings.abstractSubjectName, observerPattern.getAbstractSubject().getName());
         assertEquals(
-                settings.abstractObservableFile,
-                new File(observerPattern.getAbstractObservable().getFilePart().getFile().getPath())
+                settings.abstractSubjectFile,
+                new File(observerPattern.getAbstractSubject().getFilePart().getFile().getPath())
         );
 
         // Check of de abstract observer overeenkomt met wat we verwachten
@@ -55,8 +55,8 @@ class ObserverAnalyzerTestHelper {
                 new File(observerPattern.getAbstractObserver().getFilePart().getFile().getPath())
         );
 
-        // Check of de concrete observables overeenkomen met wat we verwachten
-        assertClassOrInterfaceInCollection(observerPattern.getConcreteObservables(), settings.concreteObservables);
+        // Check of de concrete subjects overeenkomen met wat we verwachten
+        assertClassOrInterfaceInCollection(observerPattern.getConcreteSubjects(), settings.concreteSubjects);
 
         // Check of de concrete observers overeenkomen met wat we verwachten
         assertClassOrInterfaceInCollection(observerPattern.getConcreteObservers(), settings.concreteObservers);
@@ -78,7 +78,7 @@ class ObserverAnalyzerTestHelper {
             }
 
             if (!contains){
-                fail("Missing concrete observable class '" + expectedName + "' which was expected to be found in '" + expectedFile + "'");
+                fail("Missing concrete subject class '" + expectedName + "' which was expected to be found in '" + expectedFile + "'");
             }
         }
     }
@@ -87,12 +87,12 @@ class ObserverAnalyzerTestHelper {
 class TestSettings {
     File codeDir;
 
-    String abstractObservableName;
-    File abstractObservableFile;
+    String abstractSubjectName;
+    File abstractSubjectFile;
 
     String abstractObserverName;
     File abstractObserverFile;
 
-    HashMap<String, File> concreteObservables = new HashMap<>();
+    HashMap<String, File> concreteSubjects = new HashMap<>();
     HashMap<String, File> concreteObservers = new HashMap<>();
 }

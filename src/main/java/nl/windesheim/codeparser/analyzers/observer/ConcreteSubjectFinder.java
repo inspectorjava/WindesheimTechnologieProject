@@ -1,21 +1,21 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.CompilationUnit;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.ConcreteSubject;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.List;
 
-public class ConcreteObservableFinder {
+public class ConcreteSubjectFinder {
     /**
-     * Finds ConcreteObservables: concrete implementations of an AbstractObservable.
+     * Finds ConcreteSubjects: concrete implementations of an AbstractSubject.
      *
      * @param files            A list of files containing Java code
      * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
-     *                         when concrete observables have been found a pattern instance
+     *                         when concrete subjects have been found a pattern instance
      */
-    public void findConcreteObservables(
+    public void findConcreteSubjects(
             final List<CompilationUnit> files,
             final List<EligibleObserverPattern> eligiblePatterns
     ) {
@@ -24,11 +24,11 @@ public class ConcreteObservableFinder {
         for (CompilationUnit compilationUnit : files) {
             for (EligibleObserverPattern observerPattern : eligiblePatterns) {
                 implFinder.reset();
-                implFinder.visit(compilationUnit, observerPattern.getAbstractObservable().getClassDeclaration());
+                implFinder.visit(compilationUnit, observerPattern.getAbstractSubject().getClassDeclaration());
 
-                List<ConcreteObservable> concObservables = ConcreteObservable.fromClasses(implFinder.getClasses());
+                List<ConcreteSubject> concreteSubjects = ConcreteSubject.fromClasses(implFinder.getClasses());
 
-                observerPattern.addConcreteObservable(concObservables);
+                observerPattern.addConcreteSubject(concreteSubjects);
             }
         }
     }

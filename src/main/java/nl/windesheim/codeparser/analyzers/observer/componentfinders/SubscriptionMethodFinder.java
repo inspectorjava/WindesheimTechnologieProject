@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Finds subscription methods for a potential AbstractObservable.
+ * Finds subscription methods for a potential AbstractSubject.
  *
  * A subscription method adheres to the following criteria:
  * - It operates on a potential observer collection
  * - It performs an add or remove operation on the observer collection
  * - The method is being passed an element to add to or remove from the collection
  */
-public class SubscriptionMethodFinder extends ObservableMethodFinder {
+public class SubscriptionMethodFinder extends SubjectMethodFinder {
     /**
      * A map linking potential observer collections to found method parameters.
      */

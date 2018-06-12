@@ -1,9 +1,7 @@
 package nl.windesheim.codeparser.analyzers.observer.componentfinders;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import nl.windesheim.codeparser.analyzers.observer.components.*;
 import nl.windesheim.codeparser.analyzers.util.visitor.MethodCallFinder;
@@ -38,25 +36,25 @@ public class ObserverPropertyFinder {
             return;
         }
 
-        // Find reference to observable
-        VariableDeclarator observableVar;
-        if (observer instanceof ConcreteObserver && pattern.getAbstractObserver().getObservableVariable() != null) {
-            observableVar = pattern.getAbstractObserver().getObservableVariable();
+        // Find reference to subject
+        VariableDeclarator subjectVar;
+        if (observer instanceof ConcreteObserver && pattern.getAbstractObserver().getSubjectVariable() != null) {
+            subjectVar = pattern.getAbstractObserver().getSubjectVariable();
         } else {
-            // Check whether the observer refers to an observable in a class member
-            ObservableVariableFinder obsVarFinder = new ObservableVariableFinder();
+            // Check whether the observer refers to an subject in a class member
+            SubjectVariableFinder obsVarFinder = new SubjectVariableFinder();
 
-            List<ObservableClass> observables = new ArrayList<>();
-            observables.add(pattern.getAbstractObservable());
+            List<SubjectClass> subjects = new ArrayList<>();
+            subjects.add(pattern.getAbstractSubject());
             if (observer instanceof ConcreteObserver) {
-                observables.addAll(pattern.getConcreteObservables());
+                subjects.addAll(pattern.getConcreteSubjects());
             }
 
-            observableVar = obsVarFinder.findObservableVariable(observer, observables);
+            subjectVar = obsVarFinder.findSubjectVariable(observer, subjects);
         }
 
-        if (observableVar != null) {
-            observer.setObservableVariable(observableVar);
+        if (subjectVar != null) {
+            observer.setSubjectVariable(subjectVar);
         }
 
         // Find calls to the attach and detach methods

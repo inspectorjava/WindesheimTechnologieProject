@@ -8,24 +8,24 @@ import java.util.List;
  */
 public class EligibleObserverPattern {
     /**
-     * The class or interface that has been identified as abstract observable.
+     * The class or interface that has been identified as abstract subject.
      */
-    private AbstractObservable aObservable;
+    private AbstractSubject abstractSubject;
 
     /**
-     * The classes that have been identified as concrete observables.
+     * The classes that have been identified as concrete subjects.
      */
-    private final List<ConcreteObservable> cObservables;
+    private final List<ConcreteSubject> concreteSubjects;
 
     /**
      * The class or interface that has been identified as abstract observers.
      */
-    private AbstractObserver aObserver;
+    private AbstractObserver abstractObserver;
 
     /**
      * The classes that have been identified as concrete observers.
      */
-    private final List<ConcreteObserver> cObservers;
+    private final List<ConcreteObserver> concreteObservers;
 
     private ObserverCollection activeCollection;
 
@@ -33,53 +33,53 @@ public class EligibleObserverPattern {
      * EligibleObserverPattern constructor.
      */
     public EligibleObserverPattern() {
-        this.aObservable = null;
-        this.cObservables = new ArrayList<>();
+        this.abstractSubject = null;
+        this.concreteSubjects = new ArrayList<>();
 
-        this.aObserver = null;
-        this.cObservers = new ArrayList<>();
+        this.abstractObserver = null;
+        this.concreteObservers = new ArrayList<>();
 
         this.activeCollection = null;
     }
 
     /**
-     * @return The class or interface that has been identified as abstract observable
+     * @return The class or interface that has been identified as abstract subject
      */
-    public AbstractObservable getAbstractObservable() {
-        return aObservable;
+    public AbstractSubject getAbstractSubject() {
+        return abstractSubject;
     }
 
     /**
-     * @param aObservable The class or interface that has been identified as abstract observable
+     * @param abstractSubject The class or interface that has been identified as abstract subject
      * @return this
      */
-    public EligibleObserverPattern setAbstractObservable(final AbstractObservable aObservable) {
-        this.aObservable = aObservable;
+    public EligibleObserverPattern setAbstractSubject(final AbstractSubject abstractSubject) {
+        this.abstractSubject = abstractSubject;
         return this;
     }
 
     /**
-     * @return The classes that have been identified as concrete observables
+     * @return The classes that have been identified as concrete subjects
      */
-    public List<ConcreteObservable> getConcreteObservables() {
-        return cObservables;
+    public List<ConcreteSubject> getConcreteSubjects() {
+        return concreteSubjects;
     }
 
     /**
-     * @param cObservable A class that has been identified as concrete observable
+     * @param concreteSubject A class that has been identified as concrete subject
      * @return this
      */
-    public EligibleObserverPattern addConcreteObservable(final ConcreteObservable cObservable) {
-        this.cObservables.add(cObservable);
+    public EligibleObserverPattern addConcreteSubject(final ConcreteSubject concreteSubject) {
+        this.concreteSubjects.add(concreteSubject);
         return this;
     }
 
     /**
-     * @param cObservables A list of classes that have been identified as concrete observable
+     * @param concreteSubjects A list of classes that have been identified as concrete subject
      * @return this
      */
-    public EligibleObserverPattern addConcreteObservable(final List<ConcreteObservable> cObservables) {
-        this.cObservables.addAll(cObservables);
+    public EligibleObserverPattern addConcreteSubject(final List<ConcreteSubject> concreteSubjects) {
+        this.concreteSubjects.addAll(concreteSubjects);
         return this;
     }
 
@@ -87,44 +87,44 @@ public class EligibleObserverPattern {
      * @return The class or interface that has been identified as abstract observers
      */
     public AbstractObserver getAbstractObserver() {
-        return aObserver;
+        return abstractObserver;
     }
 
     /**
-     * @param aObserver The class or interface that has been identified as abstract observers
+     * @param abstractObserver The class or interface that has been identified as abstract observers
      * @return this
      */
-    public EligibleObserverPattern setAbstractObserver(final AbstractObserver aObserver) {
-        this.aObserver = aObserver;
+    public EligibleObserverPattern setAbstractObserver(final AbstractObserver abstractObserver) {
+        this.abstractObserver = abstractObserver;
         return this;
     }
 
     public boolean hasAbstractObserver () {
-        return aObserver != null;
+        return abstractObserver != null;
     }
 
     /**
      * @return The classes that have been identified as concrete observers
      */
     public List<ConcreteObserver> getConcreteObservers() {
-        return cObservers;
+        return concreteObservers;
     }
 
     /**
-     * @param cObserver A class that has been identified as concrete observers
+     * @param concreteObserver A class that has been identified as concrete observers
      * @return this
      */
-    public EligibleObserverPattern addConcreteObserver(final ConcreteObserver cObserver) {
-        this.cObservers.add(cObserver);
+    public EligibleObserverPattern addConcreteObserver(final ConcreteObserver concreteObserver) {
+        this.concreteObservers.add(concreteObserver);
         return this;
     }
 
     /**
-     * @param cObservers A list of classes that have been identified as concrete observers
+     * @param concreteObservers A list of classes that have been identified as concrete observers
      * @return this
      */
-    public EligibleObserverPattern addConcreteObserver(final List<ConcreteObserver> cObservers) {
-        this.cObservers.addAll(cObservers);
+    public EligibleObserverPattern addConcreteObserver(final List<ConcreteObserver> concreteObservers) {
+        this.concreteObservers.addAll(concreteObservers);
         return this;
     }
 
@@ -143,6 +143,6 @@ public class EligibleObserverPattern {
      * @return Whether this represents a valid observer pattern
      */
     public boolean isObserverPattern() {
-        return aObservable != null && aObserver != null;
+        return abstractSubject != null && abstractObserver != null;
     }
 }

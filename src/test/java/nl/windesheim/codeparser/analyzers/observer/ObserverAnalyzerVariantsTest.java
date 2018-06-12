@@ -24,8 +24,8 @@ public class ObserverAnalyzerVariantsTest {
         try {
             settings.codeDir = new File(classLoader.getResource(resourceDir).getPath());
 
-            settings.abstractObservableName = "NewsAgency";
-            settings.abstractObservableFile = new File(
+            settings.abstractSubjectName = "NewsAgency";
+            settings.abstractSubjectFile = new File(
                     classLoader.getResource(resourceDir + "/NewsAgency.java").getPath()
             );
 
@@ -53,8 +53,8 @@ public class ObserverAnalyzerVariantsTest {
         try {
             settings.codeDir = new File(classLoader.getResource(resourceDir).getPath());
 
-            settings.abstractObservableName = "MyTopic";
-            settings.abstractObservableFile = new File(
+            settings.abstractSubjectName = "MyTopic";
+            settings.abstractSubjectFile = new File(
                     classLoader.getResource(resourceDir + "/MyTopic.java").getPath()
             );
 

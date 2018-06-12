@@ -14,7 +14,7 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.NotificationMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -24,9 +24,9 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Visitor which finds all classes which can be an 'abstract observable'.
+ * Visitor which finds all classes which can be an 'abstract subject'.
  */
-public class AbstractObservableFinder
+public class AbstractSubjectFinder
         extends VoidVisitorAdapter<Void> {
 
     /**
@@ -40,11 +40,11 @@ public class AbstractObservableFinder
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
-     * AbstractObservableFinder constructor.
+     * AbstractSubjectFinder constructor.
      *
      * @param typeSolver A TypeSolver which can be used by this class
      */
-    public AbstractObservableFinder(final TypeSolver typeSolver) {
+    public AbstractSubjectFinder(final TypeSolver typeSolver) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = new ArrayList<>();
@@ -84,12 +84,12 @@ public class AbstractObservableFinder
                     }
                 }
 
-                // If an abstract observable has been found, store info
+                // If an abstract subject has been found, store info
                 if (!observerCols.isEmpty()) {
-                    AbstractObservable abstObservable =
-                            new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCols);
+                    AbstractSubject abstractSubject =
+                            new AbstractSubject(classDeclaration, classDeclaration.resolve(), observerCols);
                     EligibleObserverPattern observerPattern = new EligibleObserverPattern();
-                    observerPattern.setAbstractObservable(abstObservable);
+                    observerPattern.setAbstractSubject(abstractSubject);
                     observerPatterns.add(observerPattern);
                 }
             } catch (UnsolvedSymbolException ex) {
@@ -107,7 +107,7 @@ public class AbstractObservableFinder
 
     /**
      * Find object properties which may contain a collection of Observers, which may indicate that the given
-     * class is an AbstractObservable.
+     * class is an AbstractSubject.
      *
      * A possible Observer collection adheres to the following criteria:
      * - It is an object property

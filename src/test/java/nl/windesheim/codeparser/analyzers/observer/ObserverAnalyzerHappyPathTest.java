@@ -24,8 +24,8 @@ public class ObserverAnalyzerHappyPathTest {
         try {
             settings.codeDir = new File(classLoader.getResource(resourceDir).getPath());
 
-            settings.abstractObservableName = "Subject";
-            settings.abstractObservableFile = new File(
+            settings.abstractSubjectName = "Subject";
+            settings.abstractSubjectFile = new File(
                     classLoader.getResource(resourceDir + "/Subject.java").getPath()
             );
 
@@ -61,8 +61,8 @@ public class ObserverAnalyzerHappyPathTest {
         try {
             settings.codeDir = new File(classLoader.getResource("observer/observerChat").getPath());
 
-            settings.abstractObservableName = "shared.MyObservable";
-            settings.abstractObservableFile = new File(
+            settings.abstractSubjectName = "shared.MyObservable";
+            settings.abstractSubjectFile = new File(
                     classLoader.getResource(resourceDir + "/shared/MyObservable.java").getPath()
             );
 
@@ -71,11 +71,11 @@ public class ObserverAnalyzerHappyPathTest {
                     classLoader.getResource(resourceDir + "/shared/MyObserver.java").getPath()
             );
 
-            settings.concreteObservables.put(
+            settings.concreteSubjects.put(
                     "chat.Group",
                     new File(classLoader.getResource(resourceDir + "/chat/Group.java").getPath())
             );
-            settings.concreteObservables.put(
+            settings.concreteSubjects.put(
                     "chat.User",
                     new File(classLoader.getResource(resourceDir + "/chat/User.java").getPath())
             );

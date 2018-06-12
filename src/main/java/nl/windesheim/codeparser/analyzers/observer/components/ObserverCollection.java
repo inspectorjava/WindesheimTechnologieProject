@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Information on a potential collection of Observers, as defined in an AbstractObservable class.
+ * Information on a potential collection of Observers, as defined in an AbstractSubject class.
  */
 public class ObserverCollection {
     /**

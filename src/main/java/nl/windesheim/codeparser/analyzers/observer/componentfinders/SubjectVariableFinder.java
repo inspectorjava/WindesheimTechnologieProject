@@ -8,14 +8,14 @@ import nl.windesheim.codeparser.analyzers.observer.components.*;
 
 import java.util.List;
 
-public class ObservableVariableFinder {
-    public VariableDeclarator findObservableVariable(
+public class SubjectVariableFinder {
+    public VariableDeclarator findSubjectVariable(
             final ObserverClass observer,
-            final List<ObservableClass> observables
+            final List<SubjectClass> subjects
     ) {
         List<FieldDeclaration> fields = observer.getClassDeclaration().getFields();
 
-        // Check whether a field variable type matches the type of the abstract observable
+        // Check whether a field variable type matches the type of the abstract subject
         for (FieldDeclaration field : fields) {
             for (VariableDeclarator variableDecl : field.getVariables()) {
                 ResolvedType variableType = variableDecl.getType().resolve();
@@ -23,8 +23,8 @@ public class ObservableVariableFinder {
                 if (variableType.isReferenceType()) {
                     ResolvedReferenceTypeDeclaration variableTypeDecl = variableType.asReferenceType().getTypeDeclaration();
 
-                    for (ObservableClass observable : observables) {
-                        if (variableTypeDecl.equals(observable.getResolvedTypeDeclaration())) {
+                    for (SubjectClass subject : subjects) {
+                        if (variableTypeDecl.equals(subject.getResolvedTypeDeclaration())) {
                             return variableDecl;
                         }
                     }

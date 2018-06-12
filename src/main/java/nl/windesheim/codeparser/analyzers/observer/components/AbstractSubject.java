@@ -7,43 +7,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates information on an abstract observable class.
+ * Encapsulates information on an abstract subject class.
  */
-public class AbstractObservable extends ObservableClass {
+public class AbstractSubject extends SubjectClass {
     /**
      * A list of object properties containing references to abstract observers.
      */
     private List<ObserverCollection> observerCols;
 
     /**
-     * AbstractObservable constructor.
+     * AbstractSubject constructor.
      *
-     * @param classDeclaration The class or interface defining the abstract observable
+     * @param classDeclaration The class or interface defining the abstract subject
      */
-    public AbstractObservable(final ClassOrInterfaceDeclaration classDeclaration) {
+    public AbstractSubject(final ClassOrInterfaceDeclaration classDeclaration) {
         this(classDeclaration, null, new ArrayList<>());
     }
 
     /**
-     * AbstractObservable constructor.
+     * AbstractSubject constructor.
      *
-     * @param classDeclaration        The class or interface defining the abstract observable
-     * @param resolvedType            The type of the abstract observable class
+     * @param classDeclaration        The class or interface defining the abstract subject
+     * @param resolvedType            The type of the abstract subject class
      */
-    public AbstractObservable(final ClassOrInterfaceDeclaration classDeclaration,
-                              final ResolvedReferenceTypeDeclaration resolvedType) {
+    public AbstractSubject(final ClassOrInterfaceDeclaration classDeclaration,
+                           final ResolvedReferenceTypeDeclaration resolvedType) {
         this(classDeclaration, resolvedType, new ArrayList<>());
     }
 
     /**
      *
-     * @param classDeclaration        The class or interface defining the abstract observable
-     * @param resolvedType            The type of the abstract observable class
+     * @param classDeclaration        The class or interface defining the abstract subject
+     * @param resolvedType            The type of the abstract subject class
      * @param observerCols            A list of object properties containing references to abstract observers.
      */
-    public AbstractObservable(final ClassOrInterfaceDeclaration classDeclaration,
-                              final ResolvedReferenceTypeDeclaration resolvedType,
-                              final List<ObserverCollection> observerCols) {
+    public AbstractSubject(final ClassOrInterfaceDeclaration classDeclaration,
+                           final ResolvedReferenceTypeDeclaration resolvedType,
+                           final List<ObserverCollection> observerCols) {
         super(classDeclaration, resolvedType);
         this.observerCols = observerCols;
     }

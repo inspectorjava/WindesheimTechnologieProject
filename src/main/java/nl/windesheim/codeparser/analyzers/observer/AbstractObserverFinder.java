@@ -7,11 +7,8 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
-import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
-import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
-import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
+import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.List;
@@ -57,8 +54,8 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
                     continue;
                 }
 
-                AbstractObservable abstObservable = observerPattern.getAbstractObservable();
-                List<ObserverCollection> observerCols = abstObservable.getObserverCollections();
+                AbstractSubject abstractSubject = observerPattern.getAbstractSubject();
+                List<ObserverCollection> observerCols = abstractSubject.getObserverCollections();
 
                 for (ObserverCollection observerCol : observerCols) {
                     ResolvedReferenceTypeDeclaration parameterType =
@@ -86,9 +83,9 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
 
 
     /**
-     * Finds the update method in the AbstractObserver which is being referred to from the observable classes.
+     * Finds the update method in the AbstractObserver which is being referred to from the subject classes.
      *
-     * @param abstObserver    The AbstractObservable referring to this AbstractObserver
+     * @param abstObserver    The AbstractSubject referring to this AbstractObserver
      * @param observerCol     A potential observer collection
      */
     private boolean findUpdateMethod(
