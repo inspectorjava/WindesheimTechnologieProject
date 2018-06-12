@@ -5,6 +5,7 @@ Library for the design pattern detection and analysis in java code.
 
 ## Installation
 Since this library is not available on any code repositories we recommend to use Jitpack to include this library as a dependency in your projects.
+
 ### Maven
 For Maven you have to add Jitpack to your list of repositories if you haven't done so already.
 ```xml
