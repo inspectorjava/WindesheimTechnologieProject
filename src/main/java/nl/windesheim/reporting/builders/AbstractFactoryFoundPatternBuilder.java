@@ -55,7 +55,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         HasImplementations hasImpl = new HasImplementations(hasInterface);
         hasImpl.setImplementations(this.implementations);
 
-        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(hasImpl);
+        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(patternReport);
         hasFacImpl.setImplementations(this.factoryImpl);
 
         return hasFacImpl;
