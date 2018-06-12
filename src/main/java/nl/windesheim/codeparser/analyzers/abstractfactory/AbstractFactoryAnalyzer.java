@@ -41,7 +41,9 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             List<ClassOrInterfaceDeclaration> implementations =
                     interfaceFinder.findImplementations(factory, declarations);
-            patterns.add(makeAbstractFactory(factory, implementations));
+            List<ClassOrInterfaceDeclaration> factoryInterfaces =
+                    interfaceFinder.findInterfacesFromFactory(implementations);
+            patterns.add(makeAbstractFactory(factory, implementations, factoryInterfaces));
         }
 
         return patterns;
@@ -70,12 +72,14 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
      *
      * @param factory         the factory class
      * @param implementations it's implementations
+     * @param factoryInterfaces
      * @return AbstractFactory
      */
     private AbstractFactory makeAbstractFactory(
             final ClassOrInterfaceDeclaration factory,
-            final List<ClassOrInterfaceDeclaration> implementations
-    ) {
+            final List<ClassOrInterfaceDeclaration> implementations,
+            List<ClassOrInterfaceDeclaration> factoryInterfaces) {
+        // The factory interface. (KingdomFactory)
         AbstractFactory abstractFactory = new AbstractFactory();
         abstractFactory.setFactoryInterface(
                 new ClassOrInterface()
@@ -84,6 +88,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
                         .setDeclaration(factory)
         );
 
+        // The factory implementations (OrcKingdomFactory, ElfKingdomFactory)
         List<ClassOrInterface> implClasses = new ArrayList<>();
         for (ClassOrInterfaceDeclaration declaration : implementations) {
             implClasses.add(
@@ -95,6 +100,18 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         }
 
         abstractFactory.setImplementations(implClasses);
+
+        List<ClassOrInterface> implInterfaces = new ArrayList<>();
+        for (ClassOrInterfaceDeclaration declaration : factoryInterfaces) {
+            implInterfaces.add(
+                    new ClassOrInterface()
+                            .setFilePart(FilePartResolver.getFilePartOfNode(declaration))
+                            .setName(declaration.getNameAsString())
+                            .setDeclaration(declaration)
+            );
+        }
+        abstractFactory.setConcreteInterfaces(implInterfaces);
+
         return abstractFactory;
     }
 }
