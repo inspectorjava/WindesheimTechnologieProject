@@ -40,7 +40,7 @@ public enum NodeType {
     PATTERN_ERROR,
 
     /**
-     * A remark on the design pattern
+     * A remark on the design pattern.
      */
     PATTERN_REMARK
 }

@@ -5,8 +5,11 @@ import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.ObserverPropertyFinder;
-import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
+import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.ConcreteSubject;
+import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
@@ -121,7 +124,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                 .setObserverHasSubject(aObserver.getSubjectVariable() != null)
                 .setObserverHasAttachCall(aObserver.getHasAttachStatement())
                 .setObserverHasDetachCall(aObserver.getHasDetachStatement())
-                .setUpdateHasArguments(aObserver.isUpdateMethodHasArguments());
+                .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
 
 
         // Fill concrete subject
@@ -150,7 +153,7 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                     .setObserverHasSubject(cObserver.getSubjectVariable() != null)
                     .setObserverHasAttachCall(cObserver.getHasAttachStatement())
                     .setObserverHasDetachCall(cObserver.getHasDetachStatement())
-                    .setUpdateHasArguments(aObserver.isUpdateMethodHasArguments());
+                    .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
         }
 
         observerPattern.setPatternProperties(patternProps);

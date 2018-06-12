@@ -15,11 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Finds ConcreteObservers: concrete implementations of an AbstractObserver.
+ */
 public class ConcreteObserverFinder {
     /**
-     * Finds ConcreteObservers: concrete implementations of an AbstractObserver.
-     *
      * @param files            A list of files containing Java code
+     * @param eligiblePatterns The detected potential observer patterns
      */
     public void findConcreteObservers(
             final List<CompilationUnit> files,

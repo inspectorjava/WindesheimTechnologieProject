@@ -6,6 +6,9 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 import java.util.List;
 
+/**
+ * Searches for calls to the given method.
+ */
 public class MethodCallFinder extends GenericVisitorAdapter<Boolean, List<ResolvedMethodDeclaration>> {
     @Override
     public Boolean visit(final MethodCallExpr methodCallExpr, final List<ResolvedMethodDeclaration> resMethodDecls) {

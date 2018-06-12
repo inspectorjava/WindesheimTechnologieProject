@@ -14,13 +14,19 @@ public class ObserverClass extends EligibleObserverComponent {
      */
     private ResolvedMethodDeclaration updateMethod;
 
-    // Has field of AbstractSubject type
+    /**
+     * Whether the class has a field containing a reference to a Subject.
+     */
     private VariableDeclarator subjectVar;
 
-    // Attaches itself to the subject
+    /**
+     * Whether the class calls the attach method.
+     */
     private boolean hasAttachStmt;
 
-    // Detaches itself from the subject
+    /**
+     * Whether the class calls the detach method.
+     */
     private boolean hasDetachStmt;
 
     /**
@@ -77,31 +83,52 @@ public class ObserverClass extends EligibleObserverComponent {
         this.updateMethod = updateMethod;
     }
 
+    /**
+     * @return VariableDeclarator which refers to a Subject
+     */
     public VariableDeclarator getSubjectVariable() {
         return subjectVar;
     }
 
+    /**
+     * @param abstSubjectVar VariableDeclarator which refers to a Subject
+     */
     public void setSubjectVariable(final VariableDeclarator abstSubjectVar) {
         this.subjectVar = abstSubjectVar;
     }
 
-    public boolean getHasAttachStatement () {
+    /**
+     * @return Whether the class contains a call to an attach method
+     */
+    public boolean getHasAttachStatement() {
         return hasAttachStmt;
     }
 
-    public void setHasAttachStatement (final boolean hasAttachStmt) {
+    /**
+     * @param hasAttachStmt Whether the class contains a call to an attach method
+     */
+    public void setHasAttachStatement(final boolean hasAttachStmt) {
         this.hasAttachStmt = hasAttachStmt;
     }
 
-    public boolean getHasDetachStatement () {
+    /**
+     * @return Whether the class contains a call to a detach method
+     */
+    public boolean getHasDetachStatement() {
         return hasDetachStmt;
     }
 
-    public void setHasDetachStatement (final boolean hasDetachStmt) {
+    /**
+     * @param hasDetachStmt Whether the class contains a call to a detach method
+     */
+    public void setHasDetachStatement(final boolean hasDetachStmt) {
         this.hasDetachStmt = hasDetachStmt;
     }
 
-    public boolean isUpdateMethodHasArguments () {
+    /**
+     * @return Whether the update method declaration takes parameters
+     */
+    public boolean isUpdateMethodHasParameters() {
         return updateMethod != null && updateMethod.getNumberOfParams() > 0;
     }
 }

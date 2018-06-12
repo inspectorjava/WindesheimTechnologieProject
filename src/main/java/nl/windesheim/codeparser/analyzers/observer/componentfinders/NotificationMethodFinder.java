@@ -165,7 +165,7 @@ public class NotificationMethodFinder extends SubjectMethodFinder {
             } else if (iterableExpr.isFieldAccessExpr()) {
                 iterableValue = iterableExpr.asFieldAccessExpr().resolve();
             }
-        } catch (UnsolvedSymbolException|UnsupportedOperationException ex) {
+        } catch (UnsolvedSymbolException | UnsupportedOperationException ex) {
             ErrorLog.getInstance().addError(ex);
         }
 

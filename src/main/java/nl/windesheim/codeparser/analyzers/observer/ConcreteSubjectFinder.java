@@ -7,10 +7,11 @@ import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclas
 
 import java.util.List;
 
+/**
+ * Finds ConcreteSubjects: concrete implementations of an AbstractSubject.
+ */
 public class ConcreteSubjectFinder {
     /**
-     * Finds ConcreteSubjects: concrete implementations of an AbstractSubject.
-     *
      * @param files            A list of files containing Java code
      * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
      *                         when concrete subjects have been found a pattern instance

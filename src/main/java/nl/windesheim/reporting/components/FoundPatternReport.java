@@ -26,7 +26,7 @@ public class FoundPatternReport implements IFoundPatternReport {
     private final List<String> patternErrors;
 
     /**
-     * A list of remarks about the pattern
+     * A list of remarks about the pattern.
      */
     private final List<String> patternRemarks;
 
@@ -78,7 +78,7 @@ public class FoundPatternReport implements IFoundPatternReport {
     /**
      * @return a list of remarks about the design pattern
      */
-    public List<String> getPatternRemarks () {
+    public List<String> getPatternRemarks() {
         return patternRemarks;
     }
 

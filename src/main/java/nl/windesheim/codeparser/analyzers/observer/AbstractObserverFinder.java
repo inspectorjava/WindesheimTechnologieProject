@@ -7,8 +7,11 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
+import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
+import nl.windesheim.codeparser.analyzers.observer.components.NotificationMethod;
+import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 
 import java.util.List;
@@ -87,6 +90,7 @@ public class AbstractObserverFinder extends VoidVisitorAdapter<Void> {
      *
      * @param abstObserver    The AbstractSubject referring to this AbstractObserver
      * @param observerCol     A potential observer collection
+     * @return Whether the update method is found
      */
     private boolean findUpdateMethod(
             final AbstractObserver abstObserver,

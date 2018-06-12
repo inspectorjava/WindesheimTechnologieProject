@@ -27,6 +27,9 @@ public class EligibleObserverPattern {
      */
     private final List<ConcreteObserver> concreteObservers;
 
+    /**
+     * The observer collection which links the components in this pattern.
+     */
     private ObserverCollection activeCollection;
 
     /**
@@ -99,7 +102,10 @@ public class EligibleObserverPattern {
         return this;
     }
 
-    public boolean hasAbstractObserver () {
+    /**
+     * @return Whether an abstract observer is found in the pattern
+     */
+    public boolean hasAbstractObserver() {
         return abstractObserver != null;
     }
 
@@ -128,11 +134,18 @@ public class EligibleObserverPattern {
         return this;
     }
 
-    public ObserverCollection getActiveCollection () {
+    /**
+     * @return The observer collection which links the components in this pattern
+     */
+    public ObserverCollection getActiveCollection() {
         return activeCollection;
     }
 
-    public EligibleObserverPattern setActiveCollection (final ObserverCollection activeCollection) {
+    /**
+     * @param activeCollection The observer collection which links the components in this pattern
+     * @return this
+     */
+    public EligibleObserverPattern setActiveCollection(final ObserverCollection activeCollection) {
         this.activeCollection = activeCollection;
         return this;
     }

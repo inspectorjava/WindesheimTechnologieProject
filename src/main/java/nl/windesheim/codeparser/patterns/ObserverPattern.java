@@ -30,6 +30,9 @@ public class ObserverPattern implements IDesignPattern {
      */
     private List<ClassOrInterface> cObservers;
 
+    /**
+     * Optional properties of this observer pattern.
+     */
     private ObserverPatternProperties patternProps;
 
     /**
@@ -122,11 +125,18 @@ public class ObserverPattern implements IDesignPattern {
         return this;
     }
 
+    /**
+     * @return Optional properties of this observer pattern
+     */
     public ObserverPatternProperties getPatternProperties() {
         return patternProps;
     }
 
-    public ObserverPattern setPatternProperties (final ObserverPatternProperties patternProps) {
+    /**
+     * @param patternProps Optional properties of this observer pattern
+     * @return this
+     */
+    public ObserverPattern setPatternProperties(final ObserverPatternProperties patternProps) {
         this.patternProps = patternProps;
         return this;
     }

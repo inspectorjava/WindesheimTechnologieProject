@@ -4,11 +4,20 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
-import nl.windesheim.codeparser.analyzers.observer.components.*;
+import nl.windesheim.codeparser.analyzers.observer.components.ObserverClass;
+import nl.windesheim.codeparser.analyzers.observer.components.SubjectClass;
 
 import java.util.List;
 
+/**
+ * Searches for a variable in a field declaration which refers to a Subject.
+ */
 public class SubjectVariableFinder {
+    /**
+     * @param observer The observer class to search in
+     * @param subjects The subject classes the variable should refer to
+     * @return The VariableDeclarator that refers to one of the SubjectClasses, or null
+     */
     public VariableDeclarator findSubjectVariable(
             final ObserverClass observer,
             final List<SubjectClass> subjects
@@ -21,7 +30,8 @@ public class SubjectVariableFinder {
                 ResolvedType variableType = variableDecl.getType().resolve();
 
                 if (variableType.isReferenceType()) {
-                    ResolvedReferenceTypeDeclaration variableTypeDecl = variableType.asReferenceType().getTypeDeclaration();
+                    ResolvedReferenceTypeDeclaration variableTypeDecl =
+                            variableType.asReferenceType().getTypeDeclaration();
 
                     for (SubjectClass subject : subjects) {
                         if (variableTypeDecl.equals(subject.getResolvedTypeDeclaration())) {

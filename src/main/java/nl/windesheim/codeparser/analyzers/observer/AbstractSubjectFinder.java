@@ -116,9 +116,9 @@ public class AbstractSubjectFinder
      * -- Which not the same type as itself or an ancestor
      *
      * @param classDeclaration The class to find the eligible collection in
+     * @param classTypeDecl    The resolved reference type of the given class
      * @return A list of object properties which fit the criteria for being an Observer collection
      */
-    // TODO Mag naar eigen klasse?
     private List<ObserverCollection> findEligibleCollections(
             final ClassOrInterfaceDeclaration classDeclaration,
             final ResolvedReferenceTypeDeclaration classTypeDecl
@@ -169,10 +169,17 @@ public class AbstractSubjectFinder
         return collections;
     }
 
-    private boolean isTypeEqualToSelf (final ResolvedReferenceType parameterType,
-                                       final ResolvedReferenceTypeDeclaration classTypeDecl
+    /**
+     * Determines whether the parameter is of the same type as the class, or one of it's ancestors.
+     *
+     * @param parameterType The resolved parameter type
+     * @param classTypeDecl The resolved class type
+     * @return Whether the parameter and the class are of the same type
+     */
+    private boolean isTypeEqualToSelf(
+            final ResolvedReferenceType parameterType,
+            final ResolvedReferenceTypeDeclaration classTypeDecl
     ) {
-        // TODO Make partial pattern instead?
         if (parameterType.getTypeDeclaration().equals(classTypeDecl)) {
             return true;
         }
