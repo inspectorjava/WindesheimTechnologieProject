@@ -1,15 +1,12 @@
 package nl.windesheim.reporting.builders;
 
-import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.CompositePattern;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasComponent;
-import nl.windesheim.reporting.decorators.HasComposites;
-import nl.windesheim.reporting.decorators.HasLeafs;
-
-import java.util.List;
+import nl.windesheim.reporting.decorators.HasClassList;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Composite found builder.
@@ -18,33 +15,18 @@ public class CompositeFoundBuilder extends AbstractFoundPatternBuilder {
     /**
      * The component of the composite pattern.
      */
-    private final ClassOrInterface component;
-
-    /**
-     * The composites in the composite pattern.
-     */
-    private final List<ClassOrInterface> composites;
-
-    /**
-     * The leafs in the composite pattern.
-     */
-    private final List<ClassOrInterface> leafs;
+    private final CompositePattern pattern;
 
     /**
      * Default constructor.
-     * @param component the component interface
-     * @param composites the composite classes
-     * @param leafs the leaf classes
+     *
+     * @param pattern the composite pattern
      */
     public CompositeFoundBuilder(
-            final ClassOrInterface component,
-            final List<ClassOrInterface> composites,
-            final List<ClassOrInterface> leafs
+            final CompositePattern pattern
     ) {
         super();
-        this.component = component;
-        this.composites = composites;
-        this.leafs = leafs;
+        this.pattern = pattern;
     }
 
 
@@ -53,14 +35,17 @@ public class CompositeFoundBuilder extends AbstractFoundPatternBuilder {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.COMPOSITE);
 
-        HasComponent hasComponent = new HasComponent(patternReport);
-        hasComponent.setComponent(component);
+        HasClassOrInterface hasComponent = new HasClassOrInterface(patternReport);
+        hasComponent.setName("Component");
+        hasComponent.setClassOrInterface(pattern.getComponent());
 
-        HasComposites hasComposites = new HasComposites(hasComponent);
-        hasComposites.setComposites(composites);
+        HasClassList hasComposites = new HasClassList(hasComponent);
+        hasComposites.setName("Composites");
+        hasComposites.setClasses(pattern.getComposites());
 
-        HasLeafs hasLeafs = new HasLeafs(hasComposites);
-        hasLeafs.setLeafs(leafs);
+        HasClassList hasLeafs = new HasClassList(hasComposites);
+        hasLeafs.setName("Leafs");
+        hasLeafs.setClasses(pattern.getLeafs());
 
         return hasLeafs;
     }

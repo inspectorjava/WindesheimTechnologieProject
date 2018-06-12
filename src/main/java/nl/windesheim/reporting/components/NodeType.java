@@ -20,6 +20,11 @@ public enum NodeType {
     CLASS,
 
     /**
+     * A abstract class of a pattern.
+     */
+    ABSTRACT_CLASS,
+
+    /**
      * A interface of a pattern.
      */
     INTERFACE,
@@ -28,4 +33,9 @@ public enum NodeType {
      * A list of classes of a pattern.
      */
     CLASS_LIST,
+
+    /**
+     * A fault or error in the design pattern.
+     */
+    PATTERN_ERROR
 }

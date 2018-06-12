@@ -3,6 +3,7 @@ package nl.windesheim.codeparser.analyzers.singleton;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.codeparser.patterns.Singleton;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,7 +35,11 @@ public class SingletonAnalyzerEdgeCases {
 
         List<IDesignPattern> patterns = analyzer.analyze(units);
 
-        assertEquals(0, patterns.size());
+        assertEquals(2, patterns.size());
+
+        for (IDesignPattern pattern : patterns){
+            assertFalse(((Singleton) pattern).hasPrivateConstructor());
+        }
     }
 
 }
