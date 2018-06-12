@@ -2,6 +2,7 @@ package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class AbstractFactory implements IDesignPattern {
     /**
      * List of all the used interfaces by the concrete factories.
      */
-    private List<ClassOrInterface> concreteInter;
+    private HashMap<ClassOrInterface, List<ClassOrInterface>> concreteInter;
 
     /**
      * Get the factory interface.
@@ -45,7 +46,7 @@ public class AbstractFactory implements IDesignPattern {
      * Get the concrete interfaces.
      * @return the conrete interfaces.
      */
-    public List<ClassOrInterface> getConcreteImplementations() {
+    public HashMap<ClassOrInterface, List<ClassOrInterface>> getConcreteImplementations() {
         return concreteInter;
     }
 
@@ -69,7 +70,7 @@ public class AbstractFactory implements IDesignPattern {
      * Set the list of concrete interfaces.
      * @param implInterfaces the concrete interfaces
      */
-    public void setConcreteInterfaces(final List<ClassOrInterface> implInterfaces) {
+    public void setConcreteInterfaces(final HashMap<ClassOrInterface, List<ClassOrInterface>> implInterfaces) {
         this.concreteInter = implInterfaces;
     }
 }

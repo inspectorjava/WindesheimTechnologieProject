@@ -6,7 +6,9 @@ import nl.windesheim.reporting.components.NodeType;
 import nl.windesheim.reporting.components.TreeBuilder;
 import nl.windesheim.reporting.components.TreeNode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Has implementations report decorator.
@@ -16,7 +18,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
     /**
      * List of implementations.
      */
-    private List<ClassOrInterface> implementations;
+    private HashMap<ClassOrInterface, List<ClassOrInterface>> implementations;
 
 
     /**
@@ -31,7 +33,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
      * Set implementations.
      * @param implementations list of implementations
      */
-    public void setImplementations(final List<ClassOrInterface> implementations) {
+    public void setImplementations(final HashMap<ClassOrInterface, List<ClassOrInterface>> implementations) {
         this.implementations = implementations;
     }
 
@@ -39,14 +41,22 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
     public TreeBuilder buildTreeReport(final TreeBuilder builder) {
         TreeNode node = new TreeNode("Factory implementations");
 
-        for (ClassOrInterface link : this.implementations) {
-            node.addChild(new TreeNode(link.getName())
-                .setClassOrInterface(link)
-                .setNodeType(NodeType.CLASS)
-            );
+        for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
+                entry : this.implementations.entrySet()){
+            TreeNode treeNode = new TreeNode(entry.getKey().getName())
+                    .setClassOrInterface(entry.getKey())
+                    .setNodeType(NodeType.INTERFACE);
+
+            for (ClassOrInterface declaration : entry.getValue()) {
+                treeNode.addChild(
+                        new TreeNode(declaration.getName())
+                        .setClassOrInterface(declaration)
+                        .setNodeType(NodeType.CLASS)
+                );
+            }
+
+            node.addChild(treeNode);
         }
-        node.setNodeType(NodeType.CLASS_LIST);
-        builder.addNode(node);
 
         return super.buildTreeReport(builder);
     }
@@ -59,8 +69,12 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         //Can't fix this without magic numbers which are also illegal
         @SuppressWarnings("PMD.InsufficientStringBufferDeclaration")
         StringBuilder baseString = new StringBuilder(super.getReport());
-        for (ClassOrInterface link : this.implementations) {
-            baseString.append("Factory implementation: ").append(link.getName()).append("\n\r");
+        for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
+                entry : this.implementations.entrySet()) {
+            baseString.append("factory implementation: ").append(entry.getKey()).append("\n\r");
+            for (ClassOrInterface declaration : entry.getValue()) {
+                baseString.append("- ").append(declaration.getName()).append("\n\r");
+            }
         }
 
         return baseString.toString();

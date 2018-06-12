@@ -11,7 +11,9 @@ import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The full class to analyze compilation units to check if an (Abstract) Factory pattern is used.
@@ -41,8 +43,8 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             List<ClassOrInterfaceDeclaration> implementations =
                     interfaceFinder.findImplementations(factory, declarations);
-            List<ClassOrInterfaceDeclaration> factoryInterfaces =
-                    interfaceFinder.findInterfacesFromFactory(implementations);
+            HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces =
+                    interfaceFinder.findInterfacesFromFactory(implementations, declarations);
             patterns.add(makeAbstractFactory(factory, implementations, factoryInterfaces));
         }
 
@@ -78,7 +80,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
     private AbstractFactory makeAbstractFactory(
             final ClassOrInterfaceDeclaration factory,
             final List<ClassOrInterfaceDeclaration> implementations,
-            final List<ClassOrInterfaceDeclaration> factoryInterfaces) {
+            final HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces) {
         // The factory interface. (KingdomFactory)
         AbstractFactory abstractFactory = new AbstractFactory();
         abstractFactory.setFactoryInterface(
@@ -101,13 +103,27 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
 
         abstractFactory.setImplementations(implClasses);
 
-        List<ClassOrInterface> implInterfaces = new ArrayList<>();
-        for (ClassOrInterfaceDeclaration declaration : factoryInterfaces) {
-            implInterfaces.add(
+        HashMap<ClassOrInterface, List<ClassOrInterface>>
+                implInterfaces = new HashMap<>();
+        for (
+                Map.Entry<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> entry :
+                factoryInterfaces.entrySet()) {
+
+            List<ClassOrInterface> products = new ArrayList<>();
+
+            for (ClassOrInterfaceDeclaration declaration : entry.getValue()) {
+                products.add(new ClassOrInterface()
+                        .setFilePart(FilePartResolver.getFilePartOfNode(declaration))
+                        .setName(declaration.getNameAsString())
+                        .setDeclaration(declaration));
+            }
+
+            implInterfaces.put(
                     new ClassOrInterface()
-                            .setFilePart(FilePartResolver.getFilePartOfNode(declaration))
-                            .setName(declaration.getNameAsString())
-                            .setDeclaration(declaration)
+                            .setFilePart(FilePartResolver.getFilePartOfNode(entry.getKey()))
+                            .setName(entry.getKey().getNameAsString())
+                            .setDeclaration(entry.getKey()),
+                    products
             );
         }
         abstractFactory.setConcreteInterfaces(implInterfaces);

@@ -11,6 +11,7 @@ import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -179,9 +180,10 @@ public class InterfaceFactoryFinder extends AbstractFinder {
      * @param implementations the implementations to check
      * @return The found interfaces in the factory class.
      */
-    public List<ClassOrInterfaceDeclaration> findInterfacesFromFactory(
-            final List<ClassOrInterfaceDeclaration> implementations) {
-        List<ClassOrInterfaceDeclaration> factoryInterfaces = new ArrayList<>();
+    public HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> findInterfacesFromFactory(
+            final List<ClassOrInterfaceDeclaration> implementations,
+            final List<ClassOrInterfaceDeclaration> declarations) {
+        HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces = new HashMap<>();
 
         for (ClassOrInterfaceDeclaration declaration : implementations) {
             for (Node childNode : declaration.getChildNodes()) {
@@ -212,12 +214,37 @@ public class InterfaceFactoryFinder extends AbstractFinder {
                 ClassOrInterfaceDeclaration resolvedInterface =
                         ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
 
-                if (!factoryInterfaces.contains(resolvedInterface)) {
-                    factoryInterfaces.add(resolvedInterface);
+                if (!factoryInterfaces.containsKey(resolvedInterface)) {
+                    factoryInterfaces.put(resolvedInterface,
+                            this.findConcreteInterfaceImplementations(
+                                    resolvedInterface,
+                                    declarations
+                            ));
                 }
             }
         }
 
         return factoryInterfaces;
+    }
+
+    private List<ClassOrInterfaceDeclaration> findConcreteInterfaceImplementations(
+            final ClassOrInterfaceDeclaration resolvedInterface,
+            final List<ClassOrInterfaceDeclaration> declarations) {
+        List<ClassOrInterfaceDeclaration> implementations = new ArrayList<>();
+
+        for (ClassOrInterfaceDeclaration declaration : declarations) {
+            if(declaration.getImplementedTypes().size() == 0) {
+                continue;
+            }
+
+            for (ClassOrInterfaceType implemented : declaration.getImplementedTypes()) {
+                if (implemented.getName().equals(resolvedInterface.getName()) &&
+                        !implementations.contains(declaration)) {
+                    implementations.add(declaration);
+                }
+            }
+        }
+
+        return implementations;
     }
 }

@@ -1,7 +1,9 @@
 package nl.windesheim.codeparser.analyzers.abstractfactory;
 
 import nl.windesheim.codeparser.FileAnalysisProvider;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -97,6 +99,15 @@ public class AbstractFactoryAnalyzerHappyPathTest {
         List<IDesignPattern> patterns = this.analyzeDirectory(settings.codeDir);
 
         assertEquals(patterns.size(), 1);
+
+        for (IDesignPattern pattern : patterns) {
+            if(!(pattern instanceof AbstractFactory)) {
+                continue;
+            }
+            AbstractFactory abstractFactory = (AbstractFactory) pattern;
+            AbstractFactoryFoundPatternBuilder builder = new AbstractFactoryFoundPatternBuilder(abstractFactory);
+            builder.buildReport();
+        }
     }
 
     private List<IDesignPattern> analyzeDirectory(File dir) throws IOException {

@@ -10,6 +10,7 @@ import nl.windesheim.reporting.decorators.HasFactoryImplementations;
 import nl.windesheim.reporting.decorators.HasImplementations;
 import nl.windesheim.reporting.decorators.HasInterface;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
     /**
      * List of the implementations used by the factory.
      */
-    private final List<ClassOrInterface> factoryImpl;
+    private final HashMap<ClassOrInterface, List<ClassOrInterface>> factoryImpl;
 
     /**
      * The constructor.
@@ -54,7 +55,7 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         HasImplementations hasImpl = new HasImplementations(hasInterface);
         hasImpl.setImplementations(this.implementations);
 
-        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(hasImpl);
+        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(patternReport);
         hasFacImpl.setImplementations(this.factoryImpl);
 
         return hasImpl;
