@@ -20,11 +20,11 @@ public class HasLinksTest {
     private ClassOrInterface link2;
     private ClassOrInterface link3;
 
-    private HasLinks hasLinks;
+    private HasClassList hasLinks;
 
     @Before
     public void setUp() throws Exception {
-        this.hasLinks = new HasLinks(new FoundPatternReport());
+        this.hasLinks = new HasClassList(new FoundPatternReport());
         this.link1 = new ClassOrInterface().setName("Test1");
         this.link2 = new ClassOrInterface().setName("Test2");
         this.link3 = new ClassOrInterface().setName("Test3");
@@ -35,15 +35,16 @@ public class HasLinksTest {
         links.add(this.link2);
         links.add(this.link3);
 
-        this.hasLinks.setLinks(links);
+        this.hasLinks.setName("Links");
+        this.hasLinks.setClasses(links);
     }
 
     @Test
     public void getReport() {
         String report = this.hasLinks.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Link: Test1\n\r" +
-                "Link: Test2\n\r" +
-                "Link: Test3\n\r", report);
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Links:\n\r- Test1\n\r" +
+                "- Test2\n\r" +
+                "- Test3\n\r", report);
     }
 
     @Test

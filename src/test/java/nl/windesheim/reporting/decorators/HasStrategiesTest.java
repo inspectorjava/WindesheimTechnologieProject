@@ -20,11 +20,11 @@ public class HasStrategiesTest {
     private ClassOrInterface strategy2;
     private ClassOrInterface strategy3;
 
-    private HasStrategies hasStrategies;
+    private HasClassList hasStrategies;
 
     @Before
     public void setUp() throws Exception {
-        this.hasStrategies = new HasStrategies(new FoundPatternReport());
+        this.hasStrategies = new HasClassList(new FoundPatternReport());
         this.strategy1 = new ClassOrInterface().setName("Test1");
         this.strategy2 = new ClassOrInterface().setName("Test2");
         this.strategy3 = new ClassOrInterface().setName("Test3");
@@ -35,15 +35,16 @@ public class HasStrategiesTest {
         strategies.add(this.strategy2);
         strategies.add(this.strategy3);
 
-        this.hasStrategies.setStrategies(strategies);
+        this.hasStrategies.setName("Strategies");
+        this.hasStrategies.setClasses(strategies);
     }
 
     @Test
     public void getReport() {
         String report = this.hasStrategies.getReport();
-        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Strategy: Test1\n\r" +
-                "Strategy: Test2\n\r" +
-                "Strategy: Test3\n\r", report);
+        assertEquals("Pattern: "+ DesignPatternType.NONE +" found with certainty: "+ Result.Certainty.CERTAIN +"Strategies:\n\r- Test1\n\r" +
+                "- Test2\n\r" +
+                "- Test3\n\r", report);
     }
 
     @Test

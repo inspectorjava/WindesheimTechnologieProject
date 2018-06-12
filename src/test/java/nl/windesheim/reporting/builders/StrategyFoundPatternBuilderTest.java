@@ -38,9 +38,10 @@ public class StrategyFoundPatternBuilderTest {
                 " - The context doesn't call the strategy\n" +
                 " - The context has no setter for the strategy\n" +
                 " - The strategy interface has no methods declared\n" +
-                "Strategy: Strategy1\n\r" +
-                "Strategy: Strategy2\n\r" +
+                "Strategies:\n\r" +
+                "- Strategy1\n\r" +
+                "- Strategy2\n\r" +
                 " - Context: Context\n\r" +
-                " and uses interface: Interfacename", foundPatternReport.getReport());
+                " - Strategy interface: Interfacename\n\r", foundPatternReport.getReport());
     }
 }
