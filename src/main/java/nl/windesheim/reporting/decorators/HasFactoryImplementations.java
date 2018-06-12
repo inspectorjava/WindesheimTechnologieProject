@@ -57,7 +57,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
 
             node.addChild(treeNode);
         }
-
+        builder.addNode(node);
         return super.buildTreeReport(builder);
     }
 
