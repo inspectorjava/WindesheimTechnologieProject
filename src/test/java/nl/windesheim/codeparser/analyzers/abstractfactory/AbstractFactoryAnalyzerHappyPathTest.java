@@ -5,6 +5,8 @@ import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.TreeBuilder;
+import nl.windesheim.reporting.components.TreeNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -108,6 +110,7 @@ public class AbstractFactoryAnalyzerHappyPathTest {
             AbstractFactory abstractFactory = (AbstractFactory) pattern;
             AbstractFactoryFoundPatternBuilder builder = new AbstractFactoryFoundPatternBuilder(abstractFactory);
             IFoundPatternReport report = builder.buildReport();
+            TreeNode tree = report.buildTreeReport(new TreeBuilder()).build();
             System.out.println("test");
         }
     }
