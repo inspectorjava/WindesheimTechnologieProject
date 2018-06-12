@@ -1,59 +1,31 @@
 package nl.windesheim.reporting.builders;
 
-import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.ObserverPattern;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
-import nl.windesheim.reporting.decorators.HasAbstractObservable;
-import nl.windesheim.reporting.decorators.HasAbstractObserver;
-import nl.windesheim.reporting.decorators.HasConcreteObservables;
-import nl.windesheim.reporting.decorators.HasConcreteObservers;
-
-import java.util.List;
+import nl.windesheim.reporting.decorators.HasClassList;
+import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
 /**
  * Strategy pattern found builder.
  */
 public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
     /**
-     * The file part which contains the abstract observable class or interface.
+     * The observer pattern.
      */
-    private final ClassOrInterface aObservable;
-
-    /**
-     * The file part which contains the abstract observer class or interface.
-     */
-    private final List<ClassOrInterface> cObservables;
-
-    /**
-     * A list of file parts which contain concrete observable classes.
-     */
-    private final ClassOrInterface aObserver;
-
-    /**
-     * A list of file parts which contain concrete observer classes.
-     */
-    private final List<ClassOrInterface> cObservers;
+    private final ObserverPattern pattern;
 
     /**
      * Set the required parameters for the builder.
-     * @param aObservable  The abstract observable
-     * @param cObservables The concrete observables
-     * @param aObserver    The abstract observer
-     * @param cObservers   The concrete observers
+     * @param pattern the observer pattern
      */
     public ObserverFoundPatternBuilder(
-            final ClassOrInterface aObservable,
-            final List<ClassOrInterface> cObservables,
-            final ClassOrInterface aObserver,
-            final List<ClassOrInterface> cObservers
+            final ObserverPattern pattern
     ) {
         super();
-        this.aObservable = aObservable;
-        this.cObservables = cObservables;
-        this.aObserver = aObserver;
-        this.cObservers = cObservers;
+        this.pattern = pattern;
     }
 
 
@@ -62,17 +34,21 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.OBSERVER);
 
-        HasAbstractObservable aObservable = new HasAbstractObservable(patternReport);
-        aObservable.setAbstractObservable(this.aObservable);
+        HasClassOrInterface aObservable = new HasClassOrInterface(patternReport);
+        aObservable.setName("Abstract Observable");
+        aObservable.setClassOrInterface(this.pattern.getAbstractObservable());
 
-        HasAbstractObserver aObserver = new HasAbstractObserver(patternReport);
-        aObserver.setAbstractObserver(this.aObserver);
+        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
+        aObserver.setName("Abstract Observer");
+        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
 
-        HasConcreteObservables cObservables = new HasConcreteObservables(aObservable);
-        cObservables.setConcreteObservables(this.cObservables);
+        HasClassList cObservables = new HasClassList(aObservable);
+        cObservables.setName("Concrete Observables");
+        cObservables.setClasses(this.pattern.getConcreteObservables());
 
-        HasConcreteObservers cObservers = new HasConcreteObservers(aObserver);
-        cObservers.setConcreteObservers(this.cObservers);
+        HasClassList cObservers = new HasClassList(aObserver);
+        cObservers.setName("Concrete Observers");
+        cObservers.setClasses(this.pattern.getConcreteObservers());
 
         return cObservers;
     }

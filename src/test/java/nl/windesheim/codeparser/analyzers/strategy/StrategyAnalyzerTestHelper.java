@@ -4,6 +4,7 @@ import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.FileAnalysisProvider;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.Strategy;
+import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +85,12 @@ class StrategyAnalyzerTestHelper {
                 fail("Missing strategy class '" + strategyName + "' which was expected to be found in '" + expectedFile + "'");
             }
         }
-    }
+
+        Assert.assertTrue(pattern.isStrategyMethods());
+        Assert.assertTrue(pattern.isContextHasSetter());
+        Assert.assertTrue(pattern.isContextHasCaller());
+
+     }
 }
 
 class TestSettings {

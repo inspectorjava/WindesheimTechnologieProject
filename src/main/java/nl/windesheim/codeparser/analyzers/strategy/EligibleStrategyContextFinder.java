@@ -12,7 +12,6 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
-import javafx.util.Pair;
 import nl.windesheim.codeparser.analyzers.util.visitor.SetterFinder;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class EligibleStrategyContextFinder
     /**
      * The context, interface pairs found in the last visit.
      */
-    private final List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> classes = new ArrayList<>();
+    private final List<EligibleStrategyContext> classes = new ArrayList<>();
 
     /**
      * A list of errors which were encountered.
@@ -50,7 +49,7 @@ public class EligibleStrategyContextFinder
     /**
      * @return A list of context, interface pairs which were found in the last visit
      */
-    public List<Pair<VariableDeclarator, ClassOrInterfaceDeclaration>> getClasses() {
+    public List<EligibleStrategyContext> getClasses() {
         return classes;
     }
 
@@ -113,18 +112,18 @@ public class EligibleStrategyContextFinder
 
 
                 //If the interface has at least one method it is eligible as strategy interface
-                if (resolvedInterface.getMethods().size() == 0) {
-                    continue;
-                }
+                boolean hasMethods = !resolvedInterface.getMethods().isEmpty();
 
                 //Check if there is a setter for the field
                 boolean hasSetter = setterFinder.visit(declaration, variable) != null;
 
-                if (hasSetter) {
-                    Pair<VariableDeclarator, ClassOrInterfaceDeclaration> newPair =
-                            new Pair<>(variable, resolvedInterface);
-                    classes.add(newPair);
-                }
+                classes.add(
+                    new EligibleStrategyContext()
+                        .setInterfaceAttr(variable)
+                        .setStrategyClass(resolvedInterface)
+                        .setHasMethods(hasMethods)
+                        .setHasSetter(hasSetter)
+                );
             }
         }
     }
