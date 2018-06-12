@@ -18,7 +18,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
     /**
      * List of implementations.
      */
-    private HashMap<ClassOrInterface, List<ClassOrInterface>> implementations;
+    private HashMap<ClassOrInterface, List<ClassOrInterface>> facImplementations;
 
 
     /**
@@ -34,7 +34,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
      * @param implementations list of implementations
      */
     public void setImplementations(final HashMap<ClassOrInterface, List<ClassOrInterface>> implementations) {
-        this.implementations = implementations;
+        this.facImplementations = implementations;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         TreeNode node = new TreeNode("Factory implementations");
 
         for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
-                entry : this.implementations.entrySet()){
+                entry : this.facImplementations.entrySet()){
             TreeNode treeNode = new TreeNode(entry.getKey().getName())
                     .setClassOrInterface(entry.getKey())
                     .setNodeType(NodeType.INTERFACE);
@@ -70,7 +70,7 @@ public class HasFactoryImplementations extends FoundPatternReportDecorator {
         @SuppressWarnings("PMD.InsufficientStringBufferDeclaration")
         StringBuilder baseString = new StringBuilder(super.getReport());
         for (Map.Entry<ClassOrInterface, List<ClassOrInterface>>
-                entry : this.implementations.entrySet()) {
+                entry : this.facImplementations.entrySet()) {
             baseString.append("factory implementation: ").append(entry.getKey()).append("\n\r");
             for (ClassOrInterface declaration : entry.getValue()) {
                 baseString.append("- ").append(declaration.getName()).append("\n\r");
