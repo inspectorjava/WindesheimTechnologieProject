@@ -132,7 +132,7 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
 
     /**
      * Check if the method return type is void, has no parameters and isn't a getter or setter.
-     * @param methodDeclaration
+     * @param methodDeclaration Delectation of the current method.
      * @return If method is valid command execution method.
      */
     private boolean methodIsValid(final MethodDeclaration methodDeclaration) {
