@@ -33,13 +33,13 @@ public class ObserverPropertyFinder {
     }
 
     private void findProperties (final ObserverClass observer) {
-        // TODO Probably needs some refactoring
         ObserverCollection collection = pattern.getActiveCollection();
         if (collection == null) {
             return;
         }
 
-        VariableDeclarator observableVar = null;
+        // Find reference to observable
+        VariableDeclarator observableVar;
         if (observer instanceof ConcreteObserver && pattern.getAbstractObserver().getObservableVariable() != null) {
             observableVar = pattern.getAbstractObserver().getObservableVariable();
         } else {
@@ -55,21 +55,18 @@ public class ObserverPropertyFinder {
             observableVar = obsVarFinder.findObservableVariable(observer, observables);
         }
 
+        // If there's a reference, find calls to the attach and detach methods
         if (observableVar != null) {
+            observer.setObservableVariable(observableVar);
             findMethodCalls(observer, observableVar, collection);
         }
     }
 
     private void findMethodCalls (final ObserverClass observer, final VariableDeclarator observableVar, final ObserverCollection collection) {
-        observer.setObservableVariable(observableVar);
-
         // Check whether there's a call to the attach method
         MethodCallFinder methodCallFinder = new MethodCallFinder();
 
-        List<ResolvedMethodDeclaration> resAttachMethods = new ArrayList<>();
-        for (MethodDeclaration method : collection.getAttachMethods()) {
-            resAttachMethods.add(method.resolve());
-        }
+        List<ResolvedMethodDeclaration> resAttachMethods = resolveMethodDeclarations(collection.getAttachMethods());
 
         Boolean hasAttachCalls =
                 methodCallFinder.visit(observer.getClassDeclaration(), resAttachMethods);
@@ -78,10 +75,7 @@ public class ObserverPropertyFinder {
         }
 
         // Check whether there's a call to the detach method
-        List<ResolvedMethodDeclaration> resDetachMethods = new ArrayList<>();
-        for (MethodDeclaration method : collection.getDetachMethods()) {
-            resDetachMethods.add(method.resolve());
-        }
+        List<ResolvedMethodDeclaration> resDetachMethods = resolveMethodDeclarations(collection.getDetachMethods());
 
         Boolean hasDetachCalls =
                 methodCallFinder.visit(observer.getClassDeclaration(), resDetachMethods);
@@ -90,22 +84,14 @@ public class ObserverPropertyFinder {
         }
     }
 
-    private boolean hasAttachCalls (ClassOrInterfaceDeclaration classDecl, List<MethodDeclaration> methodDecls) {
-        List<MethodCallExpr> methodCalls = classDecl.findAll(MethodCallExpr.class);
+    private List<ResolvedMethodDeclaration> resolveMethodDeclarations (List<MethodDeclaration> methodDecls) {
         List<ResolvedMethodDeclaration> resMethodDecls = new ArrayList<>();
-        for (MethodDeclaration methodDecl : methodDecls) {
-            resMethodDecls.add(methodDecl.resolve());
+
+        for (MethodDeclaration method : methodDecls) {
+            resMethodDecls.add(method.resolve());
         }
 
-        for (MethodCallExpr methodCallExpr : methodCalls) {
-            ResolvedMethodDeclaration resolvedCall = methodCallExpr.resolve();
-            for (ResolvedMethodDeclaration resMethodDecl : resMethodDecls) {
-                if (resMethodDecl.getQualifiedSignature().equals(resolvedCall.getQualifiedSignature())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return resMethodDecls;
     }
+
 }
