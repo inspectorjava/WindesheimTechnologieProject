@@ -53,7 +53,11 @@ public class ObserverAnalyzer extends PatternAnalyzer {
             aObsableFinder.visit(compilationUnit, null);
         }
 
+        // Potential patterns, as found by analyzing code for abstract observables
         List<EligibleObserverPattern> rawPatterns = aObsableFinder.getObserverPatterns();
+        if (rawPatterns.isEmpty()) {
+            return patterns;
+        }
 
         // Search for classes that extend the abstract observables
         findConcreteObservables(files, rawPatterns);

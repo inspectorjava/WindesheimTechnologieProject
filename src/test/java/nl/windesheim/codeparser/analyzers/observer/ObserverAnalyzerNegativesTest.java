@@ -10,12 +10,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-
-public class ObserverAnalyzerEdgeCasesTest {
+public class ObserverAnalyzerNegativesTest {
     private ClassLoader classLoader;
     private ObserverAnalyzerTestHelper helper;
 
-    public ObserverAnalyzerEdgeCasesTest() {
+    public ObserverAnalyzerNegativesTest() {
         classLoader = this.getClass().getClassLoader();
         helper = new ObserverAnalyzerTestHelper();
     }
