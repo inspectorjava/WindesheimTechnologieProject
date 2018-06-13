@@ -40,20 +40,20 @@ public class ObserverAnalyzer extends PatternAnalyzer {
         }
 
         // Find abstract subject classes
-        AbstractSubjectFinder aObsableFinder = new AbstractSubjectFinder(typeSolver);
+        AbstractSubjectFinder aSubjectFinder = new AbstractSubjectFinder(typeSolver);
         for (CompilationUnit compilationUnit : files) {
-            aObsableFinder.visit(compilationUnit, null);
+            aSubjectFinder.visit(compilationUnit, null);
         }
 
         // Potential patterns, as found by analyzing code for abstract subjects
-        List<EligibleObserverPattern> rawPatterns = aObsableFinder.getObserverPatterns();
+        List<EligibleObserverPattern> rawPatterns = aSubjectFinder.getObserverPatterns();
         if (rawPatterns.isEmpty()) {
             return patterns;
         }
 
         // Search for classes that extend the abstract subjects
-        ConcreteSubjectFinder cObsableFinder = new ConcreteSubjectFinder();
-        cObsableFinder.findConcreteSubjects(files, rawPatterns);
+        ConcreteSubjectFinder cSubjectFinder = new ConcreteSubjectFinder();
+        cSubjectFinder.findConcreteSubjects(files, rawPatterns);
 
         // Find abstract observer classes
         AbstractObserverFinder aObserverFinder =
