@@ -62,4 +62,19 @@ public class CommandAnalyzerHappyPathTest {
         helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/compression").getPath()));
     }
 
+    @Test
+    public void testStrategyWiki() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("strategy/wiki").getPath()));
+    }
+
+    @Test
+    public void testObserverNumberSystem() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("observer/numbersystem").getPath()));
+    }
+
+    @Test
+    public void testChainOfResponsibiltyAtm() throws IOException {
+        helper.testInvalidCommandPattern(new File(classLoader.getResource("chainOfResponsibility/atm").getPath()));
+    }
+
 }

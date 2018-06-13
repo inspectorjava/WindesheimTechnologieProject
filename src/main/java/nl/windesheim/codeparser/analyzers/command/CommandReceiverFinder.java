@@ -76,16 +76,15 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
             return;
         }
 
-        Node node = methodCall;
-        while (!(node instanceof MethodDeclaration)) {
-            if (!node.getParentNode().isPresent()) {
-                return;
-            }
-            node = node.getParentNode().get();
+        MethodDeclaration methodDeclaration = getMethodDeclaration(methodCall);
+        if (methodDeclaration == null) {
+            return;
         }
-        MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 
-        if (!methodExitsInDefinition(methodDeclaration, commandDefinition) || !methodCall.getScope().isPresent()) {
+        if (!methodExitsInDefinition(methodDeclaration, commandDefinition)
+                || !methodCall.getScope().isPresent()
+                || methodIsValid(methodDeclaration)) {
+
             return;
         }
 
@@ -116,6 +115,33 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
     }
 
     /**
+     * Get the method declaration of the method call.
+     * @param methodCall Method call.
+     * @return Method declaration.
+     */
+    private MethodDeclaration getMethodDeclaration(final MethodCallExpr methodCall) {
+        Node node = methodCall;
+        while (!(node instanceof MethodDeclaration)) {
+            if (!node.getParentNode().isPresent()) {
+                return null;
+            }
+            node = node.getParentNode().get();
+        }
+        return (MethodDeclaration) node;
+    }
+
+    /**
+     * Check if the method return type is void, has no parameters and isn't a getter or setter.
+     * @param methodDeclaration Delectation of the current method.
+     * @return If method is valid command execution method.
+     */
+    private boolean methodIsValid(final MethodDeclaration methodDeclaration) {
+        return !methodReturnsVoid(methodDeclaration)
+                || methodDeclaration.getParameters().size() > 0
+                || methodIsGetterOrSetter(methodDeclaration);
+    }
+
+    /**
      * Check if the called method exists in the command definition.
      *
      * @param methodDeclaration Delectation of the current method.
@@ -129,11 +155,41 @@ public class CommandReceiverFinder extends VoidVisitorAdapter<ClassOrInterfaceDe
         for (MethodDeclaration methodDefinition : commandDefinition.getMethods()) {
 
             // The current method exists in the command declaration.
-            if (methodDefinition.getNameAsString().equals(methodDeclaration.getNameAsString())) {
+            if (methodDefinition.getNameAsString().equals(methodDeclaration.getNameAsString())
+                    && methodDefinition.getType().toString().equals(methodDeclaration.getType().toString())
+                    && methodDefinition.isAbstract() == methodDeclaration.isAbstract()) {
+
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Check if the method return type is void.
+     *
+     * @param methodDeclaration Delectation of the current method.
+     * @return If the method return type is void.
+     */
+    private boolean methodReturnsVoid(
+            final MethodDeclaration methodDeclaration
+    ) {
+        return methodDeclaration.getType().toString().equals("void");
+    }
+
+    /**
+     * Check if the method name contains not the words getter or setter.
+     *
+     * @param methodDeclaration Delectation of the current method.
+     * @return If the method is an getter or setter.
+     */
+    private boolean methodIsGetterOrSetter(
+            final MethodDeclaration methodDeclaration
+    ) {
+        String methodName = methodDeclaration.getNameAsString().toLowerCase();
+
+        // When the method contains get or set it is certain getter or setter.
+        return methodName.contains("get") || methodName.contains("set");
     }
 }
