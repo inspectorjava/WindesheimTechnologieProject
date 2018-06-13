@@ -69,15 +69,15 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
         abstractSubject.setName("Abstract Subject");
         abstractSubject.setClassOrInterface(this.pattern.getAbstractSubject());
 
-        HasClassOrInterface abstractObserver = new HasClassOrInterface(patternReport);
-        abstractObserver.setName("Abstract Observer");
-        abstractObserver.setClassOrInterface(this.pattern.getAbstractObserver());
-
         HasClassList concreteSubjects = new HasClassList(abstractSubject);
         concreteSubjects.setName("Concrete Subjects");
         concreteSubjects.setClasses(this.pattern.getConcreteSubjects());
 
-        HasClassList concreteObservers = new HasClassList(abstractObserver);
+        HasClassOrInterface abstractObserver = new HasClassOrInterface(concreteSubjects);
+        abstractObserver.setName("Abstract Observer");
+        abstractObserver.setClassOrInterface(this.pattern.getAbstractObserver());
+
+        HasClassList concreteObservers = new HasClassList(concreteSubjects);
         concreteObservers.setName("Concrete Observers");
         concreteObservers.setClasses(this.pattern.getConcreteObservers());
 
