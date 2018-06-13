@@ -1,10 +1,11 @@
 # Windesheim codeparser
 Library for the design pattern detection and analysis in java code.
 
-[![Build Status](https://travis-ci.org/Taronyuu/WindesheimTechnologieProject.svg?branch=master)](https://travis-ci.org/Taronyuu/WindesheimTechnologieProject)
+[![Build Status](https://travis-ci.org/inspectorjava/WindesheimTechnologieProject.svg?branch=master)](https://travis-ci.org/inspectorjava/WindesheimTechnologieProject)
 
 ## Installation
 Since this library is not available on any code repositories we recommend to use Jitpack to include this library as a dependency in your projects.
+
 ### Maven
 For Maven you have to add Jitpack to your list of repositories if you haven't done so already.
 ```xml
@@ -17,7 +18,7 @@ For Maven you have to add Jitpack to your list of repositories if you haven't do
 Once you have the Jitpack repository you can add this Github project as a dependency like so.
 ```xml
 <dependency>
-    <groupId>com.github.Taronyuu</groupId>
+    <groupId>com.github.inspectorjava</groupId>
     <artifactId>WindesheimTechnologieProject</artifactId>
     <version>master</version>
 </dependency>
@@ -39,7 +40,7 @@ allprojects {
 Once you have the Jitpack repository you can add this Github project as a dependency like so.
 ```
 dependencies {
-    implementation 'com.github.Taronyuu:WindesheimTechnologieProject:master'
+    implementation 'com.github.inspectorjava:WindesheimTechnologieProject:master'
 }
 ```
 As version use 'master' for the latest stable release. Use 'develop' for testing unreleased features or fixes.

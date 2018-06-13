@@ -11,7 +11,9 @@ import nl.windesheim.codeparser.analyzers.util.ErrorLog;
 import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Find all the interface factories.
@@ -172,5 +174,85 @@ public class InterfaceFactoryFinder extends AbstractFinder {
                 ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
 
         return resolvedInterface != null;
+    }
+
+    /**
+     * Find the interfaces used in a factory class.
+     * @param implementations the implementations to check
+     * @param declarations List of the declarations.
+     * @return The found interfaces in the factory class.
+     */
+    public Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> findInterfacesFromFactory(
+            final List<ClassOrInterfaceDeclaration> implementations,
+            final List<ClassOrInterfaceDeclaration> declarations) {
+        HashMap<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces = new HashMap<>();
+
+        for (ClassOrInterfaceDeclaration declaration : implementations) {
+            for (Node childNode : declaration.getChildNodes()) {
+                if (!(childNode instanceof MethodDeclaration)) {
+                    continue;
+                }
+
+                MethodDeclaration methodDeclaration = (MethodDeclaration) childNode;
+
+                if (!(methodDeclaration.getType() instanceof ClassOrInterfaceType)) {
+                    continue;
+                }
+
+                ClassOrInterfaceType type = (ClassOrInterfaceType) methodDeclaration.getType();
+                ResolvedReferenceTypeDeclaration typeDeclaration;
+                try {
+                    typeDeclaration = type.resolve().getTypeDeclaration();
+                } catch (UnsolvedSymbolException exception) {
+                    ErrorLog.getInstance().addError(exception);
+                    continue;
+                }
+
+                //If the type is a interface
+                if (!(typeDeclaration instanceof JavaParserInterfaceDeclaration)) {
+                    continue;
+                }
+
+                ClassOrInterfaceDeclaration resolvedInterface =
+                        ((JavaParserInterfaceDeclaration) typeDeclaration).getWrappedNode();
+
+                if (!factoryInterfaces.containsKey(resolvedInterface)) {
+                    factoryInterfaces.put(resolvedInterface,
+                            this.findConcreteInterfaceImplementations(
+                                    resolvedInterface,
+                                    declarations
+                            ));
+                }
+            }
+        }
+
+        return factoryInterfaces;
+    }
+
+    /**
+     * Find the concrete implementations of the given interface.
+     * @param resolvedInterface The given interface.
+     * @param declarations The declarations.
+     * @return List of the found implementations.
+     */
+    private List<ClassOrInterfaceDeclaration> findConcreteInterfaceImplementations(
+            final ClassOrInterfaceDeclaration resolvedInterface,
+            final List<ClassOrInterfaceDeclaration> declarations) {
+        List<ClassOrInterfaceDeclaration> implementations = new ArrayList<>();
+
+        for (ClassOrInterfaceDeclaration declaration : declarations) {
+            if (declaration.getImplementedTypes().size() == 0) {
+                continue;
+            }
+
+            for (ClassOrInterfaceType implemented : declaration.getImplementedTypes()) {
+                if (implemented.getName().equals(resolvedInterface.getName())
+                        && !implementations.contains(declaration)) {
+                    implementations.add(declaration);
+                }
+            }
+        }
+
+        return implementations;
     }
 }

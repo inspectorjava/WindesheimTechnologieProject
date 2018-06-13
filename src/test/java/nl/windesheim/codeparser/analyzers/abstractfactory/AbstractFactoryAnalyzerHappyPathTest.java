@@ -1,7 +1,12 @@
 package nl.windesheim.codeparser.analyzers.abstractfactory;
 
 import nl.windesheim.codeparser.FileAnalysisProvider;
+import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
+import nl.windesheim.reporting.Report;
+import nl.windesheim.reporting.builders.AbstractFactoryFoundPatternBuilder;
+import nl.windesheim.reporting.builders.CodeReportBuilder;
+import nl.windesheim.reporting.components.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,35 +26,14 @@ public class AbstractFactoryAnalyzerHappyPathTest {
     }
 
     @Test
-    public void abstractFactoryCakeTest() throws Exception {
+    public void abstractFactoryDemoTest() throws Exception {
         TestSettings settings = new TestSettings();
 
-        File dir = new File(classLoader.getResource("abstractFactory/promienam").getPath());
+        File dir = new File(classLoader.getResource("abstractFactory/hjmf1954").getPath());
         settings.codeDir = dir;
 
-        settings.commonParentName = "DEMO";
-        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/promienam/DEMO.java").getPath());
-
-        settings.links.put(
-                "Cake",
-                new File(classLoader.getResource("abstractFactory/promienam/Cake.java").getPath())
-        );
-        settings.links.put(
-                "CakeFactory",
-                new File(classLoader.getResource("abstractFactory/promienam/CakeFactory.java").getPath())
-        );
-        settings.links.put(
-                "Custard",
-                new File(classLoader.getResource("abstractFactory/promienam/Custard.java").getPath())
-        );
-        settings.links.put(
-                "Muffin",
-                new File(classLoader.getResource("abstractFactory/promienam/Muffin.java").getPath())
-        );
-        settings.links.put(
-                "Pizza",
-                new File(classLoader.getResource("abstractFactory/promienam/Pizza.java").getPath())
-        );
+        settings.commonParentName = "App";
+        settings.commonParentFile = new File(classLoader.getResource("abstractFactory/hjmf1954/AbstractFactoryDemo.java").getPath());
 
         List<IDesignPattern> patterns = this.analyzeDirectory(settings.codeDir);
 
@@ -118,6 +102,18 @@ public class AbstractFactoryAnalyzerHappyPathTest {
         List<IDesignPattern> patterns = this.analyzeDirectory(settings.codeDir);
 
         assertEquals(patterns.size(), 1);
+
+        for (IDesignPattern pattern : patterns) {
+            if(!(pattern instanceof AbstractFactory)) {
+                continue;
+            }
+
+            CodeReportBuilder codeReportBuilder = Report.create();
+            codeReportBuilder.addFoundPatternBuilder(Report.getMapper().getBuilder(pattern));
+            CodeReport codeReport = codeReportBuilder.buildReport();
+            TreePresentation tree = codeReport.getTreePresentation();
+            System.out.println("test");
+        }
     }
 
     private List<IDesignPattern> analyzeDirectory(File dir) throws IOException {
