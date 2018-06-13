@@ -3,6 +3,7 @@ package nl.windesheim.codeparser.patterns;
 import nl.windesheim.codeparser.ClassOrInterface;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Abstract Factory pattern class.
@@ -21,6 +22,11 @@ public class AbstractFactory implements IDesignPattern {
     private List<ClassOrInterface> implementations;
 
     /**
+     * List of all the used interfaces by the concrete factories.
+     */
+    private Map<ClassOrInterface, List<ClassOrInterface>> concreteInter;
+
+    /**
      * Get the factory interface.
      * @return the factory interface.
      */
@@ -37,6 +43,14 @@ public class AbstractFactory implements IDesignPattern {
     }
 
     /**
+     * Get the concrete interfaces.
+     * @return the conrete interfaces.
+     */
+    public Map<ClassOrInterface, List<ClassOrInterface>> getConcreteImplementations() {
+        return concreteInter;
+    }
+
+    /**
      * Set the factory interface.
      * @param factoryInterface the factory interface.
      */
@@ -50,5 +64,13 @@ public class AbstractFactory implements IDesignPattern {
      */
     public void setImplementations(final List<ClassOrInterface> implementations) {
         this.implementations = implementations;
+    }
+
+    /**
+     * Set the list of concrete interfaces.
+     * @param implInterfaces the concrete interfaces
+     */
+    public void setConcreteInterfaces(final Map<ClassOrInterface, List<ClassOrInterface>> implInterfaces) {
+        this.concreteInter = implInterfaces;
     }
 }

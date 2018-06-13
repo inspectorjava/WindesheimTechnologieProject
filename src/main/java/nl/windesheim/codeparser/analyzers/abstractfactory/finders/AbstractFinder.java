@@ -121,6 +121,9 @@ public abstract class AbstractFinder {
             } catch (UnsolvedSymbolException exception) {
                 ErrorLog.getInstance().addError(exception);
                 continue;
+            } catch (UnsupportedOperationException exception) {
+                ErrorLog.getInstance().addError(exception);
+                continue;
             }
 
             //If the type is a interface

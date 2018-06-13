@@ -5,6 +5,7 @@ import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.decorators.HasFactoryImplementations;
 import nl.windesheim.reporting.decorators.HasClassList;
 import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
@@ -40,6 +41,9 @@ public class AbstractFactoryFoundPatternBuilder extends AbstractFoundPatternBuil
         hasImpl.setName("Implementations");
         hasImpl.setClasses(this.pattern.getImplementations());
 
-        return hasImpl;
+        HasFactoryImplementations hasFacImpl = new HasFactoryImplementations(hasImpl);
+        hasFacImpl.setImplementations(this.pattern.getConcreteImplementations());
+
+        return hasFacImpl;
     }
 }
