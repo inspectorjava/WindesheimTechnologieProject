@@ -160,7 +160,7 @@ public class InterfaceFactoryFinder extends AbstractFinder {
         ResolvedReferenceTypeDeclaration typeDeclaration;
         try {
             typeDeclaration = type.resolve().getTypeDeclaration();
-        } catch (UnsolvedSymbolException exception) {
+        } catch (UnsolvedSymbolException | UnsupportedOperationException exception) {
             ErrorLog.getInstance().addError(exception);
             return false;
         }
@@ -203,7 +203,7 @@ public class InterfaceFactoryFinder extends AbstractFinder {
                 ResolvedReferenceTypeDeclaration typeDeclaration;
                 try {
                     typeDeclaration = type.resolve().getTypeDeclaration();
-                } catch (UnsolvedSymbolException exception) {
+                } catch (UnsolvedSymbolException | UnsupportedOperationException exception) {
                     ErrorLog.getInstance().addError(exception);
                     continue;
                 }
