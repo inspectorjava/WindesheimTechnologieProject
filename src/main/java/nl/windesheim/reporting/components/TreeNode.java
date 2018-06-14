@@ -33,6 +33,11 @@ public class TreeNode {
     private NodeType nodeType = NodeType.ROOT;
 
     /**
+     * The level of confidence a result is correct.
+     */
+    private Result.Certainty resultCertainty = Result.Certainty.CERTAIN;
+
+    /**
      * Default construct.
      */
     public TreeNode() {
@@ -166,6 +171,22 @@ public class TreeNode {
      */
     public TreeNode setNodeType(final NodeType nodeType) {
         this.nodeType = nodeType;
+        return this;
+    }
+
+    /**
+     * @return the result certainty
+     */
+    public Result.Certainty getResultCertainty() {
+        return resultCertainty;
+    }
+
+    /**
+     * @param resultCertainty the result certainty
+     * @return this
+     */
+    public TreeNode setResultCertainty(final Result.Certainty resultCertainty) {
+        this.resultCertainty = resultCertainty;
         return this;
     }
 

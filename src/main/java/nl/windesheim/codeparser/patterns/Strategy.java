@@ -15,9 +15,24 @@ public class Strategy implements IDesignPattern {
     private ClassOrInterface context;
 
     /**
+     * Is true if the context has a setter for the strategy interface.
+     */
+    private boolean contextHasSetter;
+
+    /**
+     * Is true of the context has a function which calls a function in the strategy interface.
+     */
+    private boolean contextHasCaller;
+
+    /**
      * The file part which contains the strategy interface of the strategy pattern.
      */
     private ClassOrInterface strategyInterface;
+
+    /**
+     * Is true of the strategy interface has declared methods.
+     */
+    private boolean strategyMethods;
 
     /**
      * A list of file parts of strategies which can be used in this strategy patterns.
@@ -69,6 +84,54 @@ public class Strategy implements IDesignPattern {
      */
     public Strategy setStrategies(final List<ClassOrInterface> strategies) {
         this.strategies = strategies;
+        return this;
+    }
+
+    /**
+     * @return true/false
+     */
+    public boolean isContextHasSetter() {
+        return contextHasSetter;
+    }
+
+    /**
+     * @param contextHasSetter true/false
+     * @return this
+     */
+    public Strategy setContextHasSetter(final boolean contextHasSetter) {
+        this.contextHasSetter = contextHasSetter;
+        return this;
+    }
+
+    /**
+     * @return true/false
+     */
+    public boolean isContextHasCaller() {
+        return contextHasCaller;
+    }
+
+    /**
+     * @param contextHasCaller true/false
+     * @return this
+     */
+    public Strategy setContextHasCaller(final boolean contextHasCaller) {
+        this.contextHasCaller = contextHasCaller;
+        return this;
+    }
+
+    /**
+     * @return true/false
+     */
+    public boolean isStrategyMethods() {
+        return strategyMethods;
+    }
+
+    /**
+     * @param strategyMethods true/false
+     * @return this
+     */
+    public Strategy setStrategyMethods(final boolean strategyMethods) {
+        this.strategyMethods = strategyMethods;
         return this;
     }
 }

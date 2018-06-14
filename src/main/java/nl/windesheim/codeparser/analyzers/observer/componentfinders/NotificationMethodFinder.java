@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Finds notification methods for a potential AbstractObservable.
+ * Finds notification methods for a potential AbstractSubject.
  *
  * A notification method adheres to the following criteria:
  * - It is a method which loops over an observer collection
  * - A method is being called for each element in the observer collection
  */
-public class NotificationMethodFinder extends ObservableMethodFinder {
+public class NotificationMethodFinder extends SubjectMethodFinder {
     /**
      * NotificationMethodFinder constructor.
      *
@@ -165,7 +165,7 @@ public class NotificationMethodFinder extends ObservableMethodFinder {
             } else if (iterableExpr.isFieldAccessExpr()) {
                 iterableValue = iterableExpr.asFieldAccessExpr().resolve();
             }
-        } catch (UnsolvedSymbolException ex) {
+        } catch (UnsolvedSymbolException | UnsupportedOperationException ex) {
             ErrorLog.getInstance().addError(ex);
         }
 

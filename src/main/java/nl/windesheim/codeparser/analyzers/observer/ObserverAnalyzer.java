@@ -1,190 +1,91 @@
 package nl.windesheim.codeparser.analyzers.observer;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.CallableDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.componentfinders.ObserverPropertyFinder;
 import nl.windesheim.codeparser.analyzers.observer.components.AbstractObserver;
-import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
 import nl.windesheim.codeparser.analyzers.observer.components.ConcreteObserver;
+import nl.windesheim.codeparser.analyzers.observer.components.ConcreteSubject;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
-import nl.windesheim.codeparser.analyzers.util.visitor.ImplementationOrSuperclassFinder;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Finds occurrences of the observer pattern.
  *
  * An observer pattern is detected when
- * - The code contains a class which fits the criteria for being an AbstractObservable
+ * - The code contains a class which fits the criteria for being an AbstractSubject
  * - The code contains a class which fits the criteria for being an AbstractObserver
- * - (Optional) The code contains concrete implementations of observable classes
+ * - (Optional) The code contains concrete implementations of subject classes
  * - (Optional) The code contains concrete implementations of observer classes
  */
 public class ObserverAnalyzer extends PatternAnalyzer {
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        CombinedTypeSolver typeSolver = getParent().getTypeSolver();
+        List<IDesignPattern> patterns = new ArrayList<>();
 
-        // Find abstract observable classes
-        AbstractObservableFinder aObsableFinder = new AbstractObservableFinder(typeSolver);
-        for (CompilationUnit compilationUnit : files) {
-            aObsableFinder.visit(compilationUnit, null);
+        TypeSolver typeSolver = getTypeSolver();
+
+        // Without a typesolver, the observeranalyzer cannot function
+        if (typeSolver == null) {
+            return patterns;
         }
 
-        List<EligibleObserverPattern> eligiblePatterns = aObsableFinder.getObserverPatterns();
+        // Find abstract subject classes
+        AbstractSubjectFinder aSubjectFinder = new AbstractSubjectFinder(typeSolver);
+        for (CompilationUnit compilationUnit : files) {
+            aSubjectFinder.visit(compilationUnit, null);
+        }
 
-        // Search for classes that extend the abstract observables
-        findConcreteObservables(files, eligiblePatterns);
+        // Potential patterns, as found by analyzing code for abstract subjects
+        List<EligibleObserverPattern> rawPatterns = aSubjectFinder.getObserverPatterns();
+        if (rawPatterns.isEmpty()) {
+            return patterns;
+        }
+
+        // Search for classes that extend the abstract subjects
+        ConcreteSubjectFinder cSubjectFinder = new ConcreteSubjectFinder();
+        cSubjectFinder.findConcreteSubjects(files, rawPatterns);
 
         // Find abstract observer classes
         AbstractObserverFinder aObserverFinder =
-                new AbstractObserverFinder(typeSolver, eligiblePatterns);
+                new AbstractObserverFinder(typeSolver, rawPatterns);
         for (CompilationUnit compilationUnit : files) {
             aObserverFinder.visit(compilationUnit, null);
         }
 
-        // Search for classes that extend the abstract observers
-        findConcreteObservers(files, eligiblePatterns);
+        // Filter eligible patterns
+        List<EligibleObserverPattern> eligiblePatterns = new ArrayList<>();
+        for (EligibleObserverPattern rawPattern : rawPatterns) {
+            if (rawPattern.getAbstractObserver() != null) {
+                eligiblePatterns.add(rawPattern);
+            }
+        }
 
-        List<IDesignPattern> patterns = new ArrayList<>();
+        // Search for classes that extend the abstract observers
+        ConcreteObserverFinder cObserverFinder = new ConcreteObserverFinder();
+        cObserverFinder.findConcreteObservers(files, eligiblePatterns);
+
+        // Map eligible patterns to observer pattern results
         for (EligibleObserverPattern eligiblePattern : eligiblePatterns) {
             if (eligiblePattern.isObserverPattern()) {
+                // Find properties
+                ObserverPropertyFinder propertyFinder = new ObserverPropertyFinder(eligiblePattern);
+                propertyFinder.findObserverProperties();
+
                 patterns.add(makeObserverPattern(eligiblePattern));
             }
         }
 
         return patterns;
-    }
-
-    /**
-     * Finds ConcreteObservables: concrete implementations of an AbstractObservable.
-     *
-     * @param files            A list of files containing Java code
-     * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
-     *                         when concrete observables have been found a pattern instance
-     */
-    private void findConcreteObservables(final List<CompilationUnit> files,
-                                         final List<EligibleObserverPattern> eligiblePatterns) {
-        ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
-
-        for (CompilationUnit compilationUnit : files) {
-            for (EligibleObserverPattern observerPattern : eligiblePatterns) {
-                implFinder.reset();
-                implFinder.visit(compilationUnit, observerPattern.getAbstractObservable().getClassDeclaration());
-
-                List<ConcreteObservable> concObservables = ConcreteObservable.fromClasses(implFinder.getClasses());
-
-                observerPattern.addConcreteObservable(concObservables);
-            }
-        }
-    }
-
-    /**
-     * Finds ConcreteObservers: concrete implementations of an AbstractObserver.
-     *
-     * @param files            A list of files containing Java code
-     * @param eligiblePatterns A list of potentially detected observer patterns, this will be updated
-     *                         when concrete observers have been found for a pattern instance
-     */
-    private void findConcreteObservers(final List<CompilationUnit> files,
-                                       final List<EligibleObserverPattern> eligiblePatterns
-    ) {
-        Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap =
-                generateConcreteObserverMap(files, eligiblePatterns);
-
-        filterConcreteObserverForUpdateMethod(observerMap);
-    }
-
-    /**
-     * Generates map linking potential observer patterns to the found subclasses of it's abstract observer.
-     *
-     * @param files            A list of files containing Java code
-     * @param eligiblePatterns The detected potential observer patterns
-     * @return A map linking potential observer patterns to potential concrete observers
-     */
-    private Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> generateConcreteObserverMap(
-            final List<CompilationUnit> files,
-            final List<EligibleObserverPattern> eligiblePatterns
-    ) {
-        ImplementationOrSuperclassFinder implFinder = new ImplementationOrSuperclassFinder();
-        Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap = new HashMap<>();
-
-        for (CompilationUnit compilationUnit : files) {
-            for (EligibleObserverPattern observerPattern : eligiblePatterns) {
-                implFinder.reset();
-                implFinder.visit(compilationUnit, observerPattern.getAbstractObserver().getClassDeclaration());
-
-                // Check if the class actually implements the update method
-                List<ClassOrInterfaceDeclaration> subclasses = implFinder.getClasses();
-
-                if (!subclasses.isEmpty()) {
-                    if (observerMap.containsKey(observerPattern)) {
-                        observerMap.get(observerPattern).addAll(subclasses);
-                    } else {
-                        observerMap.put(
-                                observerPattern,
-                                new ArrayList<>(subclasses)
-                        );
-                    }
-                }
-            }
-        }
-
-        return observerMap;
-    }
-
-    /**
-     * Checks whether the found subclasses of AbstractObserver contain a method with the same signature
-     * as the update method in the abstract observer.
-     *
-     * @param observerMap A map linking potential observer patterns to the found subclasses
-     *                    of it's abstract observer
-     */
-    private void filterConcreteObserverForUpdateMethod(
-            final Map<EligibleObserverPattern, List<ClassOrInterfaceDeclaration>> observerMap
-    ) {
-        for (EligibleObserverPattern observerPattern : observerMap.keySet()) {
-            List<ClassOrInterfaceDeclaration> subclasses = observerMap.get(observerPattern);
-
-            //
-            for (ClassOrInterfaceDeclaration subclass : subclasses) {
-                List<MethodDeclaration> subclassMethods =  subclass.getMethods();
-                boolean extendsUpdate = false;
-
-                for (MethodDeclaration method : subclassMethods) {
-                    ResolvedMethodDeclaration abstractUpdate =
-                            observerPattern.getAbstractObserver().getUpdateMethod();
-                    if (!(abstractUpdate instanceof JavaParserMethodDeclaration)) {
-                        continue;
-                    }
-
-                    MethodDeclaration targetMethod =
-                            ((JavaParserMethodDeclaration) abstractUpdate).getWrappedNode();
-                    CallableDeclaration.Signature targetSignature = targetMethod.getSignature();
-                    if (method.getSignature().equals(targetSignature)) {
-                        extendsUpdate = true;
-                        break;
-                    }
-                }
-
-                if (extendsUpdate) {
-                    observerPattern.addConcreteObserver(new ConcreteObserver(subclass));
-                }
-            }
-        }
     }
 
     /**
@@ -196,15 +97,19 @@ public class ObserverAnalyzer extends PatternAnalyzer {
      */
     private ObserverPattern makeObserverPattern(final EligibleObserverPattern eligiblePattern) {
         ObserverPattern observerPattern = new ObserverPattern();
+        ObserverPatternProperties patternProps = new ObserverPatternProperties();
 
-        // Fill abstract observable
-        AbstractObservable aObservable = eligiblePattern.getAbstractObservable();
-        observerPattern.setAbstractObservable(
+        // Fill abstract subject
+        AbstractSubject abstractSubject = eligiblePattern.getAbstractSubject();
+        observerPattern.setAbstractSubject(
                 new ClassOrInterface()
-                        .setFilePart(FilePartResolver.getFilePartOfNode(aObservable.getClassDeclaration()))
-                        .setName(aObservable.getResolvedTypeDeclaration().getQualifiedName())
-                        .setDeclaration(aObservable.getClassDeclaration())
+                        .setFilePart(FilePartResolver.getFilePartOfNode(abstractSubject.getClassDeclaration()))
+                        .setName(abstractSubject.getResolvedTypeDeclaration().getQualifiedName())
+                        .setDeclaration(abstractSubject.getClassDeclaration())
         );
+
+        patternProps.setSubjectHasDetach(eligiblePattern.getActiveCollection().hasDetachMethods());
+
 
         // Fill abstract observer
         AbstractObserver aObserver = eligiblePattern.getAbstractObserver();
@@ -215,16 +120,24 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                         .setDeclaration(aObserver.getClassDeclaration())
         );
 
-        // Fill concrete observable
-        List<ConcreteObservable> cObservables = eligiblePattern.getConcreteObservables();
-        for (ConcreteObservable cObservable : cObservables) {
-            observerPattern.addConcreteObservable(
+        patternProps
+                .setObserverHasSubject(aObserver.getSubjectVariable() != null)
+                .setObserverHasAttachCall(aObserver.isHasAttachStatement())
+                .setObserverHasDetachCall(aObserver.isHasDetachStatement())
+                .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
+
+
+        // Fill concrete subject
+        List<ConcreteSubject> concreteSubjects = eligiblePattern.getConcreteSubjects();
+        for (ConcreteSubject concreteSubject : concreteSubjects) {
+            observerPattern.addConcreteSubject(
                     new ClassOrInterface()
-                            .setFilePart(FilePartResolver.getFilePartOfNode(cObservable.getClassDeclaration()))
-                            .setName(cObservable.getResolvedTypeDeclaration().getQualifiedName())
-                            .setDeclaration(cObservable.getClassDeclaration())
+                            .setFilePart(FilePartResolver.getFilePartOfNode(concreteSubject.getClassDeclaration()))
+                            .setName(concreteSubject.getResolvedTypeDeclaration().getQualifiedName())
+                            .setDeclaration(concreteSubject.getClassDeclaration())
             );
         }
+
 
         // Fill concrete observer
         List<ConcreteObserver> cObservers = eligiblePattern.getConcreteObservers();
@@ -235,7 +148,15 @@ public class ObserverAnalyzer extends PatternAnalyzer {
                             .setName(cObserver.getResolvedTypeDeclaration().getQualifiedName())
                             .setDeclaration(cObserver.getClassDeclaration())
             );
+
+            patternProps
+                    .setObserverHasSubject(cObserver.getSubjectVariable() != null)
+                    .setObserverHasAttachCall(cObserver.isHasAttachStatement())
+                    .setObserverHasDetachCall(cObserver.isHasDetachStatement())
+                    .setUpdateHasArguments(aObserver.isUpdateMethodHasParameters());
         }
+
+        observerPattern.setPatternProperties(patternProps);
 
         return observerPattern;
     }

@@ -10,16 +10,8 @@ import java.util.List;
 /**
  * Encapsulates information on a concrete observer.
  */
+@SuppressWarnings("PMD.UseUtilityClass")
 public class ConcreteObserver extends ObserverClass {
-    /**
-     * ConcreteObserver constructor.
-     *
-     * Never called, just here to silence PMD warnings
-     */
-    private ConcreteObserver() {
-        super(null, null);
-    }
-
     /**
      * ConcreteObserver constructor.
      *

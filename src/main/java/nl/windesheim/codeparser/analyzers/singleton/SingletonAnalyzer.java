@@ -22,6 +22,9 @@ import java.util.List;
  * - The class has a static instance of itself
  * -- or contains a static inner class with an instance of itself
  * - The class has a static method which returns the static instance of itself
+ *
+ * Or a partial match if one of the following is true:
+ * - the class has a non private constructor
  */
 public class SingletonAnalyzer extends PatternAnalyzer {
 
@@ -40,10 +43,6 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                 if (type instanceof ClassOrInterfaceDeclaration) {
                     ClassOrInterfaceDeclaration classDeclaration = (ClassOrInterfaceDeclaration) type;
                     if (classDeclaration.isInterface()) {
-                        continue;
-                    }
-
-                    if (!onlyHasPrivateConstructors(classDeclaration)) {
                         continue;
                     }
 
@@ -116,6 +115,8 @@ public class SingletonAnalyzer extends PatternAnalyzer {
                     .setFilePart(filePart)
                     .setDeclaration(classDeclaration)
                     .setName(classDeclaration.getName().asString());
+
+            singleton.setPrivateConstructor(onlyHasPrivateConstructors(classDeclaration));
 
             singleton.setSingletonClass(classOrInterface);
         }

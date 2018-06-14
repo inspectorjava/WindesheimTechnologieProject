@@ -5,14 +5,15 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
-import nl.windesheim.codeparser.analyzers.abstractfactory.finders.AbstractFactoryFinder;
 import nl.windesheim.codeparser.analyzers.abstractfactory.finders.InterfaceFactoryFinder;
 import nl.windesheim.codeparser.analyzers.util.FilePartResolver;
 import nl.windesheim.codeparser.patterns.AbstractFactory;
 import nl.windesheim.codeparser.patterns.IDesignPattern;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The full class to analyze compilation units to check if an (Abstract) Factory pattern is used.
@@ -28,19 +29,19 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         }
 
         InterfaceFactoryFinder interfaceFinder = new InterfaceFactoryFinder();
-        AbstractFactoryFinder abstractFinder = new AbstractFactoryFinder();
 
         List<ClassOrInterfaceDeclaration> declarations = this.findDeclarations(files);
 
         List<ClassOrInterfaceDeclaration> factoryClasses = new ArrayList<>();
 
         factoryClasses.addAll(interfaceFinder.find(declarations));
-        factoryClasses.addAll(abstractFinder.find(declarations));
 
         for (ClassOrInterfaceDeclaration factory : factoryClasses) {
             List<ClassOrInterfaceDeclaration> implementations =
                     interfaceFinder.findImplementations(factory, declarations);
-            patterns.add(makeAbstractFactory(factory, implementations));
+            Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces =
+                    interfaceFinder.findInterfacesFromFactory(implementations, declarations);
+            patterns.add(makeAbstractFactory(factory, implementations, factoryInterfaces));
         }
 
         return patterns;
@@ -69,12 +70,14 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
      *
      * @param factory         the factory class
      * @param implementations it's implementations
+     * @param factoryInterfaces the factory interfaces
      * @return AbstractFactory
      */
     private AbstractFactory makeAbstractFactory(
             final ClassOrInterfaceDeclaration factory,
-            final List<ClassOrInterfaceDeclaration> implementations
-    ) {
+            final List<ClassOrInterfaceDeclaration> implementations,
+            final Map<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> factoryInterfaces) {
+        // The factory interface. (KingdomFactory)
         AbstractFactory abstractFactory = new AbstractFactory();
         abstractFactory.setFactoryInterface(
                 new ClassOrInterface()
@@ -83,6 +86,7 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
                         .setDeclaration(factory)
         );
 
+        // The factory implementations (OrcKingdomFactory, ElfKingdomFactory)
         List<ClassOrInterface> implClasses = new ArrayList<>();
         for (ClassOrInterfaceDeclaration declaration : implementations) {
             implClasses.add(
@@ -94,6 +98,32 @@ public class AbstractFactoryAnalyzer extends PatternAnalyzer {
         }
 
         abstractFactory.setImplementations(implClasses);
+
+        HashMap<ClassOrInterface, List<ClassOrInterface>>
+                implInterfaces = new HashMap<>();
+        for (
+                Map.Entry<ClassOrInterfaceDeclaration, List<ClassOrInterfaceDeclaration>> entry
+                : factoryInterfaces.entrySet()) {
+
+            List<ClassOrInterface> products = new ArrayList<>();
+
+            for (ClassOrInterfaceDeclaration declaration : entry.getValue()) {
+                products.add(new ClassOrInterface()
+                        .setFilePart(FilePartResolver.getFilePartOfNode(declaration))
+                        .setName(declaration.getNameAsString())
+                        .setDeclaration(declaration));
+            }
+
+            implInterfaces.put(
+                    new ClassOrInterface()
+                            .setFilePart(FilePartResolver.getFilePartOfNode(entry.getKey()))
+                            .setName(entry.getKey().getNameAsString())
+                            .setDeclaration(entry.getKey()),
+                    products
+            );
+        }
+        abstractFactory.setConcreteInterfaces(implInterfaces);
+
         return abstractFactory;
     }
 }

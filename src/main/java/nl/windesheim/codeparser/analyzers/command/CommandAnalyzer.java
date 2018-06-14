@@ -2,7 +2,7 @@ package nl.windesheim.codeparser.analyzers.command;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -24,6 +24,9 @@ import java.util.Set;
  * - The execution method of the command is at least implemented on one class
  * - The command class contains a reference to a receiver
  * - The command execute method executes a method of the receiver
+ * - The command execute method return type is void
+ * - The command execute method isn't a getter or setter.
+ * - The command execute method has no parameters
  * - The commands are defined in a list
  */
 public class CommandAnalyzer extends PatternAnalyzer {
@@ -36,7 +39,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
     /**
      * A solver for data types.
      */
-    private CombinedTypeSolver typeSolver;
+    private TypeSolver typeSolver;
 
     /**
      * A parentFinder which searches for implementations of a interface.
@@ -61,7 +64,7 @@ public class CommandAnalyzer extends PatternAnalyzer {
 
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
-        typeSolver = getParent().getTypeSolver();
+        typeSolver = getTypeSolver();
 
         ArrayList<IDesignPattern> commandPatterns = new ArrayList<IDesignPattern>();
 

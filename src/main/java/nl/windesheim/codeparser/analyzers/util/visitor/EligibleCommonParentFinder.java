@@ -4,7 +4,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Finds eligible 'common parent' classes.
  */
-public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeSolver> {
+public class EligibleCommonParentFinder extends VoidVisitorAdapter<TypeSolver> {
 
     /**
      * The list of classes which were found.
@@ -43,7 +43,7 @@ public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeS
     }
 
     @Override
-    public void visit(final ClassOrInterfaceDeclaration declaration, final CombinedTypeSolver typeSolver) {
+    public void visit(final ClassOrInterfaceDeclaration declaration, final TypeSolver typeSolver) {
         super.visit(declaration, typeSolver);
 
         boolean isInterface = declaration.isInterface();
@@ -51,11 +51,6 @@ public class EligibleCommonParentFinder extends VoidVisitorAdapter<CombinedTypeS
         //The common parent should be a interface or abstract class
         // if not one of the above stop processing
         if (!isInterface && !declaration.getModifiers().contains(Modifier.ABSTRACT)) {
-            return;
-        }
-
-        //The common parent should have at least on method
-        if (declaration.getMethods().isEmpty()) {
             return;
         }
 

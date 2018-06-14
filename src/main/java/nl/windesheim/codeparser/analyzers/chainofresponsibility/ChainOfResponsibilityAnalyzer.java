@@ -13,8 +13,8 @@ import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserClassDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserInterfaceDeclaration;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import nl.windesheim.codeparser.ClassOrInterface;
 import nl.windesheim.codeparser.analyzers.PatternAnalyzer;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -39,13 +39,17 @@ import java.util.List;
  * - A 'link' should call a function defined in the 'common parent' on the 'next link'
  * from a the same function the the current 'link'
  * -- This call may also be from a function in a abstract 'common parent'
+ *
+ * Or is a partial match if one of the following is true:
+ * - The common parent has no methods
+ * - A link doesn't call the next link
  */
 public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
 
     /**
      * A solver for data types.
      */
-    private CombinedTypeSolver typeSolver;
+    private TypeSolver typeSolver;
 
     /**
      * A finder which searches for implementations of a interface.
@@ -77,7 +81,7 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
     @Override
     public List<IDesignPattern> analyze(final List<CompilationUnit> files) {
         //Get the typesolver from the parent
-        typeSolver = getParent().getTypeSolver();
+        typeSolver = getTypeSolver();
 
         //Initialize the list of chain of responsibility patterns we will be returning
         ArrayList<IDesignPattern> chainList = new ArrayList<>();
@@ -100,12 +104,6 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
             for (ClassOrInterfaceDeclaration link : linksOfParent) {
                 //If a link doesn't have a reference of the next link
                 if (!linkHasNextLinkReference(link, parent, files)) {
-                    badLinks.add(link);
-                    continue;
-                }
-
-                //If a link never calls a next link
-                if (!linkCallsNextLink(link, parent)) {
                     badLinks.add(link);
                     continue;
                 }
@@ -421,16 +419,25 @@ public class ChainOfResponsibilityAnalyzer extends PatternAnalyzer {
         );
 
         ArrayList<ClassOrInterface> linkClasses = new ArrayList<>();
+        ArrayList<ClassOrInterface> badLinks = new ArrayList<>();
         for (ClassOrInterfaceDeclaration link : links) {
-            linkClasses.add(
-                    new ClassOrInterface()
-                            .setDeclaration(link)
-                            .setName(link.getNameAsString())
-                            .setFilePart(FilePartResolver.getFilePartOfNode(link))
-            );
+            ClassOrInterface linkObject = new ClassOrInterface()
+                    .setDeclaration(link)
+                    .setName(link.getNameAsString())
+                    .setFilePart(FilePartResolver.getFilePartOfNode(link));
+
+            linkClasses.add(linkObject);
+
+            //If a link never calls a next link
+            if (!linkCallsNextLink(link, parent)) {
+                badLinks.add(linkObject);
+            }
         }
 
+        pattern.setParentHasMethods(!parent.getMethods().isEmpty());
+
         pattern.setChainLinks(linkClasses);
+        pattern.setNonChainedLinks(badLinks);
 
         return pattern;
     }
