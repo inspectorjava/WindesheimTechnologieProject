@@ -160,7 +160,7 @@ public class AbstractSubjectFinder
                             new ObserverCollection(variable, fieldType, parameterType);
                     collections.add(collection);
                 }
-            } catch (UnsolvedSymbolException ex) {
+            } catch (UnsolvedSymbolException | UnsupportedOperationException ex) {
                 // Right now, ignore this. At a later stage, add error reporting
                 ErrorLog.getInstance().addError(ex);
             }
