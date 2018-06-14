@@ -4,7 +4,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 
 /**
- * Encapsulates information on a notification method, as implemented in an abstract observable class.
+ * Encapsulates information on a notification method, as implemented in an abstract subject class.
  */
 public class NotificationMethod {
     /**

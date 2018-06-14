@@ -7,9 +7,9 @@ import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection
 import java.util.List;
 
 /**
- * Finds methods specific to an AbstractObservable.
+ * Finds methods specific to an AbstractSubject.
  */
-public abstract class ObservableMethodFinder {
+public abstract class SubjectMethodFinder {
     /**
      * A tool which resolved relations between AST nodes.
      */
@@ -21,12 +21,12 @@ public abstract class ObservableMethodFinder {
     private final List<ObserverCollection> observerCols;
 
     /**
-     * ObservableMethodFinder constructor.
+     * SubjectMethodFinder constructor.
      *
      * @param typeSolver   A TypeSolver which can be used by this class
      * @param observerCols A list of detected potential observer collections
      */
-    public ObservableMethodFinder(
+    public SubjectMethodFinder(
             final TypeSolver typeSolver,
             final List<ObserverCollection> observerCols
     ) {
@@ -35,7 +35,7 @@ public abstract class ObservableMethodFinder {
     }
 
     /**
-     * Determine whether the given method adheres to the criteria for an AbstractObservable method.
+     * Determine whether the given method adheres to the criteria for an AbstractSubject method.
      *
      * @param methodDeclaration The method to analyze
      */

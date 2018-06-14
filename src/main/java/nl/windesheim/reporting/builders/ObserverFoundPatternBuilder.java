@@ -1,10 +1,12 @@
 package nl.windesheim.reporting.builders;
 
 import nl.windesheim.codeparser.patterns.ObserverPattern;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 import nl.windesheim.reporting.DesignPatternType;
 import nl.windesheim.reporting.components.AbstractFoundPatternBuilder;
 import nl.windesheim.reporting.components.FoundPatternReport;
 import nl.windesheim.reporting.components.IFoundPatternReport;
+import nl.windesheim.reporting.components.Result;
 import nl.windesheim.reporting.decorators.HasClassList;
 import nl.windesheim.reporting.decorators.HasClassOrInterface;
 
@@ -30,26 +32,56 @@ public class ObserverFoundPatternBuilder extends AbstractFoundPatternBuilder {
 
 
     @Override
+    @SuppressWarnings("PMD.ConfusingTernary")
     public IFoundPatternReport buildReport() {
         FoundPatternReport patternReport = new FoundPatternReport();
         patternReport.setDesignPatternType(DesignPatternType.OBSERVER);
 
-        HasClassOrInterface aObservable = new HasClassOrInterface(patternReport);
-        aObservable.setName("Abstract Observable");
-        aObservable.setClassOrInterface(this.pattern.getAbstractObservable());
+        ObserverPatternProperties patternProps = this.pattern.getPatternProperties();
 
-        HasClassOrInterface aObserver = new HasClassOrInterface(patternReport);
-        aObserver.setName("Abstract Observer");
-        aObserver.setClassOrInterface(this.pattern.getAbstractObserver());
+        int errors = 0;
 
-        HasClassList cObservables = new HasClassList(aObservable);
-        cObservables.setName("Concrete Observables");
-        cObservables.setClasses(this.pattern.getConcreteObservables());
+        if (!patternProps.isSubjectHasDetach()) {
+            patternReport.addPatternRemark("Subject doesn't have a unsubscribe method");
+        } else if (!patternProps.isObserverHasDetachCall()) {
+            patternReport.addPatternRemark("Observer does not unsubscribe itself from Subject");
+        }
 
-        HasClassList cObservers = new HasClassList(aObserver);
-        cObservers.setName("Concrete Observers");
-        cObservers.setClasses(this.pattern.getConcreteObservers());
+        if (patternProps.isUpdateHasArguments()) {
+            patternReport.addPatternRemark("Arguments are passed to the update method");
+        } else if (!patternProps.isObserverHasSubject() && !patternProps.isUpdateHasArguments()) {
+            errors += 2;
+            patternReport.addPatternError("Observer does not contain a reference to the subject");
+        }
 
-        return cObservers;
+        if (!patternProps.isObserverHasAttachCall()) {
+            errors++;
+            patternReport.addPatternError("Observer does not subscribe itself to Subject");
+        }
+
+        if (errors == 1) {
+            patternReport.setCertainty(Result.Certainty.LIKELY);
+        } else if (errors > 1) {
+            patternReport.setCertainty(Result.Certainty.UNLIKELY);
+        }
+
+
+        HasClassOrInterface abstractSubject = new HasClassOrInterface(patternReport);
+        abstractSubject.setName("Abstract Subject");
+        abstractSubject.setClassOrInterface(this.pattern.getAbstractSubject());
+
+        HasClassOrInterface abstractObserver = new HasClassOrInterface(abstractSubject);
+        abstractObserver.setName("Abstract Observer");
+        abstractObserver.setClassOrInterface(this.pattern.getAbstractObserver());
+
+        HasClassList concreteSubjects = new HasClassList(abstractObserver);
+        concreteSubjects.setName("Concrete Subjects");
+        concreteSubjects.setClasses(this.pattern.getConcreteSubjects());
+
+        HasClassList concreteObservers = new HasClassList(concreteSubjects);
+        concreteObservers.setName("Concrete Observers");
+        concreteObservers.setClasses(this.pattern.getConcreteObservers());
+
+        return concreteObservers;
     }
 }

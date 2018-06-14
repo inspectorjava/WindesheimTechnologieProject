@@ -37,5 +37,10 @@ public enum NodeType {
     /**
      * A fault or error in the design pattern.
      */
-    PATTERN_ERROR
+    PATTERN_ERROR,
+
+    /**
+     * A remark on the design pattern.
+     */
+    PATTERN_REMARK
 }

@@ -21,7 +21,7 @@ public class SingletonFoundPatternBuilderTest {
 
         SingletonFoundPatternBuilder singletonFoundPatternBuilder = new SingletonFoundPatternBuilder(new Singleton().setSingletonClass(new ClassOrInterface().setFilePart(part).setName("SingletonTest")));
         IFoundPatternReport foundPatternReport = singletonFoundPatternBuilder.buildReport();
-        assertEquals( "Pattern: "+ DesignPatternType.SINGLETON +" found with certainty: "+ Result.Certainty.LIKELY +" with the following errors: \n" +
+        assertEquals( "Pattern: "+ DesignPatternType.SINGLETON +" found with certainty: "+ Result.Certainty.LIKELY +" with the following errors:\n" +
                 " - The singleton has a non-private constructor\n" +
                 " - Singleton: SingletonTest\n\r", foundPatternReport.getReport());
     }

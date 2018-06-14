@@ -1,6 +1,7 @@
 package nl.windesheim.codeparser.patterns;
 
 import nl.windesheim.codeparser.ClassOrInterface;
+import nl.windesheim.codeparser.patterns.properties.ObserverPatternProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,9 @@ import java.util.List;
  */
 public class ObserverPattern implements IDesignPattern {
     /**
-     * The file part which contains the abstract observable class or interface.
+     * The file part which contains the abstract subject class or interface.
      */
-    private ClassOrInterface aObservable;
+    private ClassOrInterface abstractSubject;
 
     /**
      * The file part which contains the abstract observer class or interface.
@@ -20,9 +21,9 @@ public class ObserverPattern implements IDesignPattern {
     private ClassOrInterface aObserver;
 
     /**
-     * A list of file parts which contain concrete observable classes.
+     * A list of file parts which contain concrete subject classes.
      */
-    private List<ClassOrInterface> cObservables;
+    private List<ClassOrInterface> concreteSubjects;
 
     /**
      * A list of file parts which contain concrete observer classes.
@@ -30,26 +31,31 @@ public class ObserverPattern implements IDesignPattern {
     private List<ClassOrInterface> cObservers;
 
     /**
+     * Optional properties of this observer pattern.
+     */
+    private ObserverPatternProperties patternProps;
+
+    /**
      * ObserverPattern constructor.
      */
     public ObserverPattern() {
-        cObservables = new ArrayList<>();
+        concreteSubjects = new ArrayList<>();
         cObservers = new ArrayList<>();
     }
 
     /**
-     * @return The abstract observable in the observer pattern
+     * @return The abstract subject in the observer pattern
      */
-    public ClassOrInterface getAbstractObservable() {
-        return aObservable;
+    public ClassOrInterface getAbstractSubject() {
+        return abstractSubject;
     }
 
     /**
-     * @param aObservable The abstract observable in the observer pattern
+     * @param abstractSubject The abstract subject in the observer pattern
      * @return this
      */
-    public ObserverPattern setAbstractObservable(final ClassOrInterface aObservable) {
-        this.aObservable = aObservable;
+    public ObserverPattern setAbstractSubject(final ClassOrInterface abstractSubject) {
+        this.abstractSubject = abstractSubject;
         return this;
     }
 
@@ -70,27 +76,27 @@ public class ObserverPattern implements IDesignPattern {
     }
 
     /**
-     * @return A list of the concrete observables in the observer pattern
+     * @return A list of the concrete subjects in the observer pattern
      */
-    public List<ClassOrInterface> getConcreteObservables() {
-        return cObservables;
+    public List<ClassOrInterface> getConcreteSubjects() {
+        return concreteSubjects;
     }
 
     /**
-     * @param cObservers A list of the concrete observables in the observer pattern
+     * @param concreteSubjects A list of the concrete subjects in the observer pattern
      * @return this
      */
-    public ObserverPattern setConcreteObservables(final List<ClassOrInterface> cObservers) {
-        this.cObservables = cObservers;
+    public ObserverPattern setConcreteSubjects(final List<ClassOrInterface> concreteSubjects) {
+        this.concreteSubjects = concreteSubjects;
         return this;
     }
 
     /**
-     * @param cObservable A concrete observable in the observer pattern
+     * @param concreteSubject A concrete subject in the observer pattern
      * @return this
      */
-    public ObserverPattern addConcreteObservable(final ClassOrInterface cObservable) {
-        this.cObservables.add(cObservable);
+    public ObserverPattern addConcreteSubject(final ClassOrInterface concreteSubject) {
+        this.concreteSubjects.add(concreteSubject);
         return this;
     }
 
@@ -116,6 +122,22 @@ public class ObserverPattern implements IDesignPattern {
      */
     public ObserverPattern addConcreteObserver(final ClassOrInterface cObserver) {
         this.cObservers.add(cObserver);
+        return this;
+    }
+
+    /**
+     * @return Optional properties of this observer pattern
+     */
+    public ObserverPatternProperties getPatternProperties() {
+        return patternProps;
+    }
+
+    /**
+     * @param patternProps Optional properties of this observer pattern
+     * @return this
+     */
+    public ObserverPattern setPatternProperties(final ObserverPatternProperties patternProps) {
+        this.patternProps = patternProps;
         return this;
     }
 }

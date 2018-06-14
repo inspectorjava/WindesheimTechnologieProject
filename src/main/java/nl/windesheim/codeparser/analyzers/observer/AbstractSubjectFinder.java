@@ -8,12 +8,13 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.NotificationMethodFinder;
 import nl.windesheim.codeparser.analyzers.observer.componentfinders.SubscriptionMethodFinder;
-import nl.windesheim.codeparser.analyzers.observer.components.AbstractObservable;
+import nl.windesheim.codeparser.analyzers.observer.components.AbstractSubject;
 import nl.windesheim.codeparser.analyzers.observer.components.EligibleObserverPattern;
 import nl.windesheim.codeparser.analyzers.observer.components.ObserverCollection;
 import nl.windesheim.codeparser.analyzers.util.ErrorLog;
@@ -23,9 +24,9 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * Visitor which finds all classes which can be an 'abstract observable'.
+ * Visitor which finds all classes which can be an 'abstract subject'.
  */
-public class AbstractObservableFinder
+public class AbstractSubjectFinder
         extends VoidVisitorAdapter<Void> {
 
     /**
@@ -39,11 +40,11 @@ public class AbstractObservableFinder
     private final List<EligibleObserverPattern> observerPatterns;
 
     /**
-     * AbstractObservableFinder constructor.
+     * AbstractSubjectFinder constructor.
      *
      * @param typeSolver A TypeSolver which can be used by this class
      */
-    public AbstractObservableFinder(final TypeSolver typeSolver) {
+    public AbstractSubjectFinder(final TypeSolver typeSolver) {
         super();
         this.typeSolver = typeSolver;
         this.observerPatterns = new ArrayList<>();
@@ -53,44 +54,46 @@ public class AbstractObservableFinder
     public void visit(final ClassOrInterfaceDeclaration classDeclaration, final Void arg) {
         if (!classDeclaration.isInterface()) {
             // Contains a collection of objects (of a reference type)
-            List<ObserverCollection> eligibleCols = this.findEligibleCollections(classDeclaration);
-            if (eligibleCols.isEmpty()) {
-                return;
-            }
+            try {
+                ResolvedReferenceTypeDeclaration classTypeDecl = classDeclaration.resolve();
 
-            // Check if the class contains attach-, detach- and notify methods
-            SubscriptionMethodFinder subscriptFinder =
-                    new SubscriptionMethodFinder(typeSolver, eligibleCols);
-            NotificationMethodFinder notifyFinder =
-                    new NotificationMethodFinder(typeSolver, eligibleCols);
-
-            List<MethodDeclaration> methods = classDeclaration.findAll(MethodDeclaration.class);
-            for (MethodDeclaration method : methods) {
-                EnumSet<Modifier> modifiers = method.getModifiers();
-                if (!modifiers.contains(Modifier.PRIVATE)) {
-                    subscriptFinder.determine(method);
-                    notifyFinder.determine(method);
+                List<ObserverCollection> eligibleCols = this.findEligibleCollections(classDeclaration, classTypeDecl);
+                if (eligibleCols.isEmpty()) {
+                    return;
                 }
-            }
 
-            List<ObserverCollection> observerCols = new ArrayList<>();
-            for (ObserverCollection eligibleCol : eligibleCols) {
-                if (eligibleCol.isObserverCollection()) {
-                    observerCols.add(eligibleCol);
+                // Check if the class contains attach-, detach- and notify methods
+                SubscriptionMethodFinder subscriptFinder =
+                        new SubscriptionMethodFinder(typeSolver, eligibleCols);
+                NotificationMethodFinder notifyFinder =
+                        new NotificationMethodFinder(typeSolver, eligibleCols);
+
+                List<MethodDeclaration> methods = classDeclaration.findAll(MethodDeclaration.class);
+                for (MethodDeclaration method : methods) {
+                    EnumSet<Modifier> modifiers = method.getModifiers();
+                    if (!modifiers.contains(Modifier.PRIVATE)) {
+                        subscriptFinder.determine(method);
+                        notifyFinder.determine(method);
+                    }
                 }
-            }
 
-            // If an abstract observable has been found, store info
-            if (!observerCols.isEmpty()) {
-                try {
-                    AbstractObservable abstObservable =
-                            new AbstractObservable(classDeclaration, classDeclaration.resolve(), observerCols);
+                List<ObserverCollection> observerCols = new ArrayList<>();
+                for (ObserverCollection eligibleCol : eligibleCols) {
+                    if (eligibleCol.isObserverCollection()) {
+                        observerCols.add(eligibleCol);
+                    }
+                }
+
+                // If an abstract subject has been found, store info
+                if (!observerCols.isEmpty()) {
+                    AbstractSubject abstractSubject =
+                            new AbstractSubject(classDeclaration, classDeclaration.resolve(), observerCols);
                     EligibleObserverPattern observerPattern = new EligibleObserverPattern();
-                    observerPattern.setAbstractObservable(abstObservable);
+                    observerPattern.setAbstractSubject(abstractSubject);
                     observerPatterns.add(observerPattern);
-                } catch (UnsolvedSymbolException ex) {
-                    ErrorLog.getInstance().addError(ex);
                 }
+            } catch (UnsolvedSymbolException ex) {
+                ErrorLog.getInstance().addError(ex);
             }
         }
     }
@@ -104,17 +107,22 @@ public class AbstractObservableFinder
 
     /**
      * Find object properties which may contain a collection of Observers, which may indicate that the given
-     * class is an AbstractObservable.
+     * class is an AbstractSubject.
      *
      * A possible Observer collection adheres to the following criteria:
      * - It is an object property
      * - It is a realization of a Java Collection
      * - It is parametrized with a reference type
+     * -- Which not the same type as itself or an ancestor
      *
      * @param classDeclaration The class to find the eligible collection in
+     * @param classTypeDecl    The resolved reference type of the given class
      * @return A list of object properties which fit the criteria for being an Observer collection
      */
-    private List<ObserverCollection> findEligibleCollections(final ClassOrInterfaceDeclaration classDeclaration) {
+    private List<ObserverCollection> findEligibleCollections(
+            final ClassOrInterfaceDeclaration classDeclaration,
+            final ResolvedReferenceTypeDeclaration classTypeDecl
+    ) {
         List<ObserverCollection> collections = new ArrayList<>();
 
         for (FieldDeclaration field : classDeclaration.getFields()) {
@@ -140,20 +148,45 @@ public class AbstractObservableFinder
                     }
                 }
 
+                // Determine if the parameter is not of the same type as the class itself
+                // or an ancestor of the class
+                if (parameterType == null || isTypeEqualToSelf(parameterType, classTypeDecl)) {
+                    continue;
+                }
+
                 // If a parameter type has been found, this is an eligible collection
-                if (parameterType != null) {
-                    for (VariableDeclarator variable : field.getVariables()) {
-                        ObserverCollection collection =
-                                new ObserverCollection(variable, fieldType, parameterType);
-                        collections.add(collection);
-                    }
+                for (VariableDeclarator variable : field.getVariables()) {
+                    ObserverCollection collection =
+                            new ObserverCollection(variable, fieldType, parameterType);
+                    collections.add(collection);
                 }
             } catch (UnsolvedSymbolException ex) {
                 // Right now, ignore this. At a later stage, add error reporting
+                ErrorLog.getInstance().addError(ex);
             }
         }
 
         return collections;
+    }
+
+    /**
+     * Determines whether the parameter is of the same type as the class, or one of it's ancestors.
+     *
+     * @param parameterType The resolved parameter type
+     * @param classTypeDecl The resolved class type
+     * @return Whether the parameter and the class are of the same type
+     */
+    private boolean isTypeEqualToSelf(
+            final ResolvedReferenceType parameterType,
+            final ResolvedReferenceTypeDeclaration classTypeDecl
+    ) {
+        if (parameterType.getTypeDeclaration().equals(classTypeDecl)) {
+            return true;
+        }
+
+        List<ResolvedReferenceType> classAncestors = classTypeDecl.getAncestors();
+
+        return classAncestors.contains(parameterType);
     }
 
     /**
